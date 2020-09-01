@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sindicato.h"
-#include "..//biblioteca-compartida/serializar.h"
+#include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
 
 int main(void) {
 	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
@@ -28,6 +28,7 @@ int main(void) {
 
 	char* buffer=malloc(100);
 
+	//Invoco a la funcion 'serializar': ({buffer que quiero enviar}, "%s%d..." agregar tanto '%{tipoDato}'los tipos de datos de acuerdo  los parametros que quiero enviar , variable1,variable2...variable N)
 	int posSerializacion=serializar(buffer,"%d%s%z%d%s",pedidoPrueba->idPedido,pedidoPrueba->descripcionPedido,pedidoPrueba->precioPedido,pedidoPrueba->idRestaurante,pedidoPrueba->nombreEstaurante);
 
 
@@ -37,6 +38,8 @@ int main(void) {
 	int idRestauranteDeserializado=0;
 	char* nombreRestauranteDeserializado=malloc(30);
 
+	//Idem serializar, agrego las variables donde quiero guardar los datos deserialzados del buffer
+	//Para datos numericos agregar el operador '&'
 	int posDeserializacion= deserializar(buffer,"%d%s%z%d%s",&idPedidoDeserializado,descripcionDeserializada,&precioDeserializado,&idRestauranteDeserializado,nombreRestauranteDeserializado);
 
 	printf("Id deserializado: %d\n",idPedidoDeserializado);

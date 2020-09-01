@@ -4,4 +4,4 @@
 #include <stdint.h>
 
 int serializar(void* buffer, const char* format, ...);
-int deserializar(void* buffer, const char* format, ...);
+int serializar(void* buffer, const char* format, ...);
