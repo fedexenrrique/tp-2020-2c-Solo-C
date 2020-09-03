@@ -1,5 +1,9 @@
 #include "serializar.h"
 
+void prueba_biblioteca_compartida(void) {
+	puts("!!!Texto impreso desde la biblioteca compartida!!!");
+}
+
 int serializar(void* buffer, const char* format, ...){
 	va_list objs;
 	int i = 0, buffIndex = 0, sizeObj;

@@ -8,10 +8,12 @@
  ============================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "cliente.h"
 
 int main(void) {
-	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
+
+	puts("!!!Hello World!!!");
+	prueba_biblioteca_compartida();
 	return EXIT_SUCCESS;
+
 }

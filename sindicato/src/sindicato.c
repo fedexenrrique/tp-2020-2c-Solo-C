@@ -8,10 +8,9 @@
  ============================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+
 #include "sindicato.h"
-#include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
+
 
 int main(void) {
 	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
