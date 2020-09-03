@@ -1,7 +1,7 @@
 #include "serializar.h"
 
 void prueba_biblioteca_compartida(void) {
-	printf("!!!Texto impreso desde la biblioteca compartida!!!");
+	printf("\n!!!Texto impreso desde la biblioteca compartida!!!\n");
 }
 
 int serializar(void* buffer, const char* format, ...){

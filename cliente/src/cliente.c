@@ -10,13 +10,153 @@
 
 #include "cliente.h"
 
-int main(void) {
+int main(int argc, char **argv) {
 
 	prueba_biblioteca_compartida();
 
 	logger = log_create("cliente.log","CLIENTE",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
+	printf("\nRecibí %d parámetros.\n", argc);
+
+	if (argc == 1) {
+
+		printf("\nDebe ingresar un comando para comicarse con los módulos.");
+		printf("\nLos comandos permitidos son los siguientes:\n");
+		printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP                                  \n");
+		printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP                                  \n");
+		printf(" 03- OBTENER_RESTAURANTES    HACIA: SINDICATO                            \n");
+		printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO          \n");
+		printf(" 05- CREAR_PEDIDO            HACIA: APP, RESTAURANTE                     \n");
+		printf(" 06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
+		printf(" 07- AÑADIR_PLATO            HACIA: APP, RESTAURANTE                     \n");
+		printf(" 08- GUARDAR_PLATO           HACIA: COMANDA, SINDICATO                   \n");
+		printf(" 10- CORFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
+		printf(" 11- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO              \n");
+		printf(" 12- CONSULTAR_PEDIDO        HACIA: APP, RESTAURANTE                     \n");
+		printf(" 13- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
+		printf(" 14- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                     \n");
+		printf(" 15- TOMAR_PEDIDO            HACIA: COMANDA, CLIENTE                     \n");
+
+		return EXIT_SUCCESS;
+
+	} else {
+
+		case TEAM:
+
+			ip_dest     = config_get_string_value(config,"IP_TEAM"    );
+			port_dest   = config_get_string_value(config,"PUERTO_TEAM");
+
+			log_info(logger,ip_dest    );
+			log_info(logger,port_dest  );
+
+			switch( tipo_mensaje ) {
+				case APPEARED_POKEMON:
+					// ./gameboy TEAM APPEARED_POKEMON [POKEMON] [POSX] [POSY]
+					buffer_a_enviar = preparar_mensaje_team_appeared_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				default:
+					log_error(logger, "TIPO DE MENSAJE NO SOPORTADO POR EL MODULO BROKER.");
+					perror           ("TIPO DE MENSAJE NO SOPORTADO POR EL MODULO BROKER.");
+					exit(EXIT_FAILURE);
+					break;
+			} // switch( tipo_mensaje )
+
+			conexion=crear_conexion(ip_dest, port_dest);
+
+			break;
+
+		case BROKER:
+
+			ip_dest     = config_get_string_value(config,"IP_BROKER"    );
+			port_dest   = config_get_string_value(config,"PUERTO_BROKER");
+
+			log_info(logger,ip_dest    );
+			log_info(logger,port_dest  );
+
+			switch( tipo_mensaje ) {
+				case NEW_POKEMON:
+					// ./gameboy BROKER NEW_POKEMON [POKEMON] [POSX] [POSY] [CANTIDAD]
+					buffer_a_enviar = preparar_mensaje_broker_new_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				case APPEARED_POKEMON:
+					// ./gameboy BROKER APPEARED_POKEMON [POKEMON] [POSX] [POSY] [ID_MENSAJE]
+					buffer_a_enviar = preparar_mensaje_broker_appeared_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				case CATCH_POKEMON:
+					// ./gameboy BROKER CATCH_POKEMON [POKEMON] [POSX] [POSY]
+					buffer_a_enviar = preparar_mensaje_broker_catch_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				case CAUGHT_POKEMON:
+					// ./gameboy BROKER CAUGHT_POKEMON [ID_MENSAJE] [OK/FAIL]
+					buffer_a_enviar =preparar_mensaje_caught_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				case GET_POKEMON:
+					// ./gameboy BROKER GET_POKEMON [POKEMON]
+					buffer_a_enviar = preparar_mensaje_get_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				default:
+					log_error(logger, "TIPO DE MENSAJE NO SOPORTADO POR EL MODULO BROKER.");
+					perror           ("TIPO DE MENSAJE NO SOPORTADO POR EL MODULO BROKER.");
+					exit(EXIT_FAILURE);
+			} // switch( tipo_mensaje )
+
+			conexion=crear_conexion(ip_dest, port_dest);
+
+			break;
+
+		case GAMECARD:
+
+			ip_dest     = config_get_string_value(config,"IP_GAMECARD"    );
+			port_dest   = config_get_string_value(config,"PUERTO_GAMECARD");
+
+			log_info(logger,ip_dest    );
+			log_info(logger,port_dest  );
+
+			switch( tipo_mensaje ) {
+				case NEW_POKEMON:
+					// ./gameboy GAMECARD NEW_POKEMON [POKEMON] [POSX] [POSY] [CANTIDAD] [ID_MENSAJE]
+					buffer_a_enviar = preparar_mensaje_gamecard_new_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				case CATCH_POKEMON:
+					// ./gameboy GAMECARD CATCH_POKEMON [POKEMON] [POSX] [POSY] [ID_MENSAJE]
+					buffer_a_enviar = preparar_mensaje_gamecard_catch_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				case GET_POKEMON:
+					// ./gameboy GAMECARD GET_POKEMON [POKEMON]
+					buffer_a_enviar = preparar_mensaje_get_pok(indice_parametro,argv,tipo_mensaje);
+					break;
+				default:
+					log_error(logger, "TIPO DE MENSAJE NO SOPORTADO POR EL MODULO BROKER.");
+					perror           ("TIPO DE MENSAJE NO SOPORTADO POR EL MODULO BROKER.");
+					exit(EXIT_FAILURE);
+			} // switch( tipo_mensaje )
+
+			conexion=crear_conexion(ip_dest, port_dest);
+
+			break;
+
+		case SUSCRIPTOR:
+
+			ip_dest     = config_get_string_value(config,"IP_BROKER"    );
+			port_dest   = config_get_string_value(config,"PUERTO_BROKER");
+
+			log_info(logger,ip_dest    );
+			log_info(logger,port_dest  );
+
+			buffer_a_enviar = preparar_msg_suscripcion(indice_parametro,argv,tipo_mensaje);
+
+			conexion=crear_conexion(ip_dest, port_dest);
+			break;
+
+		default:
+
+			log_error(logger, "MODULO O FUNCION NO RECONOCIDA.");
+
+		}
+
+
+	}
 
 	return EXIT_SUCCESS;
 
