@@ -88,14 +88,35 @@ void listar_comandos(void) {
 	printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO          \n");
 	printf(" 05- CREAR_PEDIDO            HACIA: APP, RESTAURANTE                     \n");
 	printf(" 06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
-	printf(" 07- AÑADIR_PLATO            HACIA: APP, RESTAURANTE                     \n");
+	printf(" 07- ANIADIR_PLATO           HACIA: APP, RESTAURANTE                     \n");
 	printf(" 08- GUARDAR_PLATO           HACIA: COMANDA, SINDICATO                   \n");
-	printf(" 10- CORFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
-	printf(" 11- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO              \n");
-	printf(" 12- CONSULTAR_PEDIDO        HACIA: APP, RESTAURANTE                     \n");
-	printf(" 13- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
-	printf(" 14- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                     \n");
-	printf(" 15- TOMAR_PEDIDO            HACIA: COMANDA, CLIENTE                     \n");
+	printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
+	printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO              \n");
+	printf(" 11- CONSULTAR_PEDIDO        HACIA: APP, RESTAURANTE                     \n");
+	printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
+	printf(" 13- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                     \n");
+	printf(" 14- TOMAR_PEDIDO            HACIA: COMANDA, CLIENTE                     \n");
+
+}
+
+int detectar_comando(char * p_comando) {
+
+	if ( string_equals_ignore_case(p_comando, "CONSULTAR_RESTAURANTES" ) ) return CONSULTAR_RESTAURANTES ; else
+	if ( string_equals_ignore_case(p_comando, "SELECCIONAR_RESTAURANTE") ) return SELECCIONAR_RESTAURANTE; else
+	if ( string_equals_ignore_case(p_comando, "OBTENER_RESTAURANTES"   ) ) return OBTENER_RESTAURANTES   ; else
+	if ( string_equals_ignore_case(p_comando, "CONSULTAR_PLATOS"       ) ) return CONSULTAR_PLATOS       ; else
+	if ( string_equals_ignore_case(p_comando, "CREAR_PEDIDO"           ) ) return CREAR_PEDIDO           ; else
+	if ( string_equals_ignore_case(p_comando, "GUARDAR_PEDIDO"         ) ) return GUARDAR_PEDIDO         ; else
+	if ( string_equals_ignore_case(p_comando, "ANIADIR_PLATO"          ) ) return ANIADIR_PLATO          ; else
+	if ( string_equals_ignore_case(p_comando, "GUARDAR_PLATO"          ) ) return GUARDAR_PLATO          ; else
+	if ( string_equals_ignore_case(p_comando, "CONFIRMAR_PEDIDO"       ) ) return CONFIRMAR_PEDIDO       ; else
+	if ( string_equals_ignore_case(p_comando, "PLATO_LISTO"            ) ) return PLATO_LISTO            ; else
+	if ( string_equals_ignore_case(p_comando, "CONSULTAR_PEDIDO"       ) ) return CONSULTAR_PEDIDO       ; else
+	if ( string_equals_ignore_case(p_comando, "OBTENER_PEDIDO"         ) ) return OBTENER_PEDIDO         ; else
+	if ( string_equals_ignore_case(p_comando, "FINALIZAR_PEDIDO"       ) ) return FINALIZAR_PEDIDO       ; else
+	if ( string_equals_ignore_case(p_comando, "TOMAR_PEDIDO"           ) ) return TOMAR_PEDIDO           ; else
+
+	return -1;
 
 }
 

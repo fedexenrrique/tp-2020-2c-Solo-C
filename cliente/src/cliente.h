@@ -42,7 +42,8 @@ int    g_posicion_y;         // POSICION_Y=2
 
 // FUNCIONES
 
-t_config * leer_config     (void);
-void       listar_comandos (void);
+t_config *  leer_config     ( void             );
+void        listar_comandos ( void             );
+int 		detectar_comando( char * p_comando );
 
 #endif /* CLIENTE_H_ */
