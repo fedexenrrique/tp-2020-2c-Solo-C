@@ -12,10 +12,9 @@
 #include <stdlib.h>
 #include "sindicato.h"
 #include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
-
-int main(void) {
-	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
-
+#define PATH_FILES "/Files/"
+int main(int argc, char *argv[]) {
+	cargarConfiguracion();
 	tPrueba* pedidoPrueba= malloc(sizeof(tPrueba));
 
 	pedidoPrueba->idPedido=1;
@@ -48,7 +47,35 @@ int main(void) {
 	printf("Id restaurante deserializado: %d\n",idRestauranteDeserializado);
 	printf("Nombre restaurante deserializado: %s\n",nombreRestauranteDeserializado);
 
+	pathFiles=string_new();
+	pathBloques=string_new();
+	pathMetadata=string_new();
+	string_append(&pathFiles,configuracion->puntoMontaje);
+	string_append(&pathFiles,"/Files/");
+
+	string_append(&pathBloques,configuracion->puntoMontaje);
+	string_append(&pathBloques,"/Bloques/");
+
+
+	string_append(&pathMetadata,configuracion->puntoMontaje);
+	string_append(&pathMetadata,"/Metadata/");
+
+	//Si no le paso los argumentos BLOCKSIZE, BLOCKS + MAGIC_NUMBER no monto el FS de nuevo
+	if (*argv[1]!=NULL && *argv[2]!=NULL && argv[3]!=NULL ){
+		int fs=montarFS(*argv[1],*argv[2],argv[3]);
+	}
+
+
+
+
+
+
+
+
 	free(buffer);
+	free(pathFiles);
+	free(pathBloques);
+	free(pathMetadata);
 
 	return EXIT_SUCCESS;
 }
