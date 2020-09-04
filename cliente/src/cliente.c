@@ -27,26 +27,40 @@ int main(int argc, char **argv) {
 
 		return EXIT_SUCCESS;
 
-	} else if ( argc == 2 ) {
+	} else if ( argc >= 2 ) {
 
-		printf("\nUsted ingresó el módulo: %s.\n", argv[2]);
+		printf("\nUsted ingresó el módulo: %s.\n", argv[1]);
 
-/*
-		switch( argc[2] ) {
+		switch( detectar_comando( argv[1] ) ) {
 			
-			case TEAM:
+			case CONSULTAR_RESTAURANTES: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
 
-				ip_dest     = config_get_string_value(config,"IP_TEAM"    );
-				port_dest   = config_get_string_value(config,"PUERTO_TEAM");
+				printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP                                  \n");
 
+
+
+				break;
+
+			case SELECCIONAR_RESTAURANTE:
+
+				printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP                                  \n");
+				break;
+
+			case OBTENER_RESTAURANTES:
+
+				printf(" 03- OBTENER_RESTAURANTES    HACIA: SINDICATO                            \n");
+				break;
+
+			case CONSULTAR_PLATOS:
+
+				printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO          \n");
 				break;
 
 			default:
 
-				log_error(logger, "MODULO O FUNCION NO RECONOCIDA.");
+				log_error(logger, "Comando inválido.");
 
 		}
-*/
 
 	}
 

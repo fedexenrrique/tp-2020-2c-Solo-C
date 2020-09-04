@@ -50,6 +50,12 @@ typedef enum {
 
 } cod_msg;
 
+typedef struct {
+	cod_mod modulo;
+    int     size;
+	void *  payload;
+} t_msg;
+
 // FUNCIONES
 
 int serializar(void* buffer, const char* format, ...);
