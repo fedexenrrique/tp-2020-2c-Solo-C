@@ -21,7 +21,7 @@ char * g_log_path;           // ARCHIVO_LOG=/utnso/logs/cliente.log
 int    g_posicion_x;         // POSICION_X=1
 int    g_posicion_y;         // POSICION_Y=2
 
-
+/*
 		printf("\nDebe ingresar un comando para comicarse con los módulos.");
 		printf("\nLos comandos permitidos son los siguientes:\n");
 		printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP                                  \n");
@@ -38,11 +38,11 @@ int    g_posicion_y;         // POSICION_Y=2
 		printf(" 13- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
 		printf(" 14- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                     \n");
 		printf(" 15- TOMAR_PEDIDO            HACIA: COMANDA, CLIENTE                     \n");
-
+*/
 
 // FUNCIONES
 
-t_config * leer_config(void);
-
+t_config * leer_config     (void);
+void       listar_comandos (void);
 
 #endif /* CLIENTE_H_ */
