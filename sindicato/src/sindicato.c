@@ -8,13 +8,20 @@
  ============================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+
 #include "sindicato.h"
+<<<<<<< HEAD
 #include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
 #define PATH_FILES "/Files/"
 int main(int argc, char *argv[]) {
 	cargarConfiguracion();
+=======
+
+
+int main(void) {
+	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
+
+>>>>>>> 263eab54d0dc422d533f1cda285847edcc78b824
 	tPrueba* pedidoPrueba= malloc(sizeof(tPrueba));
 
 	pedidoPrueba->idPedido=1;

@@ -1,23 +1,20 @@
+/*
+ * app.h
+ *
+ *  Created on: 3 sep. 2020
+ *      Author: utnso
+ */
 
-#include "app.h"
+#ifndef APP_H_
+#define APP_H_
 
-int main(void) {
+#include "serializar.h"
 
-	prueba_biblioteca_compartida();
+t_log    * logger;
+t_config * config;
 
-	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
-	config = leer_config();
+t_config * leer_config(void);
 
-
-	return EXIT_SUCCESS;
-
-}
-
-t_config * leer_config(void) {
-
-	t_config* config = config_create("app.config");
-
-	/*
 int g_ip_comanda;                    // IP_COMANDA=127.0.0.1
 int g_puerto_comanda;                // PUERTO_COMANDA=5001
 int g_puerto_escucha;                // PUERTO_ESCUCHA=5004
@@ -32,13 +29,5 @@ int g_log_path;                      // ARCHIVO_LOG=/utnso/logs/app.log
 int g_platos_default;                // PLATOS_DEFAULT=3
 int g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
 int g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
-	 */
 
-	// if ( config_has_property( config, "ID_PROCESO" ) )
-
-		// g_nro_no_asignado = config_get_int_value(config, "ID_PROCESO");
-
-	return config;
-
-}
-
+#endif /* APP_H_ */

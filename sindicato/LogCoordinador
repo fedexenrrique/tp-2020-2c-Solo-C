@@ -1,0 +1,386 @@
+[INFO] 20:35:52:530 Coordinador/(30599:30599): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONATJE: 8000
+
+[INFO] 23:52:51:454 Coordinador/(3833:3833): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: 8000
+
+[INFO] 23:55:40:886 Coordinador/(4338:4338): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTJE: 8000
+
+[INFO] 23:57:00:188 Coordinador/(4370:4370): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTJE: 8000
+
+[INFO] 23:59:22:437 Coordinador/(4633:4633): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 23:59:40:787 Coordinador/(4648:4648): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 23:59:43:238 Coordinador/(4661:4661): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:03:31:449 Coordinador/(4826:4826): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:08:17:807 Coordinador/(5063:5063): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: "/home/utnso/afip"
+
+[INFO] 00:08:26:907 Coordinador/(5094:5094): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: "/home/utnso/afip"
+
+[INFO] 00:51:24:350 Coordinador/(6251:6251): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:52:27:859 Coordinador/(6324:6324): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:52:27:860 Coordinador/(6324:6324): Preparando punto de montaje.
+[WARNING] 00:52:27:860 Coordinador/(6324:6324): El punto de montaje no existe. Se creará el directorio.
+[INFO] 00:52:27:861 Coordinador/(6324:6324): Directorio creado
+[INFO] 00:52:27:861 Coordinador/(6324:6324): Creando directorio de files...
+[INFO] 00:54:57:306 Coordinador/(6409:6409): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:55:02:231 Coordinador/(6409:6409): Preparando punto de montaje.
+[WARNING] 00:55:29:503 Coordinador/(6409:6409): El punto de montaje no existe. Se creará el directorio.
+[INFO] 00:56:00:103 Coordinador/(6409:6409): Directorio creado
+[INFO] 00:56:16:590 Coordinador/(6409:6409): Creando directorio de files...
+[INFO] 00:59:27:381 Coordinador/(6600:6600): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:59:27:382 Coordinador/(6600:6600): Preparando punto de montaje.
+[WARNING] 00:59:27:382 Coordinador/(6600:6600): El punto de montaje no existe. Se creará el directorio.
+[INFO] 00:59:27:388 Coordinador/(6600:6600): Directorio creado
+[INFO] 00:59:27:388 Coordinador/(6600:6600): Creando directorio de files...
+[INFO] 01:04:25:28 Coordinador/(6824:6824): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:04:25:29 Coordinador/(6824:6824): Preparando punto de montaje.
+[WARNING] 01:04:25:29 Coordinador/(6824:6824): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:04:25:33 Coordinador/(6824:6824): Directorio creado
+[INFO] 01:04:25:34 Coordinador/(6824:6824): Creando directorio de files...
+[INFO] 01:04:25:35 Coordinador/(6824:6824): Se creo el directorio para almacenar las tablas
+[INFO] 01:04:25:35 Coordinador/(6824:6824): Directorio de bloques creado
+[INFO] 01:13:45:395 Coordinador/(6919:6919): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:13:50:679 Coordinador/(6919:6919): Preparando punto de montaje.
+[WARNING] 01:13:52:963 Coordinador/(6919:6919): El punto de montaje no existe. Se creará el directorio.
+[ERROR] 01:13:59:171 Coordinador/(6919:6919): Error al crear el directorio Metadata
+[INFO] 01:14:01:787 Coordinador/(6919:6919): Creando directorio de files...
+[INFO] 01:14:01:788 Coordinador/(6919:6919): Se creo el directorio para almacenar las tablas
+[ERROR] 01:14:32:562 Coordinador/(6919:6919): Error al crear el directorio de Bloques
+[INFO] 01:17:17:207 Coordinador/(7085:7085): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:17:17:208 Coordinador/(7085:7085): Preparando punto de montaje.
+[WARNING] 01:17:17:208 Coordinador/(7085:7085): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:17:17:209 Coordinador/(7085:7085): Directorio creado
+[INFO] 01:17:17:209 Coordinador/(7085:7085): Creando directorio de files...
+[INFO] 01:17:17:209 Coordinador/(7085:7085): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 01:17:17:209 Coordinador/(7085:7085): Directorio de bloques creado
+[INFO] 02:04:20:210 Coordinador/(7768:7768): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:04:20:211 Coordinador/(7768:7768): Preparando punto de montaje.
+[WARNING] 02:04:20:211 Coordinador/(7768:7768): El punto de montaje no existe. Se creará el directorio.
+[INFO] 02:04:20:216 Coordinador/(7768:7768): Directorio creado
+[INFO] 02:04:20:217 Coordinador/(7768:7768): Creando directorio de files...
+[INFO] 02:04:20:218 Coordinador/(7768:7768): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 02:04:20:218 Coordinador/(7768:7768): Directorio de bloques creado
+[INFO] 02:05:18:807 Coordinador/(7808:7808): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:05:18:808 Coordinador/(7808:7808): Preparando punto de montaje.
+[WARNING] 02:05:18:808 Coordinador/(7808:7808): El punto de montaje no existe. Se creará el directorio.
+[INFO] 02:05:18:809 Coordinador/(7808:7808): Directorio creado
+[INFO] 02:05:18:809 Coordinador/(7808:7808): Creando directorio de files...
+[INFO] 02:05:18:809 Coordinador/(7808:7808): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 02:05:18:809 Coordinador/(7808:7808): Directorio de bloques creado
+[INFO] 02:06:31:903 Coordinador/(7867:7867): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:07:08:449 Coordinador/(7867:7867): Preparando punto de montaje.
+[WARNING] 02:07:08:449 Coordinador/(7867:7867): El punto de montaje no existe. Se creará el directorio.
+[INFO] 02:07:08:450 Coordinador/(7867:7867): Directorio creado
+[INFO] 02:07:08:450 Coordinador/(7867:7867): Creando directorio de files...
+[INFO] 02:07:08:450 Coordinador/(7867:7867): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 02:07:08:450 Coordinador/(7867:7867): Directorio de bloques creado
+[INFO] 15:33:23:399 Coordinador/(9889:9889): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 15:33:23:406 Coordinador/(9889:9889): Preparando punto de montaje.
+[WARNING] 15:33:23:406 Coordinador/(9889:9889): El punto de montaje no existe. Se creará el directorio.
+[INFO] 15:33:23:407 Coordinador/(9889:9889): Directorio creado
+[INFO] 15:33:23:407 Coordinador/(9889:9889): Creando directorio de files...
+[INFO] 15:33:23:407 Coordinador/(9889:9889): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 15:33:23:407 Coordinador/(9889:9889): Directorio de bloques creado
+[INFO] 15:38:43:316 Coordinador/(9976:9976): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 15:38:43:317 Coordinador/(9976:9976): Preparando punto de montaje.
+[WARNING] 15:38:43:317 Coordinador/(9976:9976): El punto de montaje no existe. Se creará el directorio.
+[INFO] 15:38:43:318 Coordinador/(9976:9976): Directorio creado
+[INFO] 15:38:43:318 Coordinador/(9976:9976): Creando directorio de files...
+[INFO] 15:38:43:318 Coordinador/(9976:9976): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 15:38:43:318 Coordinador/(9976:9976): Directorio de bloques creado
+[INFO] 15:39:34:447 Coordinador/(10040:10040): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 15:39:34:455 Coordinador/(10040:10040): Preparando punto de montaje.
+[WARNING] 15:39:34:455 Coordinador/(10040:10040): El punto de montaje no existe. Se creará el directorio.
+[INFO] 15:39:34:456 Coordinador/(10040:10040): Directorio creado
+[INFO] 15:39:34:460 Coordinador/(10040:10040): Creando directorio de files...
+[INFO] 15:39:34:462 Coordinador/(10040:10040): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 15:39:34:464 Coordinador/(10040:10040): Directorio de bloques creado
+[INFO] 15:42:33:216 Coordinador/(10164:10164): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 15:44:36:240 Coordinador/(10252:10252): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 15:44:36:244 Coordinador/(10252:10252): Preparando punto de montaje.
+[WARNING] 15:44:36:245 Coordinador/(10252:10252): El punto de montaje no existe. Se creará el directorio.
+[ERROR] 15:44:36:245 Coordinador/(10252:10252): Error al crear el directorio Metadata
+[INFO] 15:44:36:245 Coordinador/(10252:10252): Creando directorio de files...
+[INFO] 15:44:36:245 Coordinador/(10252:10252): Se creo el directorio para almacenar los restaurantes y las recetas
+[ERROR] 15:44:36:245 Coordinador/(10252:10252): Error al crear el directorio de Bloques
+[INFO] 15:46:03:515 Coordinador/(10308:10308): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:11:57:663 Coordinador/(10896:10896): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:13:16:23 Coordinador/(10963:10963): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:13:50:224 Coordinador/(10994:10994): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:16:36:831 Coordinador/(11185:11185): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:16:36:832 Coordinador/(11185:11185): Preparando punto de montaje.
+[WARNING] 16:16:36:832 Coordinador/(11185:11185): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:16:36:832 Coordinador/(11185:11185): Directorio creado
+[INFO] 16:16:36:832 Coordinador/(11185:11185): Creando directorio de files...
+[INFO] 16:16:36:832 Coordinador/(11185:11185): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:16:36:832 Coordinador/(11185:11185): Directorio de bloques creado
+[INFO] 16:17:48:211 Coordinador/(11254:11254): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:17:48:212 Coordinador/(11254:11254): Preparando punto de montaje.
+[WARNING] 16:17:48:212 Coordinador/(11254:11254): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:17:58:695 Coordinador/(11254:11254): Directorio creado
+[INFO] 16:18:01:603 Coordinador/(11254:11254): Creando directorio de files...
+[INFO] 16:18:01:604 Coordinador/(11254:11254): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:18:02:178 Coordinador/(11254:11254): Directorio de bloques creado
+[INFO] 16:18:52:217 Coordinador/(11337:11337): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:18:52:221 Coordinador/(11337:11337): Preparando punto de montaje.
+[WARNING] 16:18:52:221 Coordinador/(11337:11337): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:18:52:222 Coordinador/(11337:11337): Directorio creado
+[INFO] 16:18:52:222 Coordinador/(11337:11337): Creando directorio de files...
+[INFO] 16:18:52:222 Coordinador/(11337:11337): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:18:52:223 Coordinador/(11337:11337): Directorio de bloques creado
+[INFO] 16:19:40:782 Coordinador/(11399:11399): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:19:40:783 Coordinador/(11399:11399): Preparando punto de montaje.
+[WARNING] 16:19:40:783 Coordinador/(11399:11399): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:19:40:783 Coordinador/(11399:11399): Directorio creado
+[INFO] 16:19:40:783 Coordinador/(11399:11399): Creando directorio de files...
+[INFO] 16:19:40:783 Coordinador/(11399:11399): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:19:40:783 Coordinador/(11399:11399): Directorio de bloques creado
+[INFO] 16:27:53:358 Coordinador/(11715:11715): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:31:10:943 Coordinador/(11825:11825): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:43:35:361 Coordinador/(12496:12496): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:45:14:7 Coordinador/(12591:12591): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:45:32:594 Coordinador/(12591:12591): Preparando punto de montaje.
+[WARNING] 16:45:32:594 Coordinador/(12591:12591): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:45:32:595 Coordinador/(12591:12591): Directorio creado
+[INFO] 16:45:32:595 Coordinador/(12591:12591): Creando directorio de files...
+[INFO] 16:45:32:595 Coordinador/(12591:12591): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:45:32:595 Coordinador/(12591:12591): Directorio de bloques creado
+[INFO] 16:46:04:472 Coordinador/(12662:12662): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:54:24:356 Coordinador/(12930:12930): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:54:24:364 Coordinador/(12930:12930): Preparando punto de montaje.
+[WARNING] 16:54:24:365 Coordinador/(12930:12930): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:54:24:365 Coordinador/(12930:12930): Directorio creado
+[INFO] 16:54:24:365 Coordinador/(12930:12930): Creando directorio de files...
+[INFO] 16:54:24:366 Coordinador/(12930:12930): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:54:24:369 Coordinador/(12930:12930): Directorio de bloques creado
+[ERROR] 16:54:24:369 Coordinador/(12930:12930): Error al crear el directorio de Bloques
+[ERROR] 16:54:24:369 Coordinador/(12930:12930): Error al crear el directorio de Bloques
+[INFO] 16:55:13:86 Coordinador/(13015:13015): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:55:20:393 Coordinador/(13015:13015): Preparando punto de montaje.
+[WARNING] 16:55:20:394 Coordinador/(13015:13015): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:55:20:394 Coordinador/(13015:13015): Directorio creado
+[INFO] 16:55:20:394 Coordinador/(13015:13015): Creando directorio de files...
+[INFO] 16:55:20:394 Coordinador/(13015:13015): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:55:20:395 Coordinador/(13015:13015): Directorio de bloques creado
+[INFO] 16:56:28:977 Coordinador/(13096:13096): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:56:43:190 Coordinador/(13096:13096): Preparando punto de montaje.
+[WARNING] 16:56:43:190 Coordinador/(13096:13096): El punto de montaje no existe. Se creará el directorio.
+[INFO] 16:56:43:190 Coordinador/(13096:13096): Directorio creado
+[INFO] 16:56:43:190 Coordinador/(13096:13096): Creando directorio de files...
+[INFO] 16:56:43:190 Coordinador/(13096:13096): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 16:56:43:190 Coordinador/(13096:13096): Directorio de bloques creado
+[INFO] 16:57:12:835 Coordinador/(13157:13157): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 16:57:17:205 Coordinador/(13157:13157): Preparando punto de montaje.
+[WARNING] 16:57:17:205 Coordinador/(13157:13157): El punto de montaje no existe. Se creará el directorio.
+[ERROR] 16:57:17:205 Coordinador/(13157:13157): Error al crear el directorio Metadata
+[INFO] 16:57:17:205 Coordinador/(13157:13157): Creando directorio de files...
+[INFO] 16:57:17:206 Coordinador/(13157:13157): Se creo el directorio para almacenar los restaurantes y las recetas
+[ERROR] 16:57:17:206 Coordinador/(13157:13157): Error al crear el directorio de Bloques
+[INFO] 17:13:37:413 Coordinador/(13465:13465): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:16:16:855 Coordinador/(13465:13465): Preparando punto de montaje.
+[WARNING] 17:16:20:110 Coordinador/(13465:13465): El punto de montaje no existe. Se creará el directorio.
+[ERROR] 17:18:34:709 Coordinador/(13465:13465): Error al crear el directorio Metadata
+[INFO] 17:18:38:672 Coordinador/(13465:13465): Creando directorio de files...
+[INFO] 17:18:38:672 Coordinador/(13465:13465): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:19:35:477 Coordinador/(13574:13574): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:19:45:627 Coordinador/(13574:13574): Preparando punto de montaje.
+[WARNING] 17:19:47:377 Coordinador/(13574:13574): El punto de montaje no existe. Se creará el directorio.
+[INFO] 17:19:48:145 Coordinador/(13574:13574): Directorio creado
+[INFO] 17:19:48:541 Coordinador/(13574:13574): Creando directorio de files...
+[INFO] 17:19:48:542 Coordinador/(13574:13574): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:19:48:967 Coordinador/(13574:13574): Directorio de bloques creado
+[INFO] 17:25:06:503 Coordinador/(13710:13710): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:25:06:505 Coordinador/(13710:13710): Preparando punto de montaje.
+[WARNING] 17:25:06:506 Coordinador/(13710:13710): El punto de montaje no existe. Se creará el directorio.
+[INFO] 17:25:06:512 Coordinador/(13710:13710): Directorio creado
+[INFO] 17:25:06:513 Coordinador/(13710:13710): Creando directorio de files...
+[INFO] 17:25:06:513 Coordinador/(13710:13710): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:25:06:513 Coordinador/(13710:13710): Directorio de bloques creado
+[INFO] 17:25:06:515 Coordinador/(13710:13710): Directorio de restaurantes creado
+[INFO] 17:25:06:515 Coordinador/(13710:13710): Directorio de recetas creado
+[INFO] 17:27:23:105 Coordinador/(13814:13814): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:27:27:96 Coordinador/(13814:13814): Preparando punto de montaje.
+[WARNING] 17:27:27:96 Coordinador/(13814:13814): El punto de montaje no existe. Se creará el directorio.
+[INFO] 17:27:27:96 Coordinador/(13814:13814): Directorio creado
+[INFO] 17:27:27:97 Coordinador/(13814:13814): Creando directorio de files...
+[INFO] 17:27:27:97 Coordinador/(13814:13814): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:27:27:97 Coordinador/(13814:13814): Directorio de bloques creado
+[INFO] 17:27:27:97 Coordinador/(13814:13814): Directorio de restaurantes creado
+[INFO] 17:34:31:185 Coordinador/(14086:14086): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:34:31:185 Coordinador/(14086:14086): Preparando punto de montaje.
+[WARNING] 17:34:31:186 Coordinador/(14086:14086): El punto de montaje no existe. Se creará el directorio.
+[INFO] 17:34:31:192 Coordinador/(14086:14086): Directorio creado
+[INFO] 17:34:31:192 Coordinador/(14086:14086): Creando directorio de files...
+[INFO] 17:34:31:192 Coordinador/(14086:14086): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:34:31:192 Coordinador/(14086:14086): Directorio de bloques creado
+[INFO] 17:34:31:193 Coordinador/(14086:14086): Directorio de restaurantes creado
+[ERROR] 17:34:31:193 Coordinador/(14086:14086): Error al crear el directorio de Bloques
+[INFO] 17:35:48:3 Coordinador/(14159:14159): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:35:49:9 Coordinador/(14159:14159): Preparando punto de montaje.
+[WARNING] 17:35:49:9 Coordinador/(14159:14159): El punto de montaje no existe. Se creará el directorio.
+[INFO] 17:35:49:10 Coordinador/(14159:14159): Directorio creado
+[INFO] 17:35:49:10 Coordinador/(14159:14159): Creando directorio de files...
+[INFO] 17:35:49:10 Coordinador/(14159:14159): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:35:49:10 Coordinador/(14159:14159): Directorio de bloques creado
+[INFO] 17:35:49:10 Coordinador/(14159:14159): Directorio de restaurantes creado
+[INFO] 17:35:49:11 Coordinador/(14159:14159): Directorio de recetas creado
+[INFO] 17:37:11:389 Coordinador/(14236:14236): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:37:11:389 Coordinador/(14236:14236): Preparando punto de montaje.
+[WARNING] 17:37:11:389 Coordinador/(14236:14236): El punto de montaje no existe. Se creará el directorio.
+[INFO] 17:37:11:389 Coordinador/(14236:14236): Directorio creado
+[INFO] 17:37:11:389 Coordinador/(14236:14236): Creando directorio de files...
+[INFO] 17:37:11:389 Coordinador/(14236:14236): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:37:11:389 Coordinador/(14236:14236): Directorio de bloques creado
+[INFO] 17:37:11:390 Coordinador/(14236:14236): Directorio de restaurantes creado
+[INFO] 17:37:14:126 Coordinador/(14236:14236): Directorio de recetas creado
+[INFO] 17:38:08:597 Coordinador/(14315:14315): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 17:38:08:597 Coordinador/(14315:14315): Preparando punto de montaje.
+[WARNING] 17:38:08:597 Coordinador/(14315:14315): El punto de montaje no existe. Se creará el directorio.
+[INFO] 17:38:08:597 Coordinador/(14315:14315): Directorio creado
+[INFO] 17:38:08:598 Coordinador/(14315:14315): Creando directorio de files...
+[INFO] 17:38:08:598 Coordinador/(14315:14315): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 17:38:08:598 Coordinador/(14315:14315): Directorio de bloques creado
+[INFO] 17:38:08:598 Coordinador/(14315:14315): Directorio de restaurantes creado
+[INFO] 17:38:13:554 Coordinador/(14315:14315): Directorio de recetas creado

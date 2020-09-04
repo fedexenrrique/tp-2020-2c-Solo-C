@@ -23,14 +23,18 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include "serializar.h"
+
 typedef struct{
+
 	int idPedido;
 	uint32_t precioPedido;
 	char* descripcionPedido;
 	int idRestaurante;
 	char* nombreEstaurante;
 
-}tPrueba;
+} tPrueba;
 
 typedef struct{
 	int puertoEscucha;

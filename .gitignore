@@ -50,3 +50,16 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# configuraciones de eclipse
+
+app/.cproject
+app/.settings/language.settings.xml
+cliente/.cproject
+cliente/.settings/language.settings.xml
+comanda/.cproject
+comanda/.settings/language.settings.xml
+restaurante/.cproject
+restaurante/.settings/language.settings.xml
+sindicato/.cproject
+sindicato/.settings/language.settings.xml
