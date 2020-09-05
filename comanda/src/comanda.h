@@ -8,6 +8,7 @@
 #ifndef COMANDA_H_
 #define COMANDA_H_
 
-#include "serializar.h"
+#include "utils.h"
+
 
 #endif /* COMANDA_H_ */

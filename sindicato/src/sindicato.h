@@ -8,9 +8,7 @@
 #ifndef SINDICATO_H_
 #define SINDICATO_H_
 #include <stdint.h>
-#include <commons/config.h>
-#include <commons/log.h>
-#include <commons/string.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

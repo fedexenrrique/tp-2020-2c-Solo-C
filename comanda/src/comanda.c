@@ -11,6 +11,9 @@
 #include "comanda.h"
 
 int main(void) {
+
+	iniciar_comanda();
+
 	puts("!!!Hello World!!!");
 	prueba_biblioteca_compartida();
 	return EXIT_SUCCESS;
