@@ -7,6 +7,22 @@
 
 #ifndef SINDICATO_H_
 #define SINDICATO_H_
+#include <stdint.h>
+#include <commons/config.h>
+#include <commons/log.h>
+#include <commons/string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <stdarg.h>
+#include <string.h>
+#include <errno.h>
+#include <setjmp.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "serializar.h"
 
@@ -19,6 +35,25 @@ typedef struct{
 	char* nombreEstaurante;
 
 } tPrueba;
+
+typedef struct{
+	int puertoEscucha;
+	char* puntoMontaje;
+
+}tConfiguracion;
+
+
+tConfiguracion * configuracion;
+t_config * fd_configuracion;
+t_log * logger;
+
+char* pathFiles;
+char* pathMetadata;
+char* pathBloques;
+char* pathRestaurantes;
+char* pathRecetas;
+
+
 
 
 #endif /* SINDICATO_H_ */
