@@ -18,7 +18,19 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <pthread.h>
+#include <commons/log.h>
+#include <commons/string.h>
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <dirent.h>
+#include <errno.h>
+#include <setjmp.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 // AMBIENTE
 
 typedef enum {

@@ -7,20 +7,6 @@
 
 #ifndef SINDICATO_H_
 #define SINDICATO_H_
-#include <stdint.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdio.h>
-#include <dirent.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <setjmp.h>
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include "serializar.h"
 
