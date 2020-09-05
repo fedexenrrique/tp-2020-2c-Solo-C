@@ -10,14 +10,12 @@
 
 
 #include "sindicato.h"
-#include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
+//#include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
 #define PATH_FILES "/Files/"
 int main(int argc, char *argv[]) {
 	cargarConfiguracion();
 
-
-int main(void) {
-	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
+ 	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
 
 	tPrueba* pedidoPrueba= malloc(sizeof(tPrueba));
 
@@ -68,10 +66,6 @@ int main(void) {
 	if (*argv[1]!=NULL && *argv[2]!=NULL && argv[3]!=NULL ){
 		int fs=montarFS(*argv[1],*argv[2],argv[3]);
 	}
-
-
-
-
 
 
 
