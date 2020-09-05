@@ -6,9 +6,6 @@
 
 // AMBIENTE
 
-t_log    * logger;
-t_config * config;
-
 char * g_ip_comanda;         // IP_COMANDA=127.0.0.1
 int    g_puerto_comanda;     // PUERTO_COMANDA=5001
 char * g_ip_restaurante;     // IP_RESTAURANTE=127.0.0.1
@@ -44,6 +41,6 @@ int    g_posicion_y;         // POSICION_Y=2
 
 t_config *  leer_config     ( void             );
 void        listar_comandos ( void             );
-int 		detectar_comando( char * p_comando );
+
 
 #endif /* CLIENTE_H_ */

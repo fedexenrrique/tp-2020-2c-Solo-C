@@ -39,7 +39,7 @@ typedef enum {
     CONSULTAR_PLATOS        =  4,
     CREAR_PEDIDO            =  5,
     GUARDAR_PEDIDO          =  6,
-    ANIADIR_PLATO            =  7,
+    ANIADIR_PLATO           =  7,
     GUARDAR_PLATO           =  8,
     CONFIRMAR_PEDIDO        =  9,
     PLATO_LISTO             = 10,
@@ -56,9 +56,43 @@ typedef struct {
 	void *  payload;
 } t_msg;
 
+t_log    * logger;
+t_config * config;
+
 // FUNCIONES
 
 int serializar(void* buffer, const char* format, ...);
 int serializar(void* buffer, const char* format, ...);
 
-void prueba_biblioteca_compartida(void);
+int  enviar_consultar_restaurante   (char* p_ip,int p_puerto);
+
+void prueba_biblioteca_compartida   (void                   );
+
+int  crear_socket_y_conectar        (char* ip, int puerto   );
+
+int  crear_socket_escucha           ( char * p_ip, int p_puerto );
+int  aceptar_conexion               ( int p_socket_para_escuchar );
+
+int  recibir_confirmacion           (int   socket_cliente   );
+int  detectar_comando               ( char * p_comando      );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

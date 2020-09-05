@@ -4,38 +4,48 @@ void prueba_biblioteca_compartida(void) {
 	printf("\n!!!Texto impreso desde la biblioteca compartida!!!\n");
 }
 
-int enviar_consultar_restaurante(char* pokemon, int pos_x, int pos_y) {
+int enviar_consultar_restaurante(char* p_ip, int p_puerto) {
 
 	int    stream_size = sizeof( uint32_t ) * 3;
 	void * stream      = malloc( stream_size );
 	int    offset      = 0;
 
-    memset( &stream         , 0                      , stream_size        );
+	int    valor;
 
-	memset( &stream + offset, CLIENTE                , sizeof( uint32_t ) );
+    memset( stream         , 0                            , stream_size        );
 
-	offset += sizeof( uint32_t );
-
-	memset( &stream + offset, sizeof( uint32_t )     , sizeof( uint32_t ) );
-
-	offset += sizeof( uint32_t );
-
-	memset( &stream + offset, CONSULTAR_RESTAURANTES , sizeof( uint32_t ) );
+    valor = CLIENTE;
+	memcpy( stream + offset, &valor                       , sizeof( uint32_t ) );
 
 	offset += sizeof( uint32_t );
 
-	int conexion = crear_conexion(g_broker_ip, g_broker_puerto);
+	valor = 4;
+	memcpy( stream + offset, &valor                       , sizeof( uint32_t ) );
+
+	offset += sizeof( uint32_t );
+
+	valor = CONSULTAR_RESTAURANTES;
+	memcpy( stream + offset, &valor                       , sizeof( uint32_t ) );
+
+	offset += sizeof( uint32_t );
+
+	int conexion = crear_socket_y_conectar(p_ip, p_puerto);
+
 	bool resultado = true;
 
 	if ( conexion != -1 ) {
 
-		if( -1 == send(conexion, stream_paquete, size_paquete, 0) ) resultado = false;
+		if( -1 == send(conexion, stream, stream_size, 0) ) resultado = false;
 
 	} else
 
 		resultado = false;
 
+	mem_hexdump(stream, 3*sizeof(uint32_t) );
+
 	free(stream);
+
+	mem_hexdump(stream, 3*sizeof(uint32_t) );
 
 	if ( resultado )
 
@@ -51,7 +61,9 @@ int enviar_consultar_restaurante(char* pokemon, int pos_x, int pos_y) {
 
 }
 
-int crear_conexion(char*ip, char* puerto) {
+int crear_socket_y_conectar(char* p_ip, int p_puerto) {
+
+	char * puerto = string_itoa(p_puerto);
 
 	struct addrinfo hints;
 	struct addrinfo *server_info;
@@ -61,9 +73,7 @@ int crear_conexion(char*ip, char* puerto) {
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags    = AI_PASSIVE;
 
-
-
-	getaddrinfo(ip, puerto, &hints, &server_info);
+	getaddrinfo(p_ip, puerto, &hints, &server_info);
 
 	int socket_cliente   = socket (server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 	int validar_conexion = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
@@ -75,6 +85,8 @@ int crear_conexion(char*ip, char* puerto) {
 
 	freeaddrinfo(server_info);
 
+	free(puerto);
+
 	return socket_cliente;
 
 }
@@ -82,6 +94,92 @@ int crear_conexion(char*ip, char* puerto) {
 int recibir_confirmacion(int socket_cliente) {
 
 	return 000;
+
+}
+
+int crear_socket_escucha( char * p_ip, int p_puerto ) {
+
+	char * puerto = string_itoa( p_puerto );
+
+	int socket_servidor;
+
+	struct addrinfo hints, *servinfo, *p;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family   = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags    = AI_PASSIVE;
+
+    getaddrinfo( p_ip, puerto, &hints, &servinfo);
+
+    for ( p=servinfo; p != NULL; p = p->ai_next) {
+
+    	if ( -1 == (socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) ){
+
+    		perror("ERROR EN LA CREACION DE SOCKET");
+        	continue;
+
+    	}
+
+        if ( -1 == bind(socket_servidor, p->ai_addr, p->ai_addrlen) ) {
+
+        	perror("ERROR DE PUERTO");
+        	close(socket_servidor);
+            continue;
+        }
+
+        break;
+
+    }
+
+	if( -1 == listen( socket_servidor, SOMAXCONN ) ) perror("ERROR PUERTO EN ESCUCHA");
+
+	free(puerto);
+
+    freeaddrinfo(servinfo);
+
+    return socket_servidor;
+
+}
+
+int aceptar_conexion ( int p_socket_para_escuchar ) {
+
+	socklen_t          dir_cliente_size;
+	struct sockaddr_in dir_cliente;
+	int                socket_cliente;
+
+	dir_cliente_size = sizeof(struct sockaddr_in);
+
+	socket_cliente = accept(p_socket_para_escuchar, (void*) &dir_cliente, &dir_cliente_size);
+
+	if(socket_cliente == -1)
+		perror("ERROR AL ACEPTAR CONEXION DE SOCKET");
+	else {
+		return socket_cliente;
+	}
+
+	return -1;
+
+}
+
+int detectar_comando(char * p_comando) {
+
+	if ( string_equals_ignore_case(p_comando, "CONSULTAR_RESTAURANTES" ) ) return CONSULTAR_RESTAURANTES ; else
+	if ( string_equals_ignore_case(p_comando, "SELECCIONAR_RESTAURANTE") ) return SELECCIONAR_RESTAURANTE; else
+	if ( string_equals_ignore_case(p_comando, "OBTENER_RESTAURANTES"   ) ) return OBTENER_RESTAURANTES   ; else
+	if ( string_equals_ignore_case(p_comando, "CONSULTAR_PLATOS"       ) ) return CONSULTAR_PLATOS       ; else
+	if ( string_equals_ignore_case(p_comando, "CREAR_PEDIDO"           ) ) return CREAR_PEDIDO           ; else
+	if ( string_equals_ignore_case(p_comando, "GUARDAR_PEDIDO"         ) ) return GUARDAR_PEDIDO         ; else
+	if ( string_equals_ignore_case(p_comando, "ANIADIR_PLATO"          ) ) return ANIADIR_PLATO          ; else
+	if ( string_equals_ignore_case(p_comando, "GUARDAR_PLATO"          ) ) return GUARDAR_PLATO          ; else
+	if ( string_equals_ignore_case(p_comando, "CONFIRMAR_PEDIDO"       ) ) return CONFIRMAR_PEDIDO       ; else
+	if ( string_equals_ignore_case(p_comando, "PLATO_LISTO"            ) ) return PLATO_LISTO            ; else
+	if ( string_equals_ignore_case(p_comando, "CONSULTAR_PEDIDO"       ) ) return CONSULTAR_PEDIDO       ; else
+	if ( string_equals_ignore_case(p_comando, "OBTENER_PEDIDO"         ) ) return OBTENER_PEDIDO         ; else
+	if ( string_equals_ignore_case(p_comando, "FINALIZAR_PEDIDO"       ) ) return FINALIZAR_PEDIDO       ; else
+	if ( string_equals_ignore_case(p_comando, "TOMAR_PEDIDO"           ) ) return TOMAR_PEDIDO           ; else
+
+	return -1;
 
 }
 
