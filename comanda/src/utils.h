@@ -10,9 +10,12 @@
 
 #include "serializar.h"
 
-void      iniciar_comanda();
-t_log *   iniciar_logger() ;
-t_config* leer_config()    ;
+int       iniciar_comanda();
+t_log *   iniciar_logger ();
+t_config* leer_config    ();
+
+
+void manejo_modulo_conectado(void*);
 
 
 #endif /* UTILS_H_ */

@@ -18,7 +18,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <pthread.h>
-#include <commons/log.h>
 #include <commons/string.h>
 
 #include <stdint.h>
@@ -74,7 +73,7 @@ t_config * config;
 // FUNCIONES
 
 int serializar(void* buffer, const char* format, ...);
-int serializar(void* buffer, const char* format, ...);
+int deserializar(void* buffer, const char* format, ...);
 
 int  enviar_consultar_restaurante   (char* p_ip,int p_puerto);
 
@@ -82,8 +81,8 @@ void prueba_biblioteca_compartida   (void                   );
 
 int  crear_socket_y_conectar        (char* ip, int puerto   );
 
-int  crear_socket_escucha           ( char * p_ip, int p_puerto );
-int  aceptar_conexion               ( int p_socket_para_escuchar );
+int  crear_socket_escucha           ( char * p_ip, char * p_puerto );
+int  aceptar_conexion               ( int p_socket_para_escuchar   );
 
 int  recibir_confirmacion           (int   socket_cliente   );
 int  detectar_comando               ( char * p_comando      );

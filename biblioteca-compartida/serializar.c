@@ -97,9 +97,7 @@ int recibir_confirmacion(int socket_cliente) {
 
 }
 
-int crear_socket_escucha( char * p_ip, int p_puerto ) {
-
-	char * puerto = string_itoa( p_puerto );
+int crear_socket_escucha( char * p_ip, char * p_puerto ) {
 
 	int socket_servidor;
 
@@ -110,7 +108,7 @@ int crear_socket_escucha( char * p_ip, int p_puerto ) {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags    = AI_PASSIVE;
 
-    getaddrinfo( p_ip, puerto, &hints, &servinfo);
+    getaddrinfo( p_ip, p_puerto, &hints, &servinfo);
 
     for ( p=servinfo; p != NULL; p = p->ai_next) {
 
@@ -134,7 +132,6 @@ int crear_socket_escucha( char * p_ip, int p_puerto ) {
 
 	if( -1 == listen( socket_servidor, SOMAXCONN ) ) perror("ERROR PUERTO EN ESCUCHA");
 
-	free(puerto);
 
     freeaddrinfo(servinfo);
 
@@ -155,12 +152,15 @@ int aceptar_conexion ( int p_socket_para_escuchar ) {
 	if(socket_cliente == -1)
 		perror("ERROR AL ACEPTAR CONEXION DE SOCKET");
 	else {
+		log_info(logger,"Se conecto Cliente");
 		return socket_cliente;
 	}
 
 	return -1;
 
 }
+
+
 
 int detectar_comando(char * p_comando) {
 
