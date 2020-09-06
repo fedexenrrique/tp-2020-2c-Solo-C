@@ -20,7 +20,7 @@ int main(void) {
 
 t_config * leer_config(void) {
 
-	t_config* config = config_create("app.config");
+	t_config * config = config_create("app.config");
 
 	if ( config_has_property( config, "IP_COMANDA"                  ) ) g_ip_comanda                  = config_get_string_value(config, "IP_COMANDA");
 	if ( config_has_property( config, "PUERTO_COMANDA"              ) ) g_puerto_comanda              = config_get_int_value(config, "PUERTO_COMANDA");
@@ -52,15 +52,19 @@ void escuchar_cliente( int socket_cliente ) {
 
 	}
 
-	uint32_t size, modulo, otro;
+	uint32_t modulo, id_proceso, nro_msg, size;
 
-	recv(socket_cliente, &size   , sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_cliente, &modulo , sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_cliente, &otro   , sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_cliente, &modulo     , sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_cliente, &id_proceso , sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_cliente, &nro_msg    , sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_cliente, &size       , sizeof(uint32_t), MSG_WAITALL);
 
-	printf( "Módulo: %d.\n", size   );
-	printf( "Bytes: %d.\n", modulo );
-	printf( "Nro. mensaje: %d.\n", otro   );
+
+	printf( "Módulo:       %d.\n" , modulo     );
+	printf( "ID Proceso:   %d.\n" , id_proceso );
+	printf( "Nro. mensaje: %d.\n" , nro_msg    );
+	printf( "Bytes:        %d.\n" , size       );
+
 
 	t_list * lista_de_restaurante = obtener_restaurante_hardcodeado();
 
@@ -71,6 +75,7 @@ void escuchar_cliente( int socket_cliente ) {
 t_list * obtener_restaurante_hardcodeado() {
 
 	t_list * l_restaurantes = list_create();
+
 	list_add( l_restaurantes, "McDonals" );
 	list_add( l_restaurantes, "KFC" );
 	list_add( l_restaurantes, "Wendy's" );

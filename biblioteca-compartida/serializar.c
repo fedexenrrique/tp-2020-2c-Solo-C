@@ -6,7 +6,7 @@ void prueba_biblioteca_compartida(void) {
 
 int enviar_consultar_restaurante(char* p_ip, int p_puerto) {
 
-	int    stream_size = sizeof( uint32_t ) * 3;
+	int    stream_size = sizeof( uint32_t ) * 4;
 	void * stream      = malloc( stream_size );
 	int    offset      = 0;
 
@@ -14,17 +14,22 @@ int enviar_consultar_restaurante(char* p_ip, int p_puerto) {
 
     memset( stream         , 0                            , stream_size        );
 
-    valor = CLIENTE;
+    valor = CLIENTE; // 01 - MODULO
 	memcpy( stream + offset, &valor                       , sizeof( uint32_t ) );
 
 	offset += sizeof( uint32_t );
 
-	valor = 4;
+    valor = 0; // 02 - ID PROCESO
 	memcpy( stream + offset, &valor                       , sizeof( uint32_t ) );
 
 	offset += sizeof( uint32_t );
 
-	valor = CONSULTAR_RESTAURANTES;
+	valor = CONSULTAR_RESTAURANTES; // 03 - TIPO MENSAJE
+	memcpy( stream + offset, &valor                       , sizeof( uint32_t ) );
+
+	offset += sizeof( uint32_t );
+
+	valor = 0; // 04 - TAMAÑO DE PAYLOAD
 	memcpy( stream + offset, &valor                       , sizeof( uint32_t ) );
 
 	offset += sizeof( uint32_t );
