@@ -10,6 +10,14 @@
 
 #include "serializar.h"
 
+#include <commons/log.h>
+#include <commons/config.h>
+#include <commons/memory.h>
+#include "commons/collections/list.h"
+
+t_log    * logger;
+t_config * config;
+
 // AMBIENTE
 
 char *  g_ip_comanda;                    // IP_COMANDA=127.0.0.1
@@ -36,6 +44,6 @@ t_config * leer_config         ( void );
 
 void       escuchar_cliente    ( int socket_cliente );
 
-
+t_list   * obtener_restaurante_hardcodeado();
 
 #endif /* APP_H_ */
