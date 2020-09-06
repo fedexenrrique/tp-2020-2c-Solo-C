@@ -31,7 +31,7 @@ void iniciar_comanda(){
 	log_info(logger,"IP     BROKER LEIDO: %s",ip_comanda);
 	log_info(logger,"SOCKET BROKER LEIDO: %s",puerto_comanda);
 
-	socket_comanda=crear_socket_escucha(ip_comanda,(int*)puerto_comanda);
+	socket_comanda=crear_socket_escucha(ip_comanda,atoi(puerto_comanda));
 
 	log_info(logger,"el socket escucha es: %d",socket_comanda);
 
