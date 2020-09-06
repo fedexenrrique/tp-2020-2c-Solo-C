@@ -12,7 +12,7 @@ int main(void) {
 
 	int socket_aceptado = aceptar_conexion(socket_cliente);
 
-	if ( socket_aceptado > 0) escuchar_cliente(socket_aceptado);
+	if ( socket_aceptado > 0) recibir_consultar_restaurante_y_responder(socket_aceptado);
 
 	return EXIT_SUCCESS;
 
@@ -43,48 +43,6 @@ t_config * leer_config(void) {
 	return config;
 
 }
-
-void escuchar_cliente( int socket_cliente ) {
-
-	void _aux_mostrar_restaurantes( void * p_elem ) {
-
-		printf( "%s\n", (char *) p_elem );
-
-	}
-
-	uint32_t modulo, id_proceso, nro_msg, size;
-
-	recv(socket_cliente, &modulo     , sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_cliente, &id_proceso , sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_cliente, &nro_msg    , sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_cliente, &size       , sizeof(uint32_t), MSG_WAITALL);
-
-
-	printf( "Módulo:       %d.\n" , modulo     );
-	printf( "ID Proceso:   %d.\n" , id_proceso );
-	printf( "Nro. mensaje: %d.\n" , nro_msg    );
-	printf( "Bytes:        %d.\n" , size       );
-
-
-	t_list * lista_de_restaurante = obtener_restaurante_hardcodeado();
-
-	list_iterate( lista_de_restaurante, _aux_mostrar_restaurantes );
-
-}
-
-t_list * obtener_restaurante_hardcodeado() {
-
-	t_list * l_restaurantes = list_create();
-
-	list_add( l_restaurantes, "McDonals" );
-	list_add( l_restaurantes, "KFC" );
-	list_add( l_restaurantes, "Wendy's" );
-	list_add( l_restaurantes, "GreenEat" );
-
-	return l_restaurantes;
-
-}
-
 
 
 

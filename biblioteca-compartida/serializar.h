@@ -20,6 +20,7 @@
 #include <pthread.h>
 #include <commons/log.h>
 #include <commons/string.h>
+#include <commons/collections/list.h>
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -62,11 +63,14 @@ typedef enum {
 
 } cod_msg;
 
-typedef struct {
-	cod_mod modulo;
-    int     size;
-	void *  payload;
-} t_msg;
+typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
+	int    modulo;
+    int    id_proceso;
+    int    nro_msg;
+    int    size;
+	void * payload;
+} t_header;
+
 
 t_log    * logger;
 t_config * config;
@@ -76,17 +80,21 @@ t_config * config;
 int serializar(void* buffer, const char* format, ...);
 int serializar(void* buffer, const char* format, ...);
 
-int  enviar_consultar_restaurante   (char* p_ip,int p_puerto);
+t_list * enviar_consultar_restaurante   (char* p_ip,int p_puerto);
+void     recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
-void prueba_biblioteca_compartida   (void                   );
+void     prueba_biblioteca_compartida   (void                   );
 
-int  crear_socket_y_conectar        (char* ip, int puerto   );
+int      crear_socket_y_conectar        (char* ip, int puerto   );
 
-int  crear_socket_escucha           ( char * p_ip, int p_puerto );
-int  aceptar_conexion               ( int p_socket_para_escuchar );
+int      crear_socket_escucha           ( char * p_ip, int p_puerto );
+int      aceptar_conexion               ( int p_socket_para_escuchar );
 
-int  recibir_confirmacion           (int   socket_cliente   );
-int  detectar_comando               ( char * p_comando      );
+int      recibir_confirmacion           ( int   socket_cliente  );
+int      detectar_comando               ( char * p_comando      );
+
+bool       enviar_buffer            ( int p_conexion, t_header * p_header );
+t_header * recibir_buffer           ( int socket_cliente );
 
 
 
