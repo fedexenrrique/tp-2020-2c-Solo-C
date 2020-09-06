@@ -34,9 +34,9 @@ char ** g_frecuencia_de_descanso;        // FRECUENCIA_DE_DESCANSO=1
 
 char ** g_tiempo_de_descanso;            // TIEMPO_DE_DESCANSO=5
 char *  g_log_path;                      // ARCHIVO_LOG=app.log
-char *  g_platos_default;                // PLATOS_DEFAULT=3
-char *  g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
-char *  g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
+char ** g_platos_default;                // PLATOS_DEFAULT=3
+int     g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
+int     g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
 
 // FUNCIONES
 
