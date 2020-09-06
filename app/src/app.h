@@ -10,6 +10,14 @@
 
 #include "serializar.h"
 
+#include <commons/log.h>
+#include <commons/config.h>
+#include <commons/memory.h>
+#include "commons/collections/list.h"
+
+t_log    * logger;
+t_config * config;
+
 // AMBIENTE
 
 char *  g_ip_comanda;                    // IP_COMANDA=127.0.0.1
@@ -26,9 +34,9 @@ char ** g_frecuencia_de_descanso;        // FRECUENCIA_DE_DESCANSO=1
 
 char ** g_tiempo_de_descanso;            // TIEMPO_DE_DESCANSO=5
 char *  g_log_path;                      // ARCHIVO_LOG=app.log
-char *  g_platos_default;                // PLATOS_DEFAULT=3
-char *  g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
-char *  g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
+char ** g_platos_default;                // PLATOS_DEFAULT=3
+int     g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
+int     g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
 
 // FUNCIONES
 
@@ -36,6 +44,6 @@ t_config * leer_config         ( void );
 
 void       escuchar_cliente    ( int socket_cliente );
 
-
+t_list   * obtener_restaurante_hardcodeado();
 
 #endif /* APP_H_ */
