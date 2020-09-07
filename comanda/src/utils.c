@@ -56,22 +56,44 @@ t_config* leer_config(){
 void manejo_modulo_conectado(void * socket_cliente){
 
 
-	uint32_t nro_modulo         ;
-	uint32_t nro_identificatorio;
-	uint32_t tipo_mensaje       ;
-	uint32_t size_payload       ;
+
 	int * sock_cliente=(int*)socket_cliente;
 	uint32_t size_buffer=4*sizeof(uint32_t);
 	void * buffer=malloc(sizeof(size_buffer));
 
-	//t_header * mensaje_recibido;
-
+	t_header * mensaje_recibido;
 
 
 	int byte_recibidos=recv(*sock_cliente,buffer,size_buffer,MSG_WAITALL);
 	if(byte_recibidos<size_buffer)log_error(logger,"Se recibieron menos bytes de los que se esperaban");
 
-	deserializar(buffer,"%z%z%z%z",&nro_modulo ,&nro_identificatorio,&tipo_mensaje,&size_payload);
+	deserializar(buffer,"%z%z%z%z",&mensaje_recibido->modulo ,&mensaje_recibido->id_proceso,&mensaje_recibido->nro_msg,&mensaje_recibido->size);
+
+	switch(mensaje_recibido->nro_msg){
+		case GUARDAR_PEDIDO:
+			administrar_guardar_pedido();
+			break;
+		case GUARDAR_PLATO:
+			administrar_guardar_plato();
+			break;
+		case OBTENER_PEDIDO:
+			administrar_obtener_pedido();
+			break;
+		case CONFIRMAR_PEDIDO:
+			administrar_confirmar_pedido();
+			break;
+		case PLATO_LISTO:
+			administrar_plato_listo();
+			break;
+		case FINALIZAR_PEDIDO:
+			administrar_finalizar_pedido();
+			break;
+		default:
+			log_error(logger,"La Comanda no soporta el mensaje solicitado");
+
+
+
+	}
 
 
 
@@ -80,3 +102,28 @@ void manejo_modulo_conectado(void * socket_cliente){
 
 
 }
+
+void administrar_guardar_pedido(){
+
+}
+
+void administrar_guardar_plato(){
+
+}
+
+void administrar_obtener_pedido(){
+
+}
+
+void administrar_confirmar_pedido(){
+
+}
+
+void administrar_plato_listo(){
+
+}
+
+void administrar_finalizar_pedido(){
+
+}
+
