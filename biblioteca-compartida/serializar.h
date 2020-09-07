@@ -86,8 +86,8 @@ void     prueba_biblioteca_compartida   (void                   );
 
 int      crear_socket_y_conectar        (char* ip, int puerto   );
 
-int      crear_socket_escucha           ( char * p_ip, int p_puerto );
-int      aceptar_conexion               ( int p_socket_para_escuchar );
+//int      crear_socket_escucha           ( char * p_ip, int p_puerto );
+//int      aceptar_conexion               ( int p_socket_para_escuchar );
 
 int  crear_socket_escucha           ( char * p_ip, char * p_puerto );
 int  aceptar_conexion               ( int p_socket_para_escuchar   );
