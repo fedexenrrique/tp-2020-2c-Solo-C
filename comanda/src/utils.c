@@ -64,6 +64,9 @@ void manejo_modulo_conectado(void * socket_cliente){
 	uint32_t size_buffer=4*sizeof(uint32_t);
 	void * buffer=malloc(sizeof(size_buffer));
 
+	//t_header * mensaje_recibido;
+
+
 
 	int byte_recibidos=recv(*sock_cliente,buffer,size_buffer,MSG_WAITALL);
 	if(byte_recibidos<size_buffer)log_error(logger,"Se recibieron menos bytes de los que se esperaban");
