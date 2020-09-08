@@ -34,7 +34,7 @@ int main(void) {
 	header->payload=string_new();
 
 	string_append(&header->payload,info->nombreRestaurante);
-	header->size=strlen(header->payload);
+	header->size=strlen(header->payload)-1;
 
 	int bytesAEnviarPayload=serializar(buffer,"%d%d%d%d%s",header->modulo,header->id_proceso,header->nro_msg,header->size,header->payload);
 	int bufferSize=bytesAEnviarPayload-1;

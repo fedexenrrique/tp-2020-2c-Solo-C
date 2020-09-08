@@ -77,6 +77,8 @@ int main(int argc, char *argv[]) {
 		*socketCliente=socketConectado;
 		handleConexion(socketCliente);
 
+		break;
+
 
 	}
 
@@ -92,7 +94,6 @@ int main(int argc, char *argv[]) {
 
 void handleConexion(int* socketCliente){
 	log_info(logger,"Handle conexion aceptada...");
-	char* buffer=string_new();
 	int modulo,idProceso,nroMensaje,size=0;
 	char*nombreRestaurante=string_new();
 
@@ -107,6 +108,8 @@ void handleConexion(int* socketCliente){
 	headerRecibido->modulo=modulo;
 	headerRecibido->nro_msg=nroMensaje;
 	headerRecibido->size=size;
+	char* buffer=malloc(headerRecibido->size);
+
 
 	if(size>0){
 		recv(*socketCliente,buffer,headerRecibido->size,MSG_WAITALL);
