@@ -1,0 +1,25 @@
+[INFO] 19:22:06:771 Coordinador/(372:372): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:00:54:231 Coordinador/(8281:8281): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:01:20:710 Coordinador/(8351:8351): 
+PUERTO_ESCUCHA: 8000
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:01:22:821 Coordinador/(8351:8351): Inicio Escucha de conexiones...
+[INFO] 03:02:22:355 Coordinador/(8412:8412): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:02:23:898 Coordinador/(8412:8412): Inicio Escucha de conexiones...
+[INFO] 03:04:17:356 Coordinador/(8562:8562): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:04:19:81 Coordinador/(8562:8562): Inicio Escucha de conexiones...
+[INFO] 03:05:05:460 Coordinador/(8562:8562): Se conecto Cliente
+[INFO] 03:05:16:361 Coordinador/(8562:8562): Handle conexion aceptada...

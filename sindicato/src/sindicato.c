@@ -63,11 +63,22 @@ int main(int argc, char *argv[]) {
 	string_append(&pathMetadata,"/Metadata/");
 
 	//Si no le paso los argumentos BLOCKSIZE, BLOCKS + MAGIC_NUMBER no monto el FS de nuevo
-	if (*argv[1]!=NULL && *argv[2]!=NULL && argv[3]!=NULL ){
-		int fs=montarFS(*argv[1],*argv[2],argv[3]);
+//	if (*argv[1]!=NULL && *argv[2]!=NULL && argv[3]!=NULL ){
+//		int fs=montarFS(*argv[1],*argv[2],argv[3]);
+//	}
+
+	//Escucho conexiones
+	log_info(logger,"Inicio Escucha de conexiones...");
+	int socketServer= crear_socket_escucha("127.0.0.1",configuracion->puertoEscucha);
+
+	while(1){
+		int socketConectado=aceptar_conexion(socketServer);
+		int* socketCliente=malloc(8);
+		*socketCliente=socketConectado;
+		handleConexion(socketCliente);
+
+
 	}
-
-
 
 
 	free(buffer);
@@ -76,4 +87,36 @@ int main(int argc, char *argv[]) {
 	free(pathMetadata);
 
 	return EXIT_SUCCESS;
+}
+
+
+void handleConexion(int* socketCliente){
+	log_info(logger,"Handle conexion aceptada...");
+	char* buffer=string_new();
+	int modulo,idProceso,nroMensaje,size=0;
+	char*nombreRestaurante=string_new();
+
+	t_header2* headerRecibido=malloc(sizeof(t_header2));
+
+	recv(*socketCliente,&modulo,sizeof(int),MSG_WAITALL);
+	recv(*socketCliente,&idProceso,sizeof(int),MSG_WAITALL);
+	recv(*socketCliente,&nroMensaje,sizeof(int),MSG_WAITALL);
+	recv(*socketCliente,&size,sizeof(int),MSG_WAITALL);
+
+	headerRecibido->id_proceso=idProceso;
+	headerRecibido->modulo=modulo;
+	headerRecibido->nro_msg=nroMensaje;
+	headerRecibido->size=size;
+
+	if(size>0){
+		recv(*socketCliente,buffer,headerRecibido->size,MSG_WAITALL);
+		int bytesPayload=deserializar(buffer,"%s",nombreRestaurante);
+
+	}
+
+	printf("Nombre Restaurante Recibido: %s\n",nombreRestaurante);
+
+
+
+
 }

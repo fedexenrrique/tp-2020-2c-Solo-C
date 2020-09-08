@@ -18,11 +18,11 @@ int cargarConfiguracion() {
 		log_error(logger,"Archivo de configuración inválido.","ERROR");
 		return -1;
 	}
-	configuracion->puertoEscucha = config_get_int_value(fd_configuracion, "PUERTO_ESCUCHA");
+	configuracion->puertoEscucha = config_get_string_value(fd_configuracion, "PUERTO_ESCUCHA");
 	configuracion->puntoMontaje = config_get_string_value(fd_configuracion, "PUNTO_MONTAJE");
 
 	log_info(logger,
-		"\nPUERTO_ESCUCHA: %d\n"
+		"\nPUERTO_ESCUCHA: %s\n"
 		"PUNTO_MONTAJE: %s\n",
 
 		configuracion->puertoEscucha,
