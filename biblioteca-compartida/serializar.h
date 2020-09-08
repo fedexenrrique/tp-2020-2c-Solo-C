@@ -63,12 +63,39 @@ typedef enum {
 } cod_msg;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
-	int    modulo;
-    int    id_proceso;
-    int    nro_msg;
-    int    size;
-	void * payload;
+	uint32_t    modulo;
+	uint32_t    id_proceso;
+	uint32_t    nro_msg;
+	uint32_t    size;
+	void     *  payload;
 } t_header;
+
+typedef struct {
+	uint32_t cantidad_total_comida;
+	uint32_t cantidad_lista_comida;
+	char     nombre_comida[24]    ;
+}t_comida;
+
+
+typedef struct {  // Me sirve para guardar pedido, consultar pedido, obtener pedido y finalizar pedido
+	uint32_t size_nombre       ;
+	char *   nombre_restaurante;
+	uint32_t id_pedido         ;
+}t_pedido;
+
+typedef struct {
+	t_pedido* pedido           ;
+	uint32_t  size_nombre_plato;
+	char *    nombre_plato     ;
+    uint32_t  cantidad_plato   ;
+}t_guardar_plato;
+
+typedef struct {
+	t_pedido* pedido           ;
+	uint32_t  size_nombre_plato;
+	char *    nombre_plato     ;
+}t_plato_listo;
+
 
 
 t_log    * logger;

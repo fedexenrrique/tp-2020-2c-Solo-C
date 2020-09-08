@@ -18,12 +18,10 @@ t_config* leer_config    ();
 
 void manejo_modulo_conectado(void*);
 
-void administrar_guardar_pedido  ();
-void administrar_guardar_plato   ();
-void administrar_obtener_pedido  ();
-void administrar_confirmar_pedido();
-void administrar_plato_listo     ();
-void administrar_finalizar_pedido();
+
+t_guardar_plato* administrar_guardar_plato (void*);
+t_plato_listo  * administrar_plato_listo   (void*);
+t_pedido       * recibir_consulta_pedido   (void*);
 
 
 

@@ -349,7 +349,8 @@ t_header * recibir_buffer ( int socket_cliente ) {
 
 		l_header->payload= malloc(size);
 
-		recv( socket_cliente, l_header->payload, size, MSG_WAITALL );
+		int bytes_recibidos=recv( socket_cliente, l_header->payload, size, MSG_WAITALL );
+		if(bytes_recibidos<sizeof(t_header))log_error(logger,"Se recibieron menos bytes de los que se esperaban");
 
 	} else l_header->payload = NULL;
 

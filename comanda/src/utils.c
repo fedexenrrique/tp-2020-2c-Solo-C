@@ -56,37 +56,40 @@ t_config* leer_config(){
 void manejo_modulo_conectado(void * socket_cliente){
 
 
-
+	void * aux=NULL;
 	int * sock_cliente=(int*)socket_cliente;
-	uint32_t size_buffer=4*sizeof(uint32_t);
-	void * buffer=malloc(sizeof(size_buffer));
+	//uint32_t size_buffer=4*sizeof(uint32_t);
+	//void * buffer=malloc(sizeof(size_buffer));
 
-	t_header * mensaje_recibido;
+	t_header * mensaje_recibido=recibir_buffer (*sock_cliente);
 
-
-	int byte_recibidos=recv(*sock_cliente,buffer,size_buffer,MSG_WAITALL);
-	if(byte_recibidos<size_buffer)log_error(logger,"Se recibieron menos bytes de los que se esperaban");
-
-	deserializar(buffer,"%z%z%z%z",&mensaje_recibido->modulo ,&mensaje_recibido->id_proceso,&mensaje_recibido->nro_msg,&mensaje_recibido->size);
 
 	switch(mensaje_recibido->nro_msg){
 		case GUARDAR_PEDIDO:
-			administrar_guardar_pedido();
+			aux=mensaje_recibido->payload;
+			recibir_consulta_pedido(mensaje_recibido->payload);
+			free(aux);
 			break;
 		case GUARDAR_PLATO:
-			administrar_guardar_plato();
+			administrar_guardar_plato(mensaje_recibido->payload);
 			break;
 		case OBTENER_PEDIDO:
-			administrar_obtener_pedido();
+			aux=mensaje_recibido->payload;
+			recibir_consulta_pedido(mensaje_recibido->payload);
+			free(aux);
 			break;
 		case CONFIRMAR_PEDIDO:
-			administrar_confirmar_pedido();
+			aux=mensaje_recibido->payload;
+			recibir_consulta_pedido(mensaje_recibido->payload);
+			free(aux);
 			break;
 		case PLATO_LISTO:
-			administrar_plato_listo();
+			administrar_plato_listo(mensaje_recibido->payload);
 			break;
 		case FINALIZAR_PEDIDO:
-			administrar_finalizar_pedido();
+			aux=mensaje_recibido->payload;
+			recibir_consulta_pedido(mensaje_recibido->payload);
+			free(aux);
 			break;
 		default:
 			log_error(logger,"La Comanda no soporta el mensaje solicitado");
@@ -103,27 +106,70 @@ void manejo_modulo_conectado(void * socket_cliente){
 
 }
 
-void administrar_guardar_pedido(){
+
+t_guardar_plato * administrar_guardar_plato(void * payload){
+
+	t_guardar_plato * plato=malloc(sizeof(t_guardar_plato));
+	plato->pedido=malloc(sizeof(t_pedido));
+	void * stream=payload;
+
+	plato->pedido=recibir_consulta_pedido(payload);
+
+	int size_pedido=2*sizeof(uint32_t)+plato->pedido->size_nombre;
+	stream+=size_pedido;
+
+	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
+	stream+=sizeof(uint32_t);
+
+	plato->nombre_plato=malloc(plato->size_nombre_plato);
+	memcpy(plato->nombre_plato,payload,sizeof(uint32_t));
+	stream+=plato->size_nombre_plato;
+
+	memcpy(&(plato->cantidad_plato),payload,sizeof(uint32_t));
+	stream+=sizeof(uint32_t);
+
+	free(payload);
+	return plato;
 
 }
 
-void administrar_guardar_plato(){
+t_plato_listo * administrar_plato_listo(void * payload){
+
+	t_plato_listo * plato=malloc(sizeof(t_plato_listo));
+	plato->pedido=malloc(sizeof(t_pedido));
+	void * stream=payload;
+
+	plato->pedido=recibir_consulta_pedido(payload);
+
+	int size_pedido=2*sizeof(uint32_t)+plato->pedido->size_nombre;
+	stream+=size_pedido;
+
+	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
+	stream+=sizeof(uint32_t);
+
+	plato->nombre_plato=malloc(plato->size_nombre_plato);
+	memcpy(plato->nombre_plato,payload,sizeof(uint32_t));
+
+	free(payload);
+	return plato;
 
 }
 
-void administrar_obtener_pedido(){
+t_pedido * recibir_consulta_pedido(void * payload){
 
-}
+	t_pedido * pedido=malloc(sizeof(t_pedido));
+	void * stream=payload;
 
-void administrar_confirmar_pedido(){
+	memcpy(&(pedido->size_nombre),payload,sizeof(uint32_t));
+	stream+=sizeof(uint32_t);
 
-}
+	pedido->nombre_restaurante=malloc(pedido->size_nombre);
+	memcpy(pedido->nombre_restaurante,payload,sizeof(uint32_t));
+	stream+=pedido->size_nombre;
 
-void administrar_plato_listo(){
+	memcpy(&(pedido->id_pedido),payload,sizeof(uint32_t));
 
-}
-
-void administrar_finalizar_pedido(){
+	return pedido;
 
 }
 
