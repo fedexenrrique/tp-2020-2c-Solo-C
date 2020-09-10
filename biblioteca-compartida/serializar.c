@@ -358,6 +358,42 @@ t_header * recibir_buffer ( int socket_cliente ) {
 
 }
 
+void enviar_guardar_pedido   (char* p_ip,int p_puerto){
+
+	t_pedido * pedido=malloc(sizeof(t_pedido));
+	t_header * encabezado=malloc(sizeof(t_header));
+	int offset=0;
+
+	pedido->id_pedido=1;
+	pedido->size_nombre=6;
+	pedido->nombre_restaurante=malloc(pedido->size_nombre);
+	pedido->nombre_restaurante="Farola";
+
+	int size_buffer=2*sizeof(uint32_t)+pedido->size_nombre;
+	void * buffer=malloc(size_buffer);
+
+	memcpy(buffer+offset,&pedido->id_pedido,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,&pedido->size_nombre,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,pedido->nombre_restaurante,pedido->size_nombre);
+
+	mem_hexdump(buffer,size_buffer );
+
+	encabezado->payload=buffer;
+	encabezado->size=size_buffer;
+	encabezado->id_proceso=1;
+	encabezado->modulo=2;
+	encabezado->nro_msg=GUARDAR_PEDIDO;
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+}
+
 int serializar(void* buffer, const char* format, ...){
 	va_list objs;
 	int i = 0, buffIndex = 0, sizeObj;

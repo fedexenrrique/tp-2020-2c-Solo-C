@@ -33,6 +33,9 @@
 #include <sys/stat.h>
 // AMBIENTE
 
+#define TRUE  1
+#define FALSE 0
+
 typedef enum {
 
     CLIENTE     = 1,
@@ -106,17 +109,19 @@ t_config * config;
 int serializar(void* buffer, const char* format, ...);
 int deserializar(void* buffer, const char* format, ...);
 
-t_list * enviar_consultar_restaurante   (char* p_ip,int p_puerto);
-void     recibir_consultar_restaurante_y_responder ( int socket_cliente );
+t_list *   enviar_consultar_restaurante   (char* p_ip,int p_puerto);
+void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
-void     prueba_biblioteca_compartida   (void                   );
+void       enviar_guardar_pedido   (char* p_ip,int p_puerto);
 
-int      crear_socket_y_conectar        (char* ip, int puerto   );
+void       prueba_biblioteca_compartida   (void                   );
 
-int  crear_socket_escucha           ( char * p_ip, char * p_puerto );
-int  aceptar_conexion               ( int p_socket_para_escuchar   );
-int      recibir_confirmacion           ( int   socket_cliente  );
-int      detectar_comando               ( char * p_comando      );
+int        crear_socket_y_conectar        (char* ip, int puerto   );
+int        crear_socket_escucha           ( char * p_ip, char * p_puerto );
+int        aceptar_conexion               ( int p_socket_para_escuchar   );
+int        recibir_confirmacion           ( int   socket_cliente  );
+int        detectar_comando               ( char * p_comando      );
+
 
 bool       enviar_buffer            ( int p_conexion, t_header * p_header );
 t_header * recibir_buffer           ( int socket_cliente );

@@ -56,6 +56,37 @@ int main(int argc, char **argv) {
 				printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO          \n");
 				break;
 
+			case GUARDAR_PEDIDO:
+
+				printf("  06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
+				enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
+				break;
+
+			case GUARDAR_PLATO:
+
+				printf(" 08- GUARDAR_PLATO           HACIA: COMANDA, SINDICATO                     \n");
+				break;
+
+			case OBTENER_PEDIDO:
+
+				printf("  12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
+				break;
+
+			case CONFIRMAR_PEDIDO:
+
+				printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
+				break;
+
+			case PLATO_LISTO:
+
+				printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO              \n");
+				break;
+
+			case FINALIZAR_PEDIDO:
+
+				printf(" 13- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                     \n");
+				break;
+
 			default:
 
 				log_error(logger, "Comando inválido.");

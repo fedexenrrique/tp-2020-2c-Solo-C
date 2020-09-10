@@ -63,6 +63,11 @@ void manejo_modulo_conectado(void * socket_cliente){
 
 	t_header * mensaje_recibido=recibir_buffer (*sock_cliente);
 
+	log_info(logger,"Se recibio mensaje del modulo: %d",mensaje_recibido->modulo);
+	log_info(logger,"Se recibio mensaje del modulo con id: %d",mensaje_recibido->id_proceso);
+	log_info(logger,"Se recibio el tipo de mensaje numero: %d",mensaje_recibido->nro_msg);
+	log_info(logger,"Se recibio un payload del tamaño: %d",mensaje_recibido->size);
+
 
 	switch(mensaje_recibido->nro_msg){
 		case GUARDAR_PEDIDO:
@@ -157,17 +162,23 @@ t_plato_listo * administrar_plato_listo(void * payload){
 
 t_pedido * recibir_consulta_pedido(void * payload){
 
+	int size=14;
+	mem_hexdump(payload,size );
 	t_pedido * pedido=malloc(sizeof(t_pedido));
-	void * stream=payload;
-
-	memcpy(&(pedido->size_nombre),payload,sizeof(uint32_t));
-	stream+=sizeof(uint32_t);
-
-	pedido->nombre_restaurante=malloc(pedido->size_nombre);
-	memcpy(pedido->nombre_restaurante,payload,sizeof(uint32_t));
-	stream+=pedido->size_nombre;
+	//void * stream=payload;
 
 	memcpy(&(pedido->id_pedido),payload,sizeof(uint32_t));
+	payload+=sizeof(uint32_t);
+
+	memcpy(&(pedido->size_nombre),payload,sizeof(uint32_t));
+	payload+=sizeof(uint32_t);
+
+	pedido->nombre_restaurante=malloc((pedido->size_nombre)+1);
+	memcpy(pedido->nombre_restaurante,payload,pedido->size_nombre);
+
+	log_info(logger,"Se recibio el id numero: %d",pedido->id_pedido);
+	log_info(logger,"Se recibio el size del nombre %d",pedido->size_nombre);
+	log_info(logger,"Se recibio el restaurante %s",pedido->nombre_restaurante);
 
 	return pedido;
 
