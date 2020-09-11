@@ -12,58 +12,95 @@
 
 int main(int argc, char **argv) {
 
-	prueba_biblioteca_compartida();
-
 	logger = log_create("cliente.log","CLIENTE",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
-	printf("\nRecibí %d parámetros.\n", argc);
-
 	if ( argc == 1 ) {
-
-		printf("\nDebe ingresar un módulo al cual comunicar el cliente.\n");
 
 		listar_comandos();
 
 		return EXIT_SUCCESS;
 
-	} else if ( argc >= 2 ) {
+	} else if ( argc > 2 ) {
 
 		printf("\nUsted ingresó el módulo: %s.\n", argv[1]);
 
-		switch( detectar_comando( argv[1] ) ) {
+		switch( detectar_modulo( argv[1] ) ) {
+
+		case APP: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
+
+			printf(" MÓDULO DESTINO: APP                                  \n");
+
+			switch( detectar_comando( argv[2] ) ) {
+		    	
+				case CONSULTAR_RESTAURANTES: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
+
+					printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP \n");
+    		    	enviar_consultar_restaurante(g_ip_app, g_puerto_app);
+    		    	break;
+    		    
+				case SELECCIONAR_RESTAURANTE:
+    		    	printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP \n");
+		    		break;
+    		    
+				case CONSULTAR_PLATOS:
+    		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
+		    		break;
+
+				case CREAR_PEDIDO:
+    		    	printf(" 05- CREAR_PEDIDO HACIA: SINDICATO \n");
+		    		break;
+    		    
+				case ANIADIR_PLATO:
+    		    	printf(" 07- ANIADIR_PLATO HACIA: SINDICATO \n");
+		    		break;
+
+				case CONFIRMAR_PEDIDO:
+    		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: SINDICATO \n");
+		    		break;
+
+				case PLATO_LISTO:
+    		    	printf(" 10- PLATO_LISTO HACIA: SINDICATO \n");
+		    		break;
+
+				case CONSULTAR_PEDIDO:
+    		    	printf(" 11- CONSULTAR_PEDIDO HACIA: SINDICATO \n");
+		    		break;
+
+				default:
+    		    	log_error(logger, "Comando no válido para el módulo APP.");
+					break;
+
+			}
+
+			break;
+
+		case COMANDA:
+
+			printf(" MÓDULO DESTINO: COMANDA                              \n");
+			break;
+
+		case RESTAURANTE:
+
+			printf(" MÓDULO DESTINO: RESTAURANTE                          \n");
+			break;
+
+		case SINDICATO:
+
+			printf(" MÓDULO DESTINO: SINDICATO                            \n");
+			break;
+
+		default:
+
+			log_error(logger, "Módulo inválido.");
+
 		}
 
-		switch( detectar_comando( argv[1] ) ) {
-			
-			case CONSULTAR_RESTAURANTES: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
+	} else {
 
-				printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP                                  \n");
+		listar_comandos();
 
-				enviar_consultar_restaurante(g_ip_app, g_puerto_app);
-
-				break;
-
-			case SELECCIONAR_RESTAURANTE:
-
-				printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP                                  \n");
-				break;
-
-			case OBTENER_RESTAURANTES:
-
-				printf(" 03- OBTENER_RESTAURANTES    HACIA: SINDICATO                            \n");
-				break;
-
-			case CONSULTAR_PLATOS:
-
-				printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO          \n");
-				break;
-
-			default:
-
-				log_error(logger, "Comando inválido.");
-
-		}
+		return EXIT_SUCCESS;
 
 	}
 
@@ -97,7 +134,7 @@ t_config * leer_config(void) {
 
 void listar_comandos(void) {
 
-	printf("\nDebe ingresar un comando para comicarse con los módulos.                 ");
+	printf("\nDebe ingresar un comando para comicarse con los módulos.               \n");
 	printf("\nLos comandos permitidos son los siguientes:                            \n");
 	printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP                                  \n");
 	printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP                                  \n");
