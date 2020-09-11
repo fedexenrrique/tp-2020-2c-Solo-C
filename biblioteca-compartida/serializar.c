@@ -315,9 +315,14 @@ bool enviar_buffer ( int p_conexion, t_header * p_header ) {
 
 	bool resultado = true;
 
+	mem_hexdump(stream, stream_size);
+
 	if ( p_conexion != -1 ) {
 
-		if( -1 == send( p_conexion, stream, stream_size, 0) ) resultado = false;
+		int bytes_enviados=send( p_conexion, stream, stream_size, 0);
+		log_info(logger,"Se enviaron la cantidad de bytes: %d",bytes_enviados);
+
+		if( -1 == bytes_enviados ) resultado = false;
 
 	} else
 
@@ -350,7 +355,7 @@ t_header * recibir_buffer ( int socket_cliente ) {
 		l_header->payload= malloc(size);
 
 		int bytes_recibidos=recv( socket_cliente, l_header->payload, size, MSG_WAITALL );
-		if(bytes_recibidos<sizeof(t_header))log_error(logger,"Se recibieron menos bytes de los que se esperaban");
+		if(bytes_recibidos<size)log_error(logger,"Se recibieron menos bytes de los que se esperaban");
 
 	} else l_header->payload = NULL;
 
@@ -365,22 +370,20 @@ void enviar_guardar_pedido   (char* p_ip,int p_puerto){
 	int offset=0;
 
 	pedido->id_pedido=1;
-	pedido->size_nombre=6;
-	pedido->nombre_restaurante=malloc(pedido->size_nombre);
+	pedido->size_nombre_restaurante=6;
+	pedido->nombre_restaurante=malloc(pedido->size_nombre_restaurante);
 	pedido->nombre_restaurante="Farola";
 
-	int size_buffer=2*sizeof(uint32_t)+pedido->size_nombre;
+	int size_buffer=2*sizeof(uint32_t)+pedido->size_nombre_restaurante;
 	void * buffer=malloc(size_buffer);
 
 	memcpy(buffer+offset,&pedido->id_pedido,sizeof(uint32_t));
 	offset+=sizeof(uint32_t);
 
-	memcpy(buffer+offset,&pedido->size_nombre,sizeof(uint32_t));
+	memcpy(buffer+offset,&pedido->size_nombre_restaurante,sizeof(uint32_t));
 	offset+=sizeof(uint32_t);
 
-	memcpy(buffer+offset,pedido->nombre_restaurante,pedido->size_nombre);
-
-	mem_hexdump(buffer,size_buffer );
+	memcpy(buffer+offset,pedido->nombre_restaurante,pedido->size_nombre_restaurante);
 
 	encabezado->payload=buffer;
 	encabezado->size=size_buffer;
@@ -393,6 +396,173 @@ void enviar_guardar_pedido   (char* p_ip,int p_puerto){
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
 
 }
+
+t_pedido * recibir_pedido  (void * payload         ){
+
+	t_pedido * pedido=malloc(sizeof(t_pedido));
+
+	memcpy(&(pedido->id_pedido),payload,sizeof(uint32_t));
+	payload+=sizeof(uint32_t);
+
+	memcpy(&(pedido->size_nombre_restaurante),payload,sizeof(uint32_t));
+	payload+=sizeof(uint32_t);
+
+	pedido->nombre_restaurante=malloc((pedido->size_nombre_restaurante)+1);
+	memcpy(pedido->nombre_restaurante,payload,pedido->size_nombre_restaurante);
+	pedido->nombre_restaurante[pedido->size_nombre_restaurante]='\0';
+
+	log_info(logger,"Se recibio el id numero: %d",pedido->id_pedido);
+	log_info(logger,"Se recibio el size del nombre %d",pedido->size_nombre_restaurante);
+	log_info(logger,"Se recibio el restaurante %s",pedido->nombre_restaurante);
+
+	return pedido;
+
+}
+
+void 	   enviar_guardar_plato    (char* p_ip,int p_puerto){
+
+	t_guardar_plato * plato=malloc(sizeof(t_guardar_plato));
+	plato->pedido=malloc(sizeof(t_pedido));
+	t_header * encabezado=malloc(sizeof(t_header));
+	int offset=0;
+
+	plato->pedido->id_pedido=1;
+	plato->pedido->size_nombre_restaurante=9;
+	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
+	plato->pedido->nombre_restaurante="Mataderos";
+	plato->size_nombre_plato=4;
+	plato->nombre_plato="papa";
+	plato->cantidad_plato=5;
+
+	int size_buffer=4*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
+	void * buffer=malloc(size_buffer);
+
+	memcpy(buffer+offset,&plato->pedido->id_pedido,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,&plato->pedido->size_nombre_restaurante,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,plato->pedido->nombre_restaurante,plato->pedido->size_nombre_restaurante);
+	offset+=plato->pedido->size_nombre_restaurante;
+
+	memcpy(buffer+offset,&plato->size_nombre_plato,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,plato->nombre_plato,plato->size_nombre_plato);
+	offset+=plato->size_nombre_plato;
+
+	memcpy(buffer+offset,&plato->cantidad_plato,sizeof(uint32_t));
+
+	encabezado->payload=buffer;
+	encabezado->size=size_buffer;
+	encabezado->id_proceso=2;
+	encabezado->modulo=3;
+	encabezado->nro_msg=GUARDAR_PLATO;
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del plato");
+
+}
+
+t_guardar_plato * recibir_guardar_plato   (void * payload         ){
+
+	t_guardar_plato * plato=malloc(sizeof(t_guardar_plato));
+	plato->pedido=malloc(sizeof(t_pedido));
+
+	plato->pedido=recibir_pedido(payload);
+
+	int size_pedido=2*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante;
+	payload+=size_pedido;
+
+	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
+	payload+=sizeof(uint32_t);
+
+	plato->nombre_plato=malloc(plato->size_nombre_plato+1);
+	memcpy(plato->nombre_plato,payload,plato->size_nombre_plato);
+	plato->nombre_plato[plato->size_nombre_plato]='\0';
+	payload+=plato->size_nombre_plato;
+
+	memcpy(&(plato->cantidad_plato),payload,sizeof(uint32_t));
+	payload+=sizeof(uint32_t);
+
+	log_info(logger,"Se recibio el size del nombre del plato: %d",plato->size_nombre_plato);
+	log_info(logger,"Se recibio el plato %s",plato->nombre_plato);
+	log_info(logger,"Se recibio la cantidad de platos %d",plato->cantidad_plato);
+
+	return plato;
+
+}
+
+void 	   enviar_plato_listo    (char* p_ip,int p_puerto){
+
+	t_plato_listo * plato=malloc(sizeof(t_plato_listo));
+	plato->pedido=malloc(sizeof(t_pedido));
+	t_header * encabezado=malloc(sizeof(t_header));
+	int offset=0;
+
+	plato->pedido->id_pedido=15;
+	plato->pedido->size_nombre_restaurante=7;
+	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
+	plato->pedido->nombre_restaurante="Tinajas";
+	plato->size_nombre_plato=6;
+	plato->nombre_plato="batata";
+
+	int size_buffer=3*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
+	void * buffer=malloc(size_buffer);
+
+	memcpy(buffer+offset,&plato->pedido->id_pedido,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,&plato->pedido->size_nombre_restaurante,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,plato->pedido->nombre_restaurante,plato->pedido->size_nombre_restaurante);
+	offset+=plato->pedido->size_nombre_restaurante;
+
+	memcpy(buffer+offset,&plato->size_nombre_plato,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(buffer+offset,plato->nombre_plato,plato->size_nombre_plato);
+
+	encabezado->payload=buffer;
+	encabezado->size=size_buffer;
+	encabezado->id_proceso=2;
+	encabezado->modulo=3;
+	encabezado->nro_msg=PLATO_LISTO;
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del plato");
+
+}
+
+t_plato_listo *	recibir_plato_listo     (void * payload){
+
+	t_plato_listo * plato=malloc(sizeof(t_plato_listo));
+	plato->pedido=malloc(sizeof(t_pedido));
+
+	plato->pedido=recibir_pedido(payload);
+
+	int size_pedido=2*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante;
+	payload+=size_pedido;
+
+	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
+	payload+=sizeof(uint32_t);
+
+	plato->nombre_plato=malloc(plato->size_nombre_plato+1);
+	memcpy(plato->nombre_plato,payload,plato->size_nombre_plato);
+	plato->nombre_plato[plato->size_nombre_plato]='\0';
+
+
+	log_info(logger,"Se recibio el size del nombre del plato: %d",plato->size_nombre_plato);
+	log_info(logger,"Se recibio el plato %s",plato->nombre_plato);
+
+	return plato;
+
+}
+
 
 int serializar(void* buffer, const char* format, ...){
 	va_list objs;

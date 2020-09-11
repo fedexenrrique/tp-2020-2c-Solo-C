@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
 			case GUARDAR_PLATO:
 
 				printf(" 08- GUARDAR_PLATO           HACIA: COMANDA, SINDICATO                     \n");
+				enviar_guardar_plato(g_ip_comanda, g_puerto_comanda);
 				break;
 
 			case OBTENER_PEDIDO:
@@ -80,6 +81,7 @@ int main(int argc, char **argv) {
 			case PLATO_LISTO:
 
 				printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO              \n");
+				enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
 				break;
 
 			case FINALIZAR_PEDIDO:

@@ -81,9 +81,9 @@ typedef struct {
 
 
 typedef struct {  // Me sirve para guardar pedido, consultar pedido, obtener pedido y finalizar pedido
-	uint32_t size_nombre       ;
-	char *   nombre_restaurante;
-	uint32_t id_pedido         ;
+	uint32_t size_nombre_restaurante;
+	char *   nombre_restaurante     ;
+	uint32_t id_pedido              ;
 }t_pedido;
 
 typedef struct {
@@ -113,6 +113,13 @@ t_list *   enviar_consultar_restaurante   (char* p_ip,int p_puerto);
 void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
 void       enviar_guardar_pedido   (char* p_ip,int p_puerto);
+t_pedido * recibir_pedido          (void * payload         );
+
+void 	          enviar_guardar_plato    (char* p_ip,int p_puerto);
+t_guardar_plato * recibir_guardar_plato   (void * payload         );
+
+void 	        enviar_plato_listo      (char* p_ip,int p_puerto);
+t_plato_listo *	recibir_plato_listo     (void * payload         );
 
 void       prueba_biblioteca_compartida   (void                   );
 

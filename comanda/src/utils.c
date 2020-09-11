@@ -77,6 +77,7 @@ void manejo_modulo_conectado(void * socket_cliente){
 			break;
 		case GUARDAR_PLATO:
 			administrar_guardar_plato(mensaje_recibido->payload);
+			free(mensaje_recibido->payload);
 			break;
 		case OBTENER_PEDIDO:
 			aux=mensaje_recibido->payload;
@@ -90,6 +91,7 @@ void manejo_modulo_conectado(void * socket_cliente){
 			break;
 		case PLATO_LISTO:
 			administrar_plato_listo(mensaje_recibido->payload);
+			free(mensaje_recibido->payload);
 			break;
 		case FINALIZAR_PEDIDO:
 			aux=mensaje_recibido->payload;
@@ -114,73 +116,22 @@ void manejo_modulo_conectado(void * socket_cliente){
 
 t_guardar_plato * administrar_guardar_plato(void * payload){
 
-	t_guardar_plato * plato=malloc(sizeof(t_guardar_plato));
-	plato->pedido=malloc(sizeof(t_pedido));
-	void * stream=payload;
+	t_guardar_plato * plato=recibir_guardar_plato(payload);
 
-	plato->pedido=recibir_consulta_pedido(payload);
-
-	int size_pedido=2*sizeof(uint32_t)+plato->pedido->size_nombre;
-	stream+=size_pedido;
-
-	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
-	stream+=sizeof(uint32_t);
-
-	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	memcpy(plato->nombre_plato,payload,sizeof(uint32_t));
-	stream+=plato->size_nombre_plato;
-
-	memcpy(&(plato->cantidad_plato),payload,sizeof(uint32_t));
-	stream+=sizeof(uint32_t);
-
-	free(payload);
 	return plato;
-
 }
 
 t_plato_listo * administrar_plato_listo(void * payload){
 
-	t_plato_listo * plato=malloc(sizeof(t_plato_listo));
-	plato->pedido=malloc(sizeof(t_pedido));
-	void * stream=payload;
+	t_plato_listo * plato=recibir_plato_listo(payload);
 
-	plato->pedido=recibir_consulta_pedido(payload);
-
-	int size_pedido=2*sizeof(uint32_t)+plato->pedido->size_nombre;
-	stream+=size_pedido;
-
-	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
-	stream+=sizeof(uint32_t);
-
-	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	memcpy(plato->nombre_plato,payload,sizeof(uint32_t));
-
-	free(payload);
 	return plato;
-
 }
 
 t_pedido * recibir_consulta_pedido(void * payload){
 
-	int size=14;
-	mem_hexdump(payload,size );
-	t_pedido * pedido=malloc(sizeof(t_pedido));
-	//void * stream=payload;
-
-	memcpy(&(pedido->id_pedido),payload,sizeof(uint32_t));
-	payload+=sizeof(uint32_t);
-
-	memcpy(&(pedido->size_nombre),payload,sizeof(uint32_t));
-	payload+=sizeof(uint32_t);
-
-	pedido->nombre_restaurante=malloc((pedido->size_nombre)+1);
-	memcpy(pedido->nombre_restaurante,payload,pedido->size_nombre);
-
-	log_info(logger,"Se recibio el id numero: %d",pedido->id_pedido);
-	log_info(logger,"Se recibio el size del nombre %d",pedido->size_nombre);
-	log_info(logger,"Se recibio el restaurante %s",pedido->nombre_restaurante);
+	t_pedido * pedido=recibir_pedido(payload);
 
 	return pedido;
-
 }
 
