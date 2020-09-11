@@ -129,6 +129,14 @@ int        aceptar_conexion               ( int p_socket_para_escuchar   );
 int        recibir_confirmacion           ( int   socket_cliente  );
 int        detectar_comando               ( char * p_comando      );
 
+int     crear_socket_escucha           ( char * p_ip, char * p_puerto );
+int     aceptar_conexion               ( int p_socket_para_escuchar   );
+int     recibir_confirmacion           ( int   socket_cliente  );
+
+int     detectar_comando               ( char * p_comando      );
+char *  nro_comando_a_texto            ( int    p_comando      );
+int     detectar_modulo                ( char * p_modulo       );
+char *  nro_modulo_a_texto             ( int    p_modulo       );
 
 bool       enviar_buffer            ( int p_conexion, t_header * p_header );
 t_header * recibir_buffer           ( int socket_cliente );

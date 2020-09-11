@@ -276,6 +276,51 @@ int detectar_comando(char * p_comando) {
 
 }
 
+char * nro_comando_a_texto(int p_comando) {
+
+	switch (p_comando) {
+		case CONSULTAR_RESTAURANTES:  	return "CONSULTAR_RESTAURANTES" ;break;
+		case SELECCIONAR_RESTAURANTE: 	return "SELECCIONAR_RESTAURANTE";break;
+		case OBTENER_RESTAURANTES: 		return "OBTENER_RESTAURANTES"   ;break;
+		case CONSULTAR_PLATOS: 			return "CONSULTAR_PLATOS"       ;break;
+		case CREAR_PEDIDO: 			 	return "CREAR_PEDIDO"           ;break;
+		case GUARDAR_PEDIDO: 			return "GUARDAR_PEDIDO"         ;break;
+		case ANIADIR_PLATO: 			return "ANIADIR_PLATO"          ;break;
+		case GUARDAR_PLATO: 			return "GUARDAR_PLATO"          ;break;
+		case CONFIRMAR_PEDIDO: 			return "CONFIRMAR_PEDIDO"       ;break;
+		case PLATO_LISTO: 				return "PLATO_LISTO"            ;break;
+		case CONSULTAR_PEDIDO: 			return "CONSULTAR_PEDIDO"       ;break;
+		case OBTENER_PEDIDO: 			return "OBTENER_PEDIDO"         ;break;
+		case FINALIZAR_PEDIDO: 			return "FINALIZAR_PEDIDO"       ;break;
+		case TOMAR_PEDIDO: 				return "TOMAR_PEDIDO"           ;break;
+		default: 						return NULL ;break;
+	}
+
+}
+
+int detectar_modulo( char * p_modulo ) {
+
+	if ( string_equals_ignore_case(p_modulo, "APP"          ) ) return APP         ; else
+	if ( string_equals_ignore_case(p_modulo, "COMANDA"      ) ) return COMANDA     ; else
+	if ( string_equals_ignore_case(p_modulo, "RESTAURANTE"  ) ) return RESTAURANTE ; else
+	if ( string_equals_ignore_case(p_modulo, "SINDICATO"    ) ) return SINDICATO   ; else
+
+	return -1;
+
+}
+
+char * nro_modulo_a_texto( int p_modulo ) {
+
+	switch ( p_modulo ) {
+		case APP:         return "APP"          ;break;
+		case COMANDA: 	  return "COMANDA"      ;break;
+		case RESTAURANTE: return "RESTAURANTES" ;break;
+		case SINDICATO:   return "SINDICATO"    ;break;
+		default:          return NULL           ;break;
+	}
+
+}
+
 bool enviar_buffer ( int p_conexion, t_header * p_header ) {
 
 	int    stream_size = sizeof( uint32_t ) * 4 + p_header->size;
