@@ -298,6 +298,29 @@ char * nro_comando_a_texto(int p_comando) {
 
 }
 
+int detectar_modulo( char * p_modulo ) {
+
+	if ( string_equals_ignore_case(p_modulo, "APP"          ) ) return APP         ; else
+	if ( string_equals_ignore_case(p_modulo, "COMANDA"      ) ) return COMANDA     ; else
+	if ( string_equals_ignore_case(p_modulo, "RESTAURANTE"  ) ) return RESTAURANTE ; else
+	if ( string_equals_ignore_case(p_modulo, "SINDICATO"    ) ) return SINDICATO   ; else
+
+	return -1;
+
+}
+
+char * nro_modulo_a_texto( int p_modulo ) {
+
+	switch ( p_modulo ) {
+		case APP:         return "APP"          ;break;
+		case COMANDA: 	  return "COMANDA"      ;break;
+		case RESTAURANTE: return "RESTAURANTES" ;break;
+		case SINDICATO:   return "SINDICATO"    ;break;
+		default:          return NULL           ;break;
+	}
+
+}
+
 bool enviar_buffer ( int p_conexion, t_header * p_header ) {
 
 	int    stream_size = sizeof( uint32_t ) * 4 + p_header->size;

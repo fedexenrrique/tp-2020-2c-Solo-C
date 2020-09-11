@@ -32,6 +32,9 @@ int main(int argc, char **argv) {
 		printf("\nUsted ingresó el módulo: %s.\n", argv[1]);
 
 		switch( detectar_comando( argv[1] ) ) {
+		}
+
+		switch( detectar_comando( argv[1] ) ) {
 			
 			case CONSULTAR_RESTAURANTES: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
 
