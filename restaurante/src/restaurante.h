@@ -32,6 +32,13 @@ typedef struct{
 	char* nombreRestaurante;
 
 }tSolicitudInfoResto;
+typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
+	uint32_t    modulo;
+	uint32_t 	id_proceso;
+	uint32_t 	nro_msg;
+	uint32_t    size;
+	void * payload;
+} t_header2;
 
 
 tConfiguracion * configuracion;

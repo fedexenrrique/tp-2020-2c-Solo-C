@@ -15,8 +15,6 @@
 int main(int argc, char *argv[]) {
 	cargarConfiguracion();
 
- 	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
-
 	tPrueba* pedidoPrueba= malloc(sizeof(tPrueba));
 
 	pedidoPrueba->idPedido=1;
@@ -74,8 +72,7 @@ int main(int argc, char *argv[]) {
 	while(1){
 		int socketConectado=aceptar_conexion(socketServer);
 		int* socketCliente=malloc(8);
-		*socketCliente=socketConectado;
-		handleConexion(socketCliente);
+		handleConexion(socketConectado);
 
 		break;
 
@@ -92,32 +89,34 @@ int main(int argc, char *argv[]) {
 }
 
 
-void handleConexion(int* socketCliente){
+void handleConexion(int socketCliente){
 	log_info(logger,"Handle conexion aceptada...");
 	int modulo,idProceso,nroMensaje,size=0;
-	char*nombreRestaurante=string_new();
 
 	t_header2* headerRecibido=malloc(sizeof(t_header2));
 
-	recv(*socketCliente,&modulo,sizeof(int),MSG_WAITALL);
-	recv(*socketCliente,&idProceso,sizeof(int),MSG_WAITALL);
-	recv(*socketCliente,&nroMensaje,sizeof(int),MSG_WAITALL);
-	recv(*socketCliente,&size,sizeof(int),MSG_WAITALL);
+	recv(socketCliente,&modulo,sizeof(uint32_t),MSG_WAITALL);
+	recv(socketCliente,&idProceso,sizeof(uint32_t),MSG_WAITALL);
+	recv(socketCliente,&nroMensaje,sizeof(uint32_t),MSG_WAITALL);
+	recv(socketCliente,&size,sizeof(uint32_t),MSG_WAITALL);
 
 	headerRecibido->id_proceso=idProceso;
 	headerRecibido->modulo=modulo;
 	headerRecibido->nro_msg=nroMensaje;
 	headerRecibido->size=size;
-	char* buffer=malloc(headerRecibido->size);
+	headerRecibido->payload=malloc(headerRecibido->size);
+
+	printf("Size payload antes recv: %d\n",strlen(headerRecibido->payload));
 
 
 	if(size>0){
-		recv(*socketCliente,buffer,headerRecibido->size,MSG_WAITALL);
-		int bytesPayload=deserializar(buffer,"%s",nombreRestaurante);
+		headerRecibido->payload=malloc(size);
+		recv(socketCliente,headerRecibido->payload,size,MSG_WAITALL);
 
 	}
-
-	printf("Nombre Restaurante Recibido: %s\n",nombreRestaurante);
+	printf("Size payload despues recv: %d\n",strlen(headerRecibido->payload));
+	string_trim(&headerRecibido->payload);
+	printf("Nombre Restaurante Recibido: %s\n",headerRecibido->payload);
 
 
 

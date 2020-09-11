@@ -27,11 +27,11 @@ typedef struct{
 }tConfiguracion;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
-	int    modulo;
-    int    id_proceso;
-    int    nro_msg;
-    int    size;
-	char* * payload;
+	uint32_t    modulo;
+	uint32_t    id_proceso;
+	uint32_t    nro_msg;
+	uint32_t	size;
+	void* payload;
 } t_header2;
 
 tConfiguracion * configuracion;

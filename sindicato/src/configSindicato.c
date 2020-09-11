@@ -5,7 +5,7 @@ int configValida(t_config* fd_configuracion) {
 }
 
 int cargarConfiguracion() {
-	logger = log_create("LogCoordinador", "Coordinador", true, LOG_LEVEL_INFO);
+	logger = log_create("LogSindicato", "Sindicato", true, LOG_LEVEL_INFO);
 	configuracion = malloc(sizeof(tConfiguracion));
 
 
