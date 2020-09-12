@@ -41,8 +41,19 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 } t_header2;
 
 
+typedef struct{
+	uint32_t cantCocineros;
+	char* posicion;
+	char* afinidadCocineros;
+	char* platos;
+	char* preciosPlatos;
+	uint32_t cantidadHornos;
+}tMensajeInfoRestaurante;
+
 tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;
+
+void recibirInfoRestaurante(tMensajeInfoRestaurante* infoRestaurante,int socketCliente);
 
 #endif /* RESTAURANTE_H_ */

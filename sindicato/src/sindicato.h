@@ -21,7 +21,7 @@ typedef struct{
 } tPrueba;
 
 typedef struct{
-	int puertoEscucha;
+	char* puertoEscucha;
 	char* puntoMontaje;
 
 }tConfiguracion;
@@ -34,6 +34,17 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	void* payload;
 } t_header2;
 
+typedef struct{
+	uint32_t cantCocineros;
+	char* posicion;
+	char* afinidadCocineros;
+	char* platos;
+	char* preciosPlatos;
+	uint32_t cantidadHornos;
+
+
+}tMensajeInfoRestaurante;
+
 tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;
@@ -44,7 +55,8 @@ char* pathBloques;
 char* pathRestaurantes;
 char* pathRecetas;
 
-
+void handleConexion(int socketCliente);
+void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream);
 
 
 #endif /* SINDICATO_H_ */

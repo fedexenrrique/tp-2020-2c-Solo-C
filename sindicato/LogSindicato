@@ -268,3 +268,150 @@ PUNTO_MONTAJE: /home/utnso/afip
 [INFO] 15:03:17:816 Sindicato/(13656:13656): Inicio Escucha de conexiones...
 [INFO] 15:03:28:341 Sindicato/(13656:13656): Se conecto Cliente
 [INFO] 15:03:30:883 Sindicato/(13656:13656): Handle conexion aceptada...
+[INFO] 02:27:56:690 Sindicato/(9604:9604): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:27:56:691 Sindicato/(9604:9604): Inicio Escucha de conexiones...
+[INFO] 02:28:12:317 Sindicato/(9604:9604): Se conecto Cliente
+[INFO] 02:28:14:492 Sindicato/(9604:9604): Handle conexion aceptada...
+[INFO] 02:32:15:43 Sindicato/(9839:9839): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:32:15:44 Sindicato/(9839:9839): Inicio Escucha de conexiones...
+[INFO] 02:32:18:463 Sindicato/(9839:9839): Handle conexion aceptada...
+[INFO] 02:34:17:774 Sindicato/(9976:9976): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:34:17:774 Sindicato/(9976:9976): Inicio Escucha de conexiones...
+[INFO] 02:34:21:462 Sindicato/(9976:9976): Se conecto Cliente
+[INFO] 02:34:32:204 Sindicato/(9976:9976): Handle conexion aceptada...
+[INFO] 02:38:45:286 Sindicato/(10104:10104): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:38:45:286 Sindicato/(10104:10104): Inicio Escucha de conexiones...
+[INFO] 02:40:40:21 Sindicato/(10238:10238): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:40:40:21 Sindicato/(10238:10238): Inicio Escucha de conexiones...
+[INFO] 02:40:44:740 Sindicato/(10238:10238): Se conecto Cliente
+[INFO] 02:40:47:129 Sindicato/(10238:10238): Handle conexion aceptada...
+[INFO] 02:44:38:383 Sindicato/(10449:10449): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:44:38:383 Sindicato/(10449:10449): Inicio Escucha de conexiones...
+[INFO] 02:44:42:119 Sindicato/(10449:10449): Se conecto Cliente
+[INFO] 02:44:48:786 Sindicato/(10449:10449): Handle conexion aceptada...
+[INFO] 02:47:02:274 Sindicato/(10599:10599): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:47:02:276 Sindicato/(10599:10599): Inicio Escucha de conexiones...
+[INFO] 02:48:58:189 Sindicato/(10729:10729): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:48:58:189 Sindicato/(10729:10729): Inicio Escucha de conexiones...
+[INFO] 02:49:02:932 Sindicato/(10729:10729): Se conecto Cliente
+[INFO] 02:49:05:418 Sindicato/(10729:10729): Handle conexion aceptada...
+[INFO] 02:50:51:417 Sindicato/(10937:10937): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:50:51:418 Sindicato/(10937:10937): Inicio Escucha de conexiones...
+[INFO] 02:51:01:89 Sindicato/(10937:10937): Se conecto Cliente
+[INFO] 02:51:02:687 Sindicato/(10937:10937): Handle conexion aceptada...
+[INFO] 03:28:51:566 Sindicato/(12438:12438): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:28:51:566 Sindicato/(12438:12438): Inicio Escucha de conexiones...
+[INFO] 03:29:07:686 Sindicato/(12438:12438): Se conecto Cliente
+[INFO] 03:29:10:608 Sindicato/(12438:12438): Handle conexion aceptada...
+[INFO] 03:36:49:975 Sindicato/(12737:12737): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:36:49:980 Sindicato/(12737:12737): Inicio Escucha de conexiones...
+[INFO] 03:36:55:609 Sindicato/(12737:12737): Se conecto Cliente
+[INFO] 03:36:58:156 Sindicato/(12737:12737): Handle conexion aceptada...
+[ERROR] 03:41:08:253 Sindicato/(12737:12737): Error al enviar pedido de info Resturante
+[INFO] 09:45:56:931 Sindicato/(14027:14027): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 09:45:56:931 Sindicato/(14027:14027): Inicio Escucha de conexiones...
+[INFO] 09:46:13:790 Sindicato/(14027:14027): Se conecto Cliente
+[INFO] 09:46:17:18 Sindicato/(14027:14027): Handle conexion aceptada...
+[INFO] 09:48:00:501 Sindicato/(14165:14165): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 09:48:00:503 Sindicato/(14165:14165): Inicio Escucha de conexiones...
+[INFO] 09:48:04:133 Sindicato/(14165:14165): Handle conexion aceptada...
+[INFO] 09:48:36:39 Sindicato/(14205:14205): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 09:48:36:40 Sindicato/(14205:14205): Inicio Escucha de conexiones...
+[INFO] 09:50:03:238 Sindicato/(14330:14330): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 09:50:03:238 Sindicato/(14330:14330): Inicio Escucha de conexiones...
+[INFO] 09:50:31:13 Sindicato/(14330:14330): Se conecto Cliente
+[INFO] 09:50:34:851 Sindicato/(14330:14330): Handle conexion aceptada...
+[INFO] 09:54:24:303 Sindicato/(14668:14668): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 09:54:24:303 Sindicato/(14668:14668): Inicio Escucha de conexiones...
+[INFO] 09:54:28:861 Sindicato/(14668:14668): Se conecto Cliente
+[INFO] 09:54:32:883 Sindicato/(14668:14668): Handle conexion aceptada...
+[INFO] 09:57:11:70 Sindicato/(14857:14857): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 09:57:11:70 Sindicato/(14857:14857): Inicio Escucha de conexiones...
+[INFO] 09:57:14:364 Sindicato/(14857:14857): Se conecto Cliente
+[INFO] 09:57:17:887 Sindicato/(14857:14857): Handle conexion aceptada...
+[INFO] 10:01:45:81 Sindicato/(15066:15066): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 10:01:45:81 Sindicato/(15066:15066): Inicio Escucha de conexiones...
+[INFO] 10:01:48:381 Sindicato/(15066:15066): Se conecto Cliente
+[INFO] 10:01:52:147 Sindicato/(15066:15066): Handle conexion aceptada...
+[INFO] 10:07:38:979 Sindicato/(15161:15161): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 10:07:38:979 Sindicato/(15161:15161): Inicio Escucha de conexiones...
+[INFO] 10:07:43:900 Sindicato/(15161:15161): Se conecto Cliente
+[INFO] 10:07:47:494 Sindicato/(15161:15161): Handle conexion aceptada...
+[INFO] 10:19:03:759 Sindicato/(15648:15648): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 10:19:03:759 Sindicato/(15648:15648): Inicio Escucha de conexiones...
+[INFO] 10:19:09:130 Sindicato/(15648:15648): Se conecto Cliente
+[INFO] 10:19:38:405 Sindicato/(15648:15648): Handle conexion aceptada...
+[INFO] 10:21:23:194 Sindicato/(15794:15794): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 10:21:23:194 Sindicato/(15794:15794): Inicio Escucha de conexiones...
+[INFO] 10:21:26:804 Sindicato/(15794:15794): Se conecto Cliente
+[INFO] 10:21:30:164 Sindicato/(15794:15794): Handle conexion aceptada...
+[INFO] 14:12:08:26 Sindicato/(18144:18144): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 14:12:08:26 Sindicato/(18144:18144): Inicio Escucha de conexiones...
+[INFO] 14:12:11:616 Sindicato/(18144:18144): Se conecto Cliente
+[INFO] 14:12:14:214 Sindicato/(18144:18144): Handle conexion aceptada...

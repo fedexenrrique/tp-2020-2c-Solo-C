@@ -81,7 +81,6 @@ int main(void) {
 
 	//header->size=strlen(header->payload)-1;
 	int streamSize = sizeof(uint32_t) * 4 + header->size;
-	void* stream = malloc(streamSize);
 
 	memcpy(header->payload, info->nombreRestaurante, bufferSize);
 
@@ -97,10 +96,57 @@ int main(void) {
 	if (-1 == send(socketCliente, streamSerializado, streamSize, 0)) {
 		log_error(logger, "Error al enviar pedido de infor Resturante");
 	}
+
+
+	//Recibo info del restaurante
+	t_header2* headerRecibido = malloc(sizeof(t_header2));
+	uint32_t modulo, idProceso, nroMsg, size;
+
+
+	recv(socketCliente,&modulo,sizeof(uint32_t),MSG_WAITALL);
+	recv(socketCliente, &idProceso, sizeof(uint32_t), MSG_WAITALL);
+	recv(socketCliente, &nroMsg, sizeof(uint32_t), MSG_WAITALL);
+	recv(socketCliente, &size, sizeof(uint32_t), MSG_WAITALL);
+
+	headerRecibido->id_proceso = idProceso;
+	headerRecibido->modulo = modulo;
+	headerRecibido->nro_msg = nroMsg;
+	headerRecibido->size = size;
+	headerRecibido->payload = malloc(headerRecibido->size);
+	tMensajeInfoRestaurante* infoRestaurante= malloc(sizeof(tMensajeInfoRestaurante));
+
+	if (size > 0) {
+		recibirInfoRestaurante(infoRestaurante,socketCliente);
+	}
+
+	log_info(logger,infoRestaurante->platos);
 	free(info);
 //	free(header);
 //	free(buffer);
 
 	return EXIT_SUCCESS;
 }
+
+
+void recibirInfoRestaurante(tMensajeInfoRestaurante* infoRestaurante, int socketCliente){
+	uint32_t cantPosicion,cantAfinidadesCocineros, cantPlatos,cantPreciosPlatos;
+
+	recv(socketCliente,&infoRestaurante->cantCocineros,sizeof(uint32_t),MSG_WAITALL);
+
+	recv(socketCliente, &cantPosicion, sizeof(uint32_t), MSG_WAITALL);
+	recv(socketCliente, infoRestaurante->posicion, cantPosicion, MSG_WAITALL);
+
+	recv(socketCliente, &cantAfinidadesCocineros, sizeof(uint32_t), MSG_WAITALL);
+	recv(socketCliente, infoRestaurante->afinidadCocineros, cantAfinidadesCocineros, MSG_WAITALL);
+
+	recv(socketCliente, &cantPlatos, sizeof(uint32_t), MSG_WAITALL);
+	recv(socketCliente, infoRestaurante->platos, cantPlatos, MSG_WAITALL);
+
+	recv(socketCliente, &cantPreciosPlatos, sizeof(uint32_t), MSG_WAITALL);
+	recv(socketCliente, infoRestaurante->preciosPlatos, cantPreciosPlatos, MSG_WAITALL);
+
+	recv(socketCliente, &infoRestaurante->cantidadHornos, sizeof(uint32_t), MSG_WAITALL);
+
+}
+
 
