@@ -17,6 +17,7 @@ int    g_puerto_app;         // PUERTO_APP=5004
 char * g_log_path;           // ARCHIVO_LOG=/utnso/logs/cliente.log
 int    g_posicion_x;         // POSICION_X=1
 int    g_posicion_y;         // POSICION_Y=2
+int    g_id_proceso;         // ID_PROCESO=100
 
 /*
 		printf("\nDebe ingresar un comando para comicarse con los módulos.");
