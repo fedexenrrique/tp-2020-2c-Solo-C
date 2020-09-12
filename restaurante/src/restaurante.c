@@ -11,11 +11,13 @@
 #include "restaurante.h"
 
 int main(void) {
-	puts("!!!Hello World!!!");
-	prueba_biblioteca_compartida();
-	int conf=cargarConfiguracion();
 
-	int socketCliente= crear_socket_y_conectar(configuracion->ipSindicato,configuracion->puertoSindicato);
+	prueba_biblioteca_compartida();
+
+	cargar_config();
+
+	/*
+	int socket_sindicato = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
 
 	tSolicitudInfoResto* info=malloc(sizeof(tSolicitudInfoResto));
 
@@ -42,7 +44,7 @@ int main(void) {
 	if(-1==send(socketCliente,buffer,bufferSize,0)){
 		log_error(logger,"Error al enviar pedido de infor Resturante");
 	}
-
+*/
 
 	return EXIT_SUCCESS;
 }

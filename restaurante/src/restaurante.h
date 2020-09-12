@@ -9,22 +9,8 @@
 #define RESTAURANTE_H_
 
 #include "serializar.h"
+#include "config_restaurante.h"
 
-
-
-typedef struct{
-	char* puertoEscucha;
-	char* ipSindicato;
-	int puertoSindicato;
-	char* ipApp;
-	int puertoApp;
-	int quantum;
-	char* pathArchivoLog;
-	char* algoritmoPlanificacion;
-	char* nombreRestaurante;
-
-
-}tConfiguracion;
 
 
 typedef struct{
@@ -32,10 +18,5 @@ typedef struct{
 	char* nombreRestaurante;
 
 }tSolicitudInfoResto;
-
-
-tConfiguracion * configuracion;
-t_config * fd_configuracion;
-t_log * logger;
 
 #endif /* RESTAURANTE_H_ */
