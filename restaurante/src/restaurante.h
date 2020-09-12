@@ -14,8 +14,8 @@
 
 typedef struct{
 
-	char* nombreRestaurante;
+	char	* 	nombre_restaurante;
 
-}tSolicitudInfoResto;
+}t_solicitud_info_restaurante;
 
 #endif /* RESTAURANTE_H_ */
