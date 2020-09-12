@@ -93,11 +93,28 @@ int main(int argc, char **argv) {
 				enviar_guardar_plato(g_ip_comanda, g_puerto_comanda);
 				break;
 
+			case CONFIRMAR_PEDIDO:
+
+				printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO  \n");
+				// enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				break;
 
 			case PLATO_LISTO:
 
-				printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO              \n");
+				printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO               \n");
 				enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				break;
+
+			case OBTENER_PEDIDO:
+
+				printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                    \n");
+				// enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				break;
+
+			case FINALIZAR_PEDIDO:
+
+				printf(" 13- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                      \n");
+				// enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
 				break;
 
 			default:
@@ -106,16 +123,81 @@ int main(int argc, char **argv) {
 
 
 			}
+
 			break;
 
 		case RESTAURANTE:
 
 			printf(" MÓDULO DESTINO: RESTAURANTE                          \n");
+
+			switch( detectar_comando( argv[2] ) ) {
+		    	
+				case CONSULTAR_PLATOS: 
+
+					printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO \n");
+    		    	// enviar_consultar_restaurante(g_ip_app, g_puerto_app);
+    		    	break;
+    		    
+				case CREAR_PEDIDO:
+    		    	printf(" 05- CREAR_PEDIDO            HACIA: APP, RESTAURANTE            \n");
+		    		break;
+    		    
+				case ANIADIR_PLATO:
+    		    	printf(" 07- ANIADIR_PLATO           HACIA: APP, RESTAURANTE            \n");
+		    		break;
+
+				case CONFIRMAR_PEDIDO:
+    		    	printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
+		    		break;
+    		    
+				case CONSULTAR_PEDIDO:
+    		    	printf(" 11- CONSULTAR_PEDIDO        HACIA: APP, RESTAURANTE \n");
+		    		break;
+
+				default:
+    		    	log_error(logger, "Comando no válido para el módulo RESTAURANTE.");
+					break;
+
+			}
+
 			break;
 
 		case SINDICATO:
 
 			printf(" MÓDULO DESTINO: SINDICATO                            \n");
+
+			switch( detectar_comando( argv[2] ) ) {
+
+				case OBTENER_RESTAURANTES:
+    		    	printf(" 03- OBTENER_RESTAURANTES    HACIA: SINDICATO          \n");
+		    		break;
+
+				case GUARDAR_PEDIDO:
+    		    	printf(" 06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO \n");
+		    		break;
+    		    
+				case GUARDAR_PLATO:
+    		    	printf(" 08- GUARDAR_PLATO           HACIA: COMANDA, SINDICATO \n");
+		    		break;
+
+				case CONFIRMAR_PEDIDO:
+    		    	printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
+		    		break;
+
+				case PLATO_LISTO:
+    		    	printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO  \n");
+		    		break;
+
+				case OBTENER_PEDIDO:
+    		    	printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO \n");
+		    		break;
+
+				default:
+    		    	log_error(logger, "Comando no válido para el módulo SINDICATO.");
+					break;
+
+			}
+
 			break;
 
 		default:
