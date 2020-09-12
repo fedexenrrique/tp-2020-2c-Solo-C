@@ -113,6 +113,10 @@ t_list *   enviar_consultar_restaurante   (char* p_ip,int p_puerto);
 void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
 void       enviar_guardar_pedido   (char* p_ip,int p_puerto);
+void       enviar_obtener_pedido   (char* p_ip,int p_puerto);
+void       enviar_confirmar_pedido (char* p_ip,int p_puerto);
+void       enviar_finalizar_pedido (char* p_ip,int p_puerto);
+t_header * serializar_pedido       (uint32_t nro_msg       );
 t_pedido * recibir_pedido          (void * payload         );
 
 void 	          enviar_guardar_plato    (char* p_ip,int p_puerto);

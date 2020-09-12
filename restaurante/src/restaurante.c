@@ -16,35 +16,39 @@ int main(void) {
 
 	cargar_config();
 
-	/*
+	obtener_info_restaurante();
+
+	return EXIT_SUCCESS;
+}
+
+void obtener_info_restaurante() {
 	int socket_sindicato = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
 
-	tSolicitudInfoResto* info=malloc(sizeof(tSolicitudInfoResto));
+	t_solicitud_info_restaurante* info_restaurante = malloc(sizeof(t_solicitud_info_restaurante));
 
-	info->nombreRestaurante=string_new();
-	string_append(&info->nombreRestaurante,"RESTO PRUEBA");
+	info_restaurante->nombre_restaurante = string_new();
+	//	string_append(&info_restaurante->nombre_restaurante, "RESTO PRUEBA");
+	string_append(&info_restaurante->nombre_restaurante, nombre_restaurante);
 
 	//Armo el header + payload
-	char* buffer=malloc(100);
+	char* buffer = malloc(100);
 
 	t_header* header= malloc(sizeof(t_header));
 
-	header->modulo=4;
-	header->id_proceso=0;
-	header->nro_msg=3;
-	header->size=0;
-	header->payload=string_new();
+	header->modulo = 4;
+	header->id_proceso = 0;
+	header->nro_msg = 3;
+	header->size = 0;
+	header->payload = string_new();
 
-	string_append(&header->payload,info->nombreRestaurante);
-	header->size=strlen(header->payload)-1;
+	string_append(&header->payload, info_restaurante->nombre_restaurante);
+	header->size = strlen(header->payload) - 1;
 
-	int bytesAEnviarPayload=serializar(buffer,"%d%d%d%d%s",header->modulo,header->id_proceso,header->nro_msg,header->size,header->payload);
-	int bufferSize=bytesAEnviarPayload-1;
+	int payload_a_enviar = serializar(buffer,"%d%d%d%d%s", header->modulo, header->id_proceso,
+											header->nro_msg, header->size, header->payload);
+	int buffer_size = payload_a_enviar - 1;
 
-	if(-1==send(socketCliente,buffer,bufferSize,0)){
-		log_error(logger,"Error al enviar pedido de infor Resturante");
+	if(-1 == send(socket_sindicato, buffer, buffer_size, 0)){
+		log_error(logger_restaurante, "Error al enviar pedido de infor Resturante");
 	}
-*/
-
-	return EXIT_SUCCESS;
 }

@@ -566,6 +566,49 @@ void recibir_seleccionar_restaurante_y_responder( int socket_cliente ) {
 
 void enviar_guardar_pedido   (char* p_ip,int p_puerto){
 
+	uint32_t nro_msg=GUARDAR_PEDIDO;
+	t_header * encabezado=serializar_pedido(nro_msg);
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+}
+
+void enviar_obtener_pedido   (char* p_ip,int p_puerto){
+
+	uint32_t nro_msg=OBTENER_PEDIDO;
+	t_header * encabezado=serializar_pedido(nro_msg);
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+}
+
+void enviar_confirmar_pedido   (char* p_ip,int p_puerto){
+
+	uint32_t nro_msg=CONFIRMAR_PEDIDO;
+	t_header * encabezado=serializar_pedido(nro_msg);
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+}
+
+void enviar_finalizar_pedido   (char* p_ip,int p_puerto){
+
+	uint32_t nro_msg=FINALIZAR_PEDIDO;
+	t_header * encabezado=serializar_pedido(nro_msg);
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+}
+
+t_header * serializar_pedido       (uint32_t nro_msg        ){
+
 	t_pedido * pedido=malloc(sizeof(t_pedido));
 	t_header * encabezado=malloc(sizeof(t_header));
 	int offset=0;
@@ -590,12 +633,9 @@ void enviar_guardar_pedido   (char* p_ip,int p_puerto){
 	encabezado->size=size_buffer;
 	encabezado->id_proceso=1;
 	encabezado->modulo=2;
-	encabezado->nro_msg=GUARDAR_PEDIDO;
+	encabezado->nro_msg=nro_msg;
 
-	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
-
-	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
-
+	return encabezado;
 }
 
 t_pedido * recibir_pedido  (void * payload         ){
