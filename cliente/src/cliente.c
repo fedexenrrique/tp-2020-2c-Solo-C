@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 			case CONFIRMAR_PEDIDO:
 
 				printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO  \n");
-				// enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				enviar_confirmar_pedido(g_ip_comanda, g_puerto_comanda);
 				break;
 
 			case PLATO_LISTO:
@@ -108,13 +108,13 @@ int main(int argc, char **argv) {
 			case OBTENER_PEDIDO:
 
 				printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                    \n");
-				// enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda);
 				break;
 
 			case FINALIZAR_PEDIDO:
 
 				printf(" 13- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                      \n");
-				// enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				enviar_finalizar_pedido(g_ip_comanda, g_puerto_comanda);
 				break;
 
 			default:
