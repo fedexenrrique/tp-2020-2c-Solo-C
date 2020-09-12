@@ -8,7 +8,6 @@
 #ifndef RESTAURANTE_H_
 #define RESTAURANTE_H_
 
-#include "serializar.h"
 #include "config_restaurante.h"
 
 
