@@ -80,12 +80,13 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 	switch ( header_recibido->nro_msg ) {
 	case CONSULTAR_RESTAURANTES:
-		recibir_consultar_restaurante_y_responder( *((int*)p_socket_aceptado) );
+		recibir_consultar_restaurante_y_responder( socket_aceptado );
 		break;
 	case SELECCIONAR_RESTAURANTE:
 		responder_seleccionar_restaurante( socket_aceptado, header_recibido->size, header_recibido->payload );
 		break;
 	case CONSULTAR_PLATOS:
+		responder_consultar_platos( socket_aceptado, g_platos_default );
 		break;
 	case CREAR_PEDIDO:
 		break;

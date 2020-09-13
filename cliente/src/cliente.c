@@ -48,6 +48,8 @@ int main(int argc, char **argv) {
     		    
 				case CONSULTAR_PLATOS:
     		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
+    		    	enviar_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
+
 		    		break;
 
 				case CREAR_PEDIDO:

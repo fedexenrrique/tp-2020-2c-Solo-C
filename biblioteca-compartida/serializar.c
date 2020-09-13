@@ -8,8 +8,6 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 
 	t_list * _recibir_lista_restaurantes( int p_conexion ) {
 
-		printf("Por recibir lista de restaurantes.");
-
 		t_header * header_restaurantes = recibir_buffer( p_conexion );
 
 		t_list   * lista_restaurantes;
@@ -17,6 +15,7 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 		if ( header_restaurantes->size > 0 ) {
 
 			lista_restaurantes = list_create();
+
 			int despla = 0;
 
 			int cantidad_restaurantes = 0;
@@ -25,7 +24,7 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 
 			despla += sizeof(uint32_t);
 
-			for ( int i = 0; i < 4; i++ ) {
+			for ( int i = 0; i < cantidad_restaurantes; i++ ) {
 
 				uint32_t act_size;
 
@@ -550,6 +549,157 @@ void responder_seleccionar_restaurante( int socket_cliente, int p_size, void * p
 	header_response.payload    = NULL;
 
 	enviar_buffer( socket_cliente, &header_response);
+
+}
+
+t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process ) {
+
+	t_list * _recibir_lista_platos( int p_conexion ) {
+
+		t_header * header_restaurantes = recibir_buffer( p_conexion );
+
+		printf( "Módulo:       %d.\n" , header_restaurantes->modulo     );
+		printf( "ID Proceso:   %d.\n" , header_restaurantes->id_proceso );
+		printf( "Nro. mensaje: %d.\n" , header_restaurantes->nro_msg    );
+		printf( "Bytes:        %d.\n" , header_restaurantes->size       );
+
+		t_list   * lista_platos;
+
+		if ( header_restaurantes->nro_msg != CONSULTAR_PLATOS ) {
+
+			perror("No es la respuesta esperada.");
+			exit(-1);
+
+		}
+
+		if ( header_restaurantes->size > 0 ) {
+
+			lista_platos = list_create();
+
+			int despla = 0;
+
+			int cantidad_platos = 0;
+
+			memcpy( &cantidad_platos, header_restaurantes->payload + despla, sizeof(uint32_t) );
+
+			despla += sizeof(uint32_t);
+
+			for ( int i = 0; i < cantidad_platos; i++ ) {
+
+				uint32_t act_size;
+
+				memcpy( &act_size    , header_restaurantes->payload + despla, sizeof(uint32_t) );
+				despla += sizeof(uint32_t);
+
+				char * nombre_plato = malloc(act_size + 1);
+
+				memcpy( nombre_plato , header_restaurantes->payload + despla, act_size );
+				despla += act_size;
+
+				nombre_plato[act_size] = '\0';
+
+				printf("\n%s\n", nombre_plato);
+
+				list_add(lista_platos, nombre_plato);
+
+			}
+
+			return lista_platos;
+
+		} else return NULL;
+
+	}
+
+	t_header l_header;
+
+	l_header.modulo     = CLIENTE;
+	l_header.id_proceso = p_id_process;
+	l_header.nro_msg    = CONSULTAR_PLATOS;
+	l_header.size       = 0;
+	l_header.payload    = NULL;
+
+	int conexion = crear_socket_y_conectar(p_ip, p_puerto);
+
+	if ( enviar_buffer( conexion, &l_header ) ) {
+
+		t_list * list_restaurantes = _recibir_lista_platos(conexion);
+
+		close(conexion);
+
+		return list_restaurantes;
+
+	} else {
+
+		close(conexion);
+
+		return NULL;
+
+	}
+
+}
+
+void responder_consultar_platos( int socket_cliente, char ** p_platos ) {
+
+	void * buffer_response;
+	uint32_t buffer_size;
+	uint32_t despla = 0;
+
+	uint32_t cantidad_platos = 0;
+	uint32_t size_nombres    = 0;
+
+	uint32_t aux = 0;
+
+	while ( p_platos[aux] != NULL ) {
+
+		cantidad_platos ++;
+
+		size_nombres    += string_length( p_platos[aux] );
+
+		printf("\nEl plato actual es: %s.\n", p_platos[aux] );
+
+		aux ++;
+
+	}
+
+	buffer_size = sizeof(uint32_t)
+					+ cantidad_platos * sizeof(uint32_t)
+					+ size_nombres;
+
+	buffer_response = malloc(buffer_size);
+
+	memcpy( buffer_response + despla, &cantidad_platos, sizeof(uint32_t) );
+
+	despla += sizeof(uint32_t);
+
+	aux = 0;
+
+	while ( p_platos[aux] != NULL ) {
+
+		uint32_t l_size = (uint32_t) string_length( p_platos[aux] );
+
+		memcpy( buffer_response + despla , &l_size , sizeof( uint32_t ) );
+
+		despla += sizeof( uint32_t );
+
+		memcpy( buffer_response + despla , p_platos[aux] , string_length( p_platos[aux] ) );
+
+		despla += string_length( p_platos[aux] );
+
+		aux ++;
+
+	}
+
+	t_header header_response;
+
+	header_response.modulo     = APP;
+	header_response.id_proceso = 0;
+	header_response.nro_msg    = CONSULTAR_PLATOS;
+	header_response.size       = buffer_size;
+	header_response.payload    = buffer_response;
+
+	enviar_buffer( socket_cliente, &header_response);
+
+	free( buffer_response );
 
 }
 
