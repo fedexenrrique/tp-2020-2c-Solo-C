@@ -53,6 +53,9 @@ dkms.conf
 
 # configuraciones de eclipse
 
+.cproject
+language.settings.xml
+
 app/.cproject
 app/.settings/language.settings.xml
 cliente/.cproject

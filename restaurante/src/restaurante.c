@@ -53,100 +53,100 @@ void* serializarPedidoRestaurante(t_header2* header) {
 }
 
 int main(void) {
+
 	prueba_biblioteca_compartida();
-	int conf = cargarConfiguracion();
 
-	int socketCliente = crear_socket_y_conectar(configuracion->ipSindicato,
-			configuracion->puertoSindicato);
+	cargar_config();
 
-	tSolicitudInfoResto* info = malloc(sizeof(tSolicitudInfoResto));
+	obtener_info_restaurante();
 
-	info->nombreRestaurante = string_new();
+	return 1;
+}
 
-	string_append(&info->nombreRestaurante, "RESTO_PRUEBA");
+void obtener_info_restaurante() {
+	int socket_sindicato = crear_socket_y_conectar(ip_sindicato,
+			puerto_sindicato);
+
+	t_solicitud_info_restaurante* info_restaurante = malloc(
+			sizeof(t_solicitud_info_restaurante));
+
+	info_restaurante->nombre_restaurante = string_new();
+	//	string_append(&info_restaurante->nombre_restaurante, "RESTO PRUEBA");
+	string_append(&info_restaurante->nombre_restaurante, nombre_restaurante);
+	log_info("Nombre restaurante: %s\n",nombre_restaurante);
 
 	//Armo el header + payload
-
-	t_header2* header = malloc(sizeof(t_header2));
-
-	int bufferSize = strlen(info->nombreRestaurante);
-
+	char* buffer = malloc(100);
+	t_header* header= malloc(sizeof(t_header));
 	header->modulo = 4;
 	header->id_proceso = 0;
 	header->nro_msg = 3;
 	header->size = 0;
-	header->payload = malloc(bufferSize);
+	header->payload = string_new();
 
-	header->size = strlen(info->nombreRestaurante);
+	string_append(&header->payload, info_restaurante->nombre_restaurante);
+	header->size = strlen(header->payload);
 
-	//header->size=strlen(header->payload)-1;
-	int streamSize = sizeof(uint32_t) * 4 + header->size;
+	int payload_a_enviar = serializar(buffer, "%z%z%z%z%s", header->modulo,
+			header->id_proceso, header->nro_msg, header->size, header->payload);
+	int buffer_size = payload_a_enviar - 1;
 
-	memcpy(header->payload, info->nombreRestaurante, bufferSize);
-
-//	int bytesAEnviarPaquete = serializar(stream, "%z%z%z%z%s", header->modulo,
-//			header->id_proceso, header->nro_msg, header->size,
-//			info->nombreRestaurante);
-
-	void* streamSerializado= serializarPedidoRestaurante(header);
-
-	//int bufferSize=bytesAEnviarPaquete-1;
-	printf("BUFFER SIZE: %d\n", bufferSize);
-
-	if (-1 == send(socketCliente, streamSerializado, streamSize, 0)) {
-		log_error(logger, "Error al enviar pedido de infor Resturante");
+	if (-1 == send(socket_sindicato, buffer, buffer_size, 0)) {
+		log_error(logger_restaurante,
+				"Error al enviar pedido de infor Resturante");
 	}
 
-
-	//Recibo info del restaurante
-	t_header2* headerRecibido = malloc(sizeof(t_header2));
+//Recibo info del restaurante
+	t_header* headerRecibido = malloc(sizeof(t_header2));
 	uint32_t modulo, idProceso, nroMsg, size;
 
-
-	recv(socketCliente,&modulo,sizeof(uint32_t),MSG_WAITALL);
-	recv(socketCliente, &idProceso, sizeof(uint32_t), MSG_WAITALL);
-	recv(socketCliente, &nroMsg, sizeof(uint32_t), MSG_WAITALL);
-	recv(socketCliente, &size, sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_sindicato, &modulo, sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_sindicato, &idProceso, sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_sindicato, &nroMsg, sizeof(uint32_t), MSG_WAITALL);
+	recv(socket_sindicato, &size, sizeof(uint32_t), MSG_WAITALL);
 
 	headerRecibido->id_proceso = idProceso;
 	headerRecibido->modulo = modulo;
 	headerRecibido->nro_msg = nroMsg;
 	headerRecibido->size = size;
 	headerRecibido->payload = malloc(headerRecibido->size);
-	tMensajeInfoRestaurante* infoRestaurante= malloc(sizeof(tMensajeInfoRestaurante));
+	tMensajeInfoRestaurante* infoRestaurante = malloc(
+			sizeof(tMensajeInfoRestaurante));
 
 	if (size > 0) {
-		recibirInfoRestaurante(infoRestaurante,socketCliente);
+		recibirInfoRestaurante(infoRestaurante, socket_sindicato);
 	}
 
-	log_info(logger,infoRestaurante->platos);
-	free(info);
-//	free(header);
-//	free(buffer);
+	log_info(logger, infoRestaurante->platos);
 
-	return EXIT_SUCCESS;
+
 }
 
+void recibirInfoRestaurante(tMensajeInfoRestaurante* infoRestaurante,
+		int socketCliente) {
+	uint32_t cantPosicion, cantAfinidadesCocineros, cantPlatos,
+			cantPreciosPlatos;
 
-void recibirInfoRestaurante(tMensajeInfoRestaurante* infoRestaurante, int socketCliente){
-	uint32_t cantPosicion,cantAfinidadesCocineros, cantPlatos,cantPreciosPlatos;
-
-	recv(socketCliente,&infoRestaurante->cantCocineros,sizeof(uint32_t),MSG_WAITALL);
+	recv(socketCliente, &infoRestaurante->cantCocineros, sizeof(uint32_t),
+			MSG_WAITALL);
 
 	recv(socketCliente, &cantPosicion, sizeof(uint32_t), MSG_WAITALL);
 	recv(socketCliente, infoRestaurante->posicion, cantPosicion, MSG_WAITALL);
 
-	recv(socketCliente, &cantAfinidadesCocineros, sizeof(uint32_t), MSG_WAITALL);
-	recv(socketCliente, infoRestaurante->afinidadCocineros, cantAfinidadesCocineros, MSG_WAITALL);
+	recv(socketCliente, &cantAfinidadesCocineros, sizeof(uint32_t),
+			MSG_WAITALL);
+	recv(socketCliente, infoRestaurante->afinidadCocineros,
+			cantAfinidadesCocineros, MSG_WAITALL);
 
 	recv(socketCliente, &cantPlatos, sizeof(uint32_t), MSG_WAITALL);
 	recv(socketCliente, infoRestaurante->platos, cantPlatos, MSG_WAITALL);
 
 	recv(socketCliente, &cantPreciosPlatos, sizeof(uint32_t), MSG_WAITALL);
-	recv(socketCliente, infoRestaurante->preciosPlatos, cantPreciosPlatos, MSG_WAITALL);
+	recv(socketCliente, infoRestaurante->preciosPlatos, cantPreciosPlatos,
+			MSG_WAITALL);
 
-	recv(socketCliente, &infoRestaurante->cantidadHornos, sizeof(uint32_t), MSG_WAITALL);
+	recv(socketCliente, &infoRestaurante->cantidadHornos, sizeof(uint32_t),
+			MSG_WAITALL);
 
 }
-
 

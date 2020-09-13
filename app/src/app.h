@@ -22,7 +22,7 @@ t_config * config;
 
 char *  g_ip_comanda;                    // IP_COMANDA=127.0.0.1
 int     g_puerto_comanda;                // PUERTO_COMANDA=5001
-int     g_puerto_escucha;                // PUERTO_ESCUCHA=5004
+char *  g_puerto_escucha;                // PUERTO_ESCUCHA=5004
 int     g_retardo_ciclo_cpu;             // RETARDO_CICLO_CPU
 int     g_grado_de_multiprocesamiento;   // GRADO_DE_MULTIPROCESAMIENTO=1
 

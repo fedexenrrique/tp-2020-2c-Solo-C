@@ -8,11 +8,13 @@ int main(void) {
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
-	int socket_cliente = crear_socket_escucha("127.0.0.1", g_puerto_escucha);
+	int socket_cliente = crear_socket_escucha("127.0.0.1", g_puerto_escucha );
 
 	int socket_aceptado = aceptar_conexion(socket_cliente);
 
 	if ( socket_aceptado > 0) recibir_consultar_restaurante_y_responder(socket_aceptado);
+
+	close(socket_aceptado);
 
 	return EXIT_SUCCESS;
 
@@ -24,7 +26,7 @@ t_config * leer_config(void) {
 
 	if ( config_has_property( config, "IP_COMANDA"                  ) ) g_ip_comanda                  = config_get_string_value(config, "IP_COMANDA");
 	if ( config_has_property( config, "PUERTO_COMANDA"              ) ) g_puerto_comanda              = config_get_int_value(config, "PUERTO_COMANDA");
-	if ( config_has_property( config, "PUERTO_ESCUCHA"              ) ) g_puerto_escucha              = config_get_int_value(config, "PUERTO_ESCUCHA");
+	if ( config_has_property( config, "PUERTO_ESCUCHA"              ) ) g_puerto_escucha              = config_get_string_value(config, "PUERTO_ESCUCHA");
 	if ( config_has_property( config, "RETARDO_CICLO_CPU"           ) ) g_retardo_ciclo_cpu           = config_get_int_value(config, "RETARDO_CICLO_CPU");
 	if ( config_has_property( config, "GRADO_DE_MULTIPROCESAMIENTO" ) ) g_grado_de_multiprocesamiento = config_get_int_value(config, "GRADO_DE_MULTIPROCESAMIENTO");
 

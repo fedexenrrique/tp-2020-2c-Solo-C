@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 	free(pathBloques);
 	free(pathMetadata);
 
-	return EXIT_SUCCESS;
+	return 1;
 }
 
 void handleConexion(int socketCliente) {
@@ -118,7 +118,7 @@ void handleConexion(int socketCliente) {
 	printf("Nombre Restaurante Recibido: %s\n", headerRecibido->payload);
 
 	//Armo respuesta al restaurante
-	t_header2* headerRespuesta = malloc(sizeof(t_header2));
+	t_header* headerRespuesta = malloc(sizeof(t_header));
 
 
 	tMensajeInfoRestaurante* info = malloc(sizeof(tMensajeInfoRestaurante));

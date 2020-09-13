@@ -8,24 +8,13 @@
 #ifndef RESTAURANTE_H_
 #define RESTAURANTE_H_
 
-#include "serializar.h"
+#include "config_restaurante.h"
 
 
 
 typedef struct{
-	char* puertoEscucha;
-	char* ipSindicato;
-	int puertoSindicato;
-	char* ipApp;
-	int puertoApp;
-	int quantum;
-	char* pathArchivoLog;
-	char* algoritmoPlanificacion;
-	char* nombreRestaurante;
-
-
-}tConfiguracion;
-
+	char	* 	nombre_restaurante;
+}t_solicitud_info_restaurante;
 
 typedef struct{
 
@@ -50,9 +39,17 @@ typedef struct{
 	uint32_t cantidadHornos;
 }tMensajeInfoRestaurante;
 
-tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;
+typedef struct{
+	int			cantidad_cocineros;
+	char	*	posicion;
+	char	*	afinidad_cocineros;
+	char	*	platos;
+	char	*	precio_platos;
+	int			cantidad_hornos;
+}t_respuesta_info_restaurante;
+
 
 void recibirInfoRestaurante(tMensajeInfoRestaurante* infoRestaurante,int socketCliente);
 
