@@ -8,7 +8,7 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include "serializar.h"
+#include "memoria.h"
 
 
 int       iniciar_comanda();
