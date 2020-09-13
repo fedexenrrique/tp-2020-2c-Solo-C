@@ -19,6 +19,12 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 			lista_restaurantes = list_create();
 			int despla = 0;
 
+			int cantidad_restaurantes = 0;
+
+			memcpy( &cantidad_restaurantes, header_restaurantes->payload + despla, sizeof(uint32_t) );
+
+			despla += sizeof(uint32_t);
+
 			for ( int i = 0; i < 4; i++ ) {
 
 				uint32_t act_size;
@@ -52,6 +58,8 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 	l_header.nro_msg    = CONSULTAR_RESTAURANTES;
 	l_header.size       = 0;
 	l_header.payload    = NULL;
+
+	printf( "Se va a enviar la consulta a la ip %s y puerto %s.", p_ip, p_puerto );
 
 	int conexion = crear_socket_y_conectar(p_ip, p_puerto);
 
