@@ -41,6 +41,9 @@ int main(int argc, char **argv) {
     		    
 				case SELECCIONAR_RESTAURANTE:
     		    	printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP \n");
+    		    	( enviar_seleccionar_restaurante(g_ip_app, g_puerto_app, g_id_proceso, argv[3]) ) ?
+    		    			printf("El restaurante está en lista y se seleccionó.") :
+							printf("El restaurante no es válido.") ;
 		    		break;
     		    
 				case CONSULTAR_PLATOS:
@@ -232,7 +235,7 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "PUERTO_SINDICATO"   ) )  g_puerto_sindicato   = config_get_int_value   (config, "PUERTO_SINDICATO");
 
 	if ( config_has_property( config, "IP_APP"             ) )  g_ip_app             = config_get_string_value(config, "IP_APP");
-	if ( config_has_property( config, "PUERTO_APP"         ) )  g_puerto_app         = config_get_int_value   (config, "PUERTO_APP");
+	if ( config_has_property( config, "PUERTO_APP"         ) )  g_puerto_app         = config_get_string_value(config, "PUERTO_APP");
 
 	if ( config_has_property( config, "ARCHIVO_LOG"        ) )  g_log_path           = config_get_string_value(config, "ARCHIVO_LOG");
 	if ( config_has_property( config, "POSICION_X"         ) )  g_posicion_x         = config_get_int_value   (config, "POSICION_X");

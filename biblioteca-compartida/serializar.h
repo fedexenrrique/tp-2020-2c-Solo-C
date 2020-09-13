@@ -111,25 +111,28 @@ t_config * config;
 int serializar(void* buffer, const char* format, ...);
 int deserializar(void* buffer, const char* format, ...);
 
-t_list *   enviar_consultar_restaurante   (char* p_ip,int p_puerto);
+t_list *   enviar_consultar_restaurante   (char* p_ip,char* p_puerto);
 void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
-void       enviar_guardar_pedido   (char* p_ip,int p_puerto);
-void       enviar_obtener_pedido   (char* p_ip,int p_puerto);
-void       enviar_confirmar_pedido (char* p_ip,int p_puerto);
-void       enviar_finalizar_pedido (char* p_ip,int p_puerto);
+void       enviar_guardar_pedido   (char* p_ip,char* p_puerto);
+void       enviar_obtener_pedido   (char* p_ip,char* p_puerto);
+void       enviar_confirmar_pedido (char* p_ip,char* p_puerto);
+void       enviar_finalizar_pedido (char* p_ip,char* p_puerto);
 t_header * serializar_pedido       (uint32_t nro_msg       );
 t_pedido * recibir_pedido          (void * payload         );
 
-void 	          enviar_guardar_plato    (char* p_ip,int p_puerto);
+bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_process, char * p_restaurante );
+void recibir_seleccionar_restaurante_y_responder( int socket_cliente );
+
+void 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
-void 	        enviar_plato_listo      (char* p_ip,int p_puerto);
+void 	        enviar_plato_listo      (char* p_ip,char* p_puerto);
 t_plato_listo *	recibir_plato_listo     (void * payload         );
 
 void       prueba_biblioteca_compartida   (void                   );
 
-int        crear_socket_y_conectar        (char* ip, int puerto   );
+int        crear_socket_y_conectar        (char* ip, char* puerto   );
 int        crear_socket_escucha           ( char * p_ip, char * p_puerto );
 int        aceptar_conexion               ( int p_socket_para_escuchar   );
 int        recibir_confirmacion           ( int   socket_cliente  );

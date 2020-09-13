@@ -12,7 +12,40 @@ int main(void) {
 
 	int socket_aceptado = aceptar_conexion(socket_cliente);
 
-	if ( socket_aceptado > 0) recibir_consultar_restaurante_y_responder(socket_aceptado);
+	if ( socket_aceptado > 0) recibir_buffer( socket_aceptado );
+
+	t_header * header_recibido = recibir_buffer( socket_cliente );
+
+	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
+	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
+	printf( "Nro. mensaje: %d.\n" , header_recibido->nro_msg    );
+	printf( "Bytes:        %d.\n" , header_recibido->size       );
+
+	switch ( header_recibido->nro_msg ) {
+	case CONSULTAR_RESTAURANTES:
+		recibir_consultar_restaurante_y_responder(socket_aceptado);
+		break;
+	case SELECCIONAR_RESTAURANTE:
+		break;
+	case CONSULTAR_PLATOS:
+		break;
+	case CREAR_PEDIDO:
+		break;
+	case ANIADIR_PLATO:
+		break;
+	case CONFIRMAR_PEDIDO:
+		break;
+	case PLATO_LISTO:
+		break;
+	case CONSULTAR_PEDIDO:
+		break;
+	default:
+		printf("Mensaje no compatible con módulo APP.");
+	}
+
+	if ( header_recibido->size > 0 || header_recibido->payload != NULL )
+
+		free( header_recibido->payload );
 
 	close(socket_aceptado);
 
