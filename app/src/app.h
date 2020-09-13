@@ -8,7 +8,7 @@
 #ifndef APP_H_
 #define APP_H_
 
-#include "serializar.h"
+#include <serializar.h>
 
 #include <commons/log.h>
 #include <commons/config.h>
@@ -45,5 +45,9 @@ t_config * leer_config         ( void );
 void       escuchar_cliente    ( int socket_cliente );
 
 t_list   * obtener_restaurante_hardcodeado();
+
+void procesamiento_mensaje( void * socket_cliente );
+
+void sigint(int a);
 
 #endif /* APP_H_ */

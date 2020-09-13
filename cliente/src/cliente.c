@@ -42,12 +42,14 @@ int main(int argc, char **argv) {
 				case SELECCIONAR_RESTAURANTE:
     		    	printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP \n");
     		    	( enviar_seleccionar_restaurante(g_ip_app, g_puerto_app, g_id_proceso, argv[3]) ) ?
-    		    			printf("El restaurante está en lista y se seleccionó.") :
-							printf("El restaurante no es válido.") ;
+    		    			printf("El restaurante está en lista y se seleccionó.\n") :
+							printf("El restaurante no es válido.\n") ;
 		    		break;
     		    
 				case CONSULTAR_PLATOS:
     		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
+    		    	enviar_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
+
 		    		break;
 
 				case CREAR_PEDIDO:

@@ -5,51 +5,37 @@ int main(void) {
 
 	prueba_biblioteca_compartida();
 
+	g_sockets_abiertos = list_create();
+
+	signal(SIGINT, sigint);
+
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
-	int socket_cliente = crear_socket_escucha("127.0.0.1", g_puerto_escucha );
+	g_socket_cliente = crear_socket_escucha("127.0.0.1", g_puerto_escucha );
 
-	int socket_aceptado = aceptar_conexion(socket_cliente);
+	while (1) {
 
-	if ( socket_aceptado > 0) recibir_buffer( socket_aceptado );
+		uint32_t socket_aceptado = aceptar_conexion( g_socket_cliente );
 
-	t_header * header_recibido = recibir_buffer( socket_cliente );
+		uint32_t * _socket_aceptado = malloc( sizeof(uint32_t) );
 
-	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
-	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
-	printf( "Nro. mensaje: %d.\n" , header_recibido->nro_msg    );
-	printf( "Bytes:        %d.\n" , header_recibido->size       );
+		memcpy( _socket_aceptado, &socket_aceptado, sizeof(uint32_t) );
 
-	switch ( header_recibido->nro_msg ) {
-	case CONSULTAR_RESTAURANTES:
-		recibir_consultar_restaurante_y_responder(socket_aceptado);
-		break;
-	case SELECCIONAR_RESTAURANTE:
-		break;
-	case CONSULTAR_PLATOS:
-		break;
-	case CREAR_PEDIDO:
-		break;
-	case ANIADIR_PLATO:
-		break;
-	case CONFIRMAR_PEDIDO:
-		break;
-	case PLATO_LISTO:
-		break;
-	case CONSULTAR_PEDIDO:
-		break;
-	default:
-		printf("Mensaje no compatible con módulo APP.");
+		if ( socket_aceptado <= 0) {
+
+			perror("Error al aceptar el socket.");
+			exit(-1);
+
+		}
+
+		list_add( g_sockets_abiertos, _socket_aceptado );
+
+		pthread_t  thread_app;
+
+		pthread_create(&thread_app,NULL,(void*)&procesamiento_mensaje,(void*)(&socket_aceptado));
+
 	}
-
-	if ( header_recibido->size > 0 || header_recibido->payload != NULL )
-
-		free( header_recibido->payload );
-
-	close(socket_aceptado);
-
-	return EXIT_SUCCESS;
 
 }
 
@@ -76,6 +62,73 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_Y"     ) ) g_posicion_rest_default_y     = config_get_int_value(config, "POSICION_REST_DEFAULT_Y");
 
 	return config;
+
+}
+
+void procesamiento_mensaje( void * p_socket_aceptado ) {
+
+	int socket_aceptado = * ( (int*) p_socket_aceptado );
+
+	t_header * header_recibido = recibir_buffer( socket_aceptado );
+
+	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
+	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
+	printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
+	printf( "Bytes:        %d.\n" , header_recibido->size       );
+
+	mem_hexdump(header_recibido->payload, header_recibido->size);
+
+	switch ( header_recibido->nro_msg ) {
+	case CONSULTAR_RESTAURANTES:
+		recibir_consultar_restaurante_y_responder( socket_aceptado );
+		break;
+	case SELECCIONAR_RESTAURANTE:
+		responder_seleccionar_restaurante( socket_aceptado, header_recibido->size, header_recibido->payload );
+		break;
+	case CONSULTAR_PLATOS:
+		responder_consultar_platos( socket_aceptado, g_platos_default );
+		break;
+	case CREAR_PEDIDO:
+		break;
+	case ANIADIR_PLATO:
+		break;
+	case CONFIRMAR_PEDIDO:
+		break;
+	case PLATO_LISTO:
+		break;
+	case CONSULTAR_PEDIDO:
+		break;
+	default:
+		printf("Mensaje no compatible con módulo APP.\n");
+	}
+
+	if ( header_recibido->size > 0 || header_recibido->payload != NULL )
+
+		free( header_recibido->payload );
+
+	close( socket_aceptado );
+
+}
+
+void sigint(int a) {
+
+	/*
+	void _cerrar_socket(void * p_elem) {
+
+		int * socket = (int*)p_elem;
+		close( * socket );
+
+	}
+
+	printf ("\nCerrando File Descriptor abiertos.\n");
+
+	list_iterate( g_sockets_abiertos, _cerrar_socket );
+*/
+	log_destroy(logger);
+	config_destroy(config);
+	close( g_socket_cliente );
+
+	exit(1);
 
 }
 
