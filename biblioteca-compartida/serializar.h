@@ -48,20 +48,22 @@ typedef enum {
 
 typedef enum {
 
-    CONSULTAR_RESTAURANTES  =  1,
-    SELECCIONAR_RESTAURANTE =  2,
-    OBTENER_RESTAURANTES    =  3,
-    CONSULTAR_PLATOS        =  4,
-    CREAR_PEDIDO            =  5,
-    GUARDAR_PEDIDO          =  6,
-    ANIADIR_PLATO           =  7,
-    GUARDAR_PLATO           =  8,
-    CONFIRMAR_PEDIDO        =  9,
-    PLATO_LISTO             = 10,
-    CONSULTAR_PEDIDO        = 11,
-    OBTENER_PEDIDO          = 12,
-    FINALIZAR_PEDIDO        = 13,
-    TOMAR_PEDIDO            = 14,
+    CONSULTAR_RESTAURANTES              =  1,
+    SELECCIONAR_RESTAURANTE             =  2,
+    OBTENER_RESTAURANTES                =  3,
+    CONSULTAR_PLATOS                    =  4,
+    CREAR_PEDIDO                        =  5,
+    GUARDAR_PEDIDO                      =  6,
+    ANIADIR_PLATO                       =  7,
+    GUARDAR_PLATO                       =  8,
+    CONFIRMAR_PEDIDO                    =  9,
+    PLATO_LISTO                         = 10,
+    CONSULTAR_PEDIDO                    = 11,
+    OBTENER_PEDIDO                      = 12,
+    FINALIZAR_PEDIDO                    = 13,
+    TOMAR_PEDIDO                        = 14,
+    SELECCIONAR_RESTAURANTE_OK          = 102,
+    SELECCIONAR_RESTAURANTE_FAIL        = 202,
 
 } cod_msg;
 
