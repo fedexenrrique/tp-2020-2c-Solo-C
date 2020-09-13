@@ -111,6 +111,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 void sigint(int a) {
 
+	/*
 	void _cerrar_socket(void * p_elem) {
 
 		int * socket = (int*)p_elem;
@@ -121,7 +122,7 @@ void sigint(int a) {
 	printf ("\nCerrando File Descriptor abiertos.\n");
 
 	list_iterate( g_sockets_abiertos, _cerrar_socket );
-
+*/
 	log_destroy(logger);
 	config_destroy(config);
 	close( g_socket_cliente );

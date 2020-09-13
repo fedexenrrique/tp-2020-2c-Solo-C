@@ -469,11 +469,15 @@ bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_proces
 
 	int conexion = crear_socket_y_conectar(p_ip, p_puerto);
 
-	if ( enviar_buffer( conexion, &l_header ) )
+	if ( enviar_buffer( conexion, &l_header ) ) {
 
-		return _recibir_confirmacion_seleccionar_restaurante(conexion);
+		bool resultado = _recibir_confirmacion_seleccionar_restaurante(conexion);
 
-	else {
+		close(conexion);
+
+		return resultado;
+
+	} else {
 
 		close(conexion);
 
