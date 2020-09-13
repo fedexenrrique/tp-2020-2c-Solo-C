@@ -408,6 +408,162 @@ t_header * recibir_buffer ( int socket_cliente ) {
 
 }
 
+t_list * enviar_seleccionar_restaurante( char* p_ip, int p_puerto, int p_id_process, char * p_restaurante ) {
+
+	t_list * _recibir_lista_restaurantes( int p_conexion ) {
+
+		printf("Por recibir lista de restaurantes.");
+
+		t_header * header_restaurantes = recibir_buffer( p_conexion );
+
+		t_list   * lista_restaurantes;
+
+		if ( header_restaurantes->size > 0 ) {
+
+			lista_restaurantes = list_create();
+			int despla = 0;
+
+			for ( int i = 0; i < 4; i++ ) {
+
+				uint32_t act_size;
+
+				memcpy( &act_size    , header_restaurantes->payload + despla, sizeof(uint32_t) );
+				despla += sizeof(uint32_t);
+
+				char * nombre_resto = malloc(act_size + 1);
+
+				memcpy( nombre_resto , header_restaurantes->payload + despla, act_size );
+				despla += act_size;
+
+				nombre_resto[act_size] = '\0';
+
+				printf("\n%s\n", nombre_resto);
+
+				list_add(lista_restaurantes, nombre_resto);
+
+			}
+
+			return lista_restaurantes;
+
+		} else return NULL;
+
+	}
+
+	int size_resto = string_length( p_restaurante );
+
+	void * l_payload = malloc( size_resto );
+
+	memcpy( l_payload, p_restaurante, size_resto );
+
+	t_header l_header;
+
+	l_header.modulo     = CLIENTE;
+	l_header.id_proceso = p_id_process;
+	l_header.nro_msg    = SELECCIONAR_RESTAURANTE;
+	l_header.size       = size_resto;
+	l_header.payload    = l_payload;
+
+	int conexion = crear_socket_y_conectar(p_ip, p_puerto);
+
+	if ( enviar_buffer( conexion, &l_header ) )
+
+		return _recibir_lista_restaurantes(conexion);
+
+	else {
+
+		close(conexion);
+
+		return NULL;
+
+	}
+
+}
+
+void recibir_seleccionar_restaurante_y_responder( int socket_cliente ) {
+
+	void * buffer_response;
+	int    buffer_size;
+	int    despla = 0;
+
+	int _aux_longitud_acumulada( t_list * p_list ) {
+
+		int total = 0;
+
+		void _aux_longitud_acumulada_iter( void * p_elem ) {
+
+			total += string_length( (char *) p_elem );
+
+		}
+
+		list_iterate( p_list, _aux_longitud_acumulada_iter );
+
+		return total;
+
+	}
+
+	void _aux_mostrar_restaurantes( void * p_elem ) {
+
+		char * elem = (char *) p_elem;
+		printf( "Palabra: '%s'; Longitud: %d\n", elem, string_length(elem) );
+
+	}
+
+	void _aux_cargar_buffer( void * p_elem ) {
+
+		int length = string_length((char *) p_elem);
+
+		memcpy( buffer_response + despla, &length, sizeof(uint32_t) );
+
+		despla += sizeof(uint32_t);
+
+		memcpy( buffer_response + despla, p_elem, string_length((char *) p_elem) );
+
+		despla += string_length((char *) p_elem);
+
+	}
+
+	t_list * obtener_restaurante_hardcodeado() {
+
+		t_list * l_restaurantes = list_create();
+
+		list_add( l_restaurantes, "McDonals" );
+		list_add( l_restaurantes, "KFC" );
+		list_add( l_restaurantes, "Wendy's" );
+		list_add( l_restaurantes, "GreenEat" );
+
+		return l_restaurantes;
+
+	}
+
+	t_header * header_recibido = recibir_buffer( socket_cliente );
+
+	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
+	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
+	printf( "Nro. mensaje: %d.\n" , header_recibido->nro_msg    );
+	printf( "Bytes:        %d.\n" , header_recibido->size       );
+
+	t_list * lista_de_restaurante = obtener_restaurante_hardcodeado();
+
+	buffer_size = list_size(lista_de_restaurante) * sizeof(uint32_t) + _aux_longitud_acumulada(lista_de_restaurante);
+
+	buffer_response = malloc(buffer_size);
+
+	list_iterate( lista_de_restaurante, _aux_cargar_buffer );
+
+	list_iterate( lista_de_restaurante, _aux_mostrar_restaurantes );
+
+	t_header header_response;
+
+	header_response.modulo     = APP;
+	header_response.id_proceso = 0;
+	header_response.nro_msg    = CONSULTAR_RESTAURANTES;
+	header_response.size       = buffer_size;
+	header_response.payload    = buffer_response;
+
+	enviar_buffer( socket_cliente, &header_response);
+
+}
+
 void enviar_guardar_pedido   (char* p_ip,int p_puerto){
 
 	uint32_t nro_msg=GUARDAR_PEDIDO;

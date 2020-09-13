@@ -237,6 +237,7 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "ARCHIVO_LOG"        ) )  g_log_path           = config_get_string_value(config, "ARCHIVO_LOG");
 	if ( config_has_property( config, "POSICION_X"         ) )  g_posicion_x         = config_get_int_value   (config, "POSICION_X");
 	if ( config_has_property( config, "POSICION_Y"         ) )  g_posicion_y         = config_get_int_value   (config, "POSICION_Y");
+	if ( config_has_property( config, "ID_PROCESO"         ) )  g_id_proceso         = config_get_int_value   (config, "ID_PROCESO");
 
 	return config;
 
