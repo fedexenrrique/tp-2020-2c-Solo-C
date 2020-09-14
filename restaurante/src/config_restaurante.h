@@ -27,6 +27,7 @@ void      		cargar_config	(void);
 int				config_valida	(t_config*);
 t_log 		*   iniciar_logger	(void);
 t_config	* 	leer_config		(void);
+void			limpiar_config	(void);
 
 
 

@@ -64,89 +64,87 @@ int main(void) {
 }
 
 void obtener_info_restaurante() {
-	int socket_sindicato = crear_socket_y_conectar(ip_sindicato,
-			puerto_sindicato);
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
+	t_solicitud_info_restaurante * solicitud_info = malloc(sizeof(t_solicitud_info_restaurante));
 
-	t_solicitud_info_restaurante* info_restaurante = malloc(
-			sizeof(t_solicitud_info_restaurante));
+	solicitud_info->nombre_restaurante = nombre_restaurante;
+	solicitud_info->size_nombre_restaurante = string_length(nombre_restaurante);
 
-	info_restaurante->nombre_restaurante = string_new();
-	//	string_append(&info_restaurante->nombre_restaurante, "RESTO PRUEBA");
-	string_append(&info_restaurante->nombre_restaurante, nombre_restaurante);
-	log_info("Nombre restaurante: %s\n",nombre_restaurante);
+	int size_buffer = sizeof(uint32_t) + solicitud_info->size_nombre_restaurante;
+	void * buffer = malloc(size_buffer);
 
-	//Armo el header + payload
-	char* buffer = malloc(100);
-	t_header* header= malloc(sizeof(t_header));
-	header->modulo = 4;
-	header->id_proceso = 0;
-	header->nro_msg = 3;
-	header->size = 0;
-	header->payload = string_new();
+	memcpy(buffer + offset, &solicitud_info->size_nombre_restaurante, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
 
-	string_append(&header->payload, info_restaurante->nombre_restaurante);
-	header->size = strlen(header->payload);
+	memcpy(buffer+offset, solicitud_info->nombre_restaurante, solicitud_info->size_nombre_restaurante);
 
-	int payload_a_enviar = serializar(buffer, "%z%z%z%z%s", header->modulo,
-			header->id_proceso, header->nro_msg, header->size, header->payload);
-	int buffer_size = payload_a_enviar - 1;
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = RESTAURANTE;
+	header->nro_msg = OBTENER_RESTAURANTES;
 
-	if (-1 == send(socket_sindicato, buffer, buffer_size, 0)) {
-		log_error(logger_restaurante,
-				"Error al enviar pedido de infor Resturante");
+	int conexion = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
+
+	if (enviar_buffer(conexion, header) == false) {
+		log_error(logger_restaurante, "No se pudo enviar el pedido de info del restaurante");
 	}
 
-//Recibo info del restaurante
-	t_header* headerRecibido = malloc(sizeof(t_header2));
-	uint32_t modulo, idProceso, nroMsg, size;
+	t_header * mensaje_recibido = recibir_buffer(conexion);
 
-	recv(socket_sindicato, &modulo, sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_sindicato, &idProceso, sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_sindicato, &nroMsg, sizeof(uint32_t), MSG_WAITALL);
-	recv(socket_sindicato, &size, sizeof(uint32_t), MSG_WAITALL);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo: %d", mensaje_recibido->modulo);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo con id: %d", mensaje_recibido->id_proceso);
+	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
+	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
 
-	headerRecibido->id_proceso = idProceso;
-	headerRecibido->modulo = modulo;
-	headerRecibido->nro_msg = nroMsg;
-	headerRecibido->size = size;
-	headerRecibido->payload = malloc(headerRecibido->size);
-	tMensajeInfoRestaurante* infoRestaurante = malloc(
-			sizeof(tMensajeInfoRestaurante));
+	t_respuesta_info_restaurante * respuesta_info = deserializar_respuesta_info(mensaje_recibido->payload);
 
-	if (size > 0) {
-		recibirInfoRestaurante(infoRestaurante, socket_sindicato);
-	}
-
-	log_info(logger, infoRestaurante->platos);
-
-
+	log_info(logger_restaurante, "Resturante cantidad cocineros: %d", respuesta_info->cantidad_cocineros);
+	log_info(logger_restaurante, "Resturante posicion x: %d", respuesta_info->posicion_x);
+	log_info(logger_restaurante, "Resturante posicion y: %d", respuesta_info->posicion_y);
+	log_info(logger_restaurante, "Resturante afinidad cocineros: %s", respuesta_info->afinidad_cocineros);
+	log_info(logger_restaurante, "Resturante platos: %s", respuesta_info->platos);
+	log_info(logger_restaurante, "Resturante precio platos: %s", respuesta_info->precio_platos);
+	log_info(logger_restaurante, "Resturante cantidad hornos: %d", respuesta_info->cantidad_hornos);
 }
 
-void recibirInfoRestaurante(tMensajeInfoRestaurante* infoRestaurante,
-		int socketCliente) {
-	uint32_t cantPosicion, cantAfinidadesCocineros, cantPlatos,
-			cantPreciosPlatos;
+t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * payload) {
+	t_respuesta_info_restaurante * respuesta_info = malloc(sizeof(t_respuesta_info_restaurante));
 
-	recv(socketCliente, &infoRestaurante->cantCocineros, sizeof(uint32_t),
-			MSG_WAITALL);
+	memcpy(&(respuesta_info->cantidad_cocineros), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
 
-	recv(socketCliente, &cantPosicion, sizeof(uint32_t), MSG_WAITALL);
-	recv(socketCliente, infoRestaurante->posicion, cantPosicion, MSG_WAITALL);
+	memcpy(&(respuesta_info->posicion_x), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
 
-	recv(socketCliente, &cantAfinidadesCocineros, sizeof(uint32_t),
-			MSG_WAITALL);
-	recv(socketCliente, infoRestaurante->afinidadCocineros,
-			cantAfinidadesCocineros, MSG_WAITALL);
+	memcpy(&(respuesta_info->posicion_y), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
 
-	recv(socketCliente, &cantPlatos, sizeof(uint32_t), MSG_WAITALL);
-	recv(socketCliente, infoRestaurante->platos, cantPlatos, MSG_WAITALL);
+	memcpy(&(respuesta_info->size_afinidad_cocineros), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
 
-	recv(socketCliente, &cantPreciosPlatos, sizeof(uint32_t), MSG_WAITALL);
-	recv(socketCliente, infoRestaurante->preciosPlatos, cantPreciosPlatos,
-			MSG_WAITALL);
+	respuesta_info->afinidad_cocineros = malloc((respuesta_info->size_afinidad_cocineros) + 1);
+	memcpy(&(respuesta_info->afinidad_cocineros), payload, respuesta_info->size_afinidad_cocineros);
+	payload += respuesta_info->size_afinidad_cocineros;
 
-	recv(socketCliente, &infoRestaurante->cantidadHornos, sizeof(uint32_t),
-			MSG_WAITALL);
+	memcpy(&(respuesta_info->size_platos), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
 
+	respuesta_info->platos = malloc((respuesta_info->size_platos) + 1);
+	memcpy(&(respuesta_info->platos), payload, respuesta_info->size_platos);
+	payload += respuesta_info->size_platos;
+
+	memcpy(&(respuesta_info->size_precio_platos), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
+
+	respuesta_info->precio_platos = malloc((respuesta_info->size_precio_platos) + 1);
+	memcpy(&(respuesta_info->precio_platos), payload, respuesta_info->size_precio_platos);
+	payload += respuesta_info->size_precio_platos;
+
+	memcpy(&(respuesta_info->cantidad_hornos), payload, sizeof(uint32_t));
+
+	return respuesta_info;
 }
+
 

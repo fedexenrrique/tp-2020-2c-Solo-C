@@ -78,7 +78,7 @@ t_config* leer_config(void){
 	return fd_configuracion;
 }
 
-void limpiarConfiguracion() {
+void limpiar_config() {
 	config_destroy(config_restaurante);
 	log_destroy(logger_restaurante);
 }
