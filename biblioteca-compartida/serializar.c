@@ -1039,3 +1039,49 @@ int deserializar(void* buffer, const char* format, ...){
 
 	return buffIndex;
 }
+
+t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * respuesta_info) {
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
+
+	int size_buffer = sizeof(uint32_t) * 7 + respuesta_info->size_afinidad_cocineros
+			+ respuesta_info->size_platos + respuesta_info->size_precio_platos;
+	void * buffer = malloc(size_buffer);
+
+	memcpy(buffer + offset, &respuesta_info->cantidad_cocineros, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, &respuesta_info->posicion_x, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, &respuesta_info->posicion_y, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, &respuesta_info->size_afinidad_cocineros, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer+offset, respuesta_info->afinidad_cocineros, respuesta_info->size_afinidad_cocineros);
+	offset += respuesta_info->size_afinidad_cocineros;
+
+	memcpy(buffer + offset, &respuesta_info->size_platos, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer+offset, respuesta_info->platos, respuesta_info->size_platos);
+	offset += respuesta_info->size_platos;
+
+	memcpy(buffer + offset, &respuesta_info->size_precio_platos, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer+offset, respuesta_info->precio_platos, respuesta_info->size_precio_platos);
+	offset += respuesta_info->size_precio_platos;
+
+	memcpy(buffer + offset, &respuesta_info->cantidad_hornos, sizeof(uint32_t));
+
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = SINDICATO;
+	header->nro_msg = OBTENER_RESTAURANTES;
+
+	return header;
+}

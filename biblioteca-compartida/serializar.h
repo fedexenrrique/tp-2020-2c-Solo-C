@@ -97,6 +97,24 @@ typedef struct {
 	char *    nombre_plato     ;
 }t_plato_listo;
 
+typedef struct{
+	uint32_t		size_nombre_restaurante;
+	char		* 	nombre_restaurante;
+}t_solicitud_info_restaurante;
+
+typedef struct{
+	uint32_t		cantidad_cocineros;
+	uint32_t		posicion_x;
+	uint32_t		posicion_y;
+	uint32_t		size_afinidad_cocineros;
+	char		*	afinidad_cocineros;
+	uint32_t		size_platos;
+	char		*	platos;
+	uint32_t		size_precio_platos;
+	char		*	precio_platos;
+	uint32_t		cantidad_hornos;
+}t_respuesta_info_restaurante;
+
 
 
 t_log    * logger;
@@ -144,6 +162,8 @@ int     detectar_comando               ( char * p_comando      );
 char *  nro_comando_a_texto            ( int    p_comando      );
 int     detectar_modulo                ( char * p_modulo       );
 char *  nro_modulo_a_texto             ( int    p_modulo       );
+
+t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * respuesta_info);
 
 bool       enviar_buffer            ( int p_conexion, t_header * p_header );
 t_header * recibir_buffer           ( int socket_cliente );
