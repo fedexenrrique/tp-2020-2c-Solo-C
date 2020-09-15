@@ -86,21 +86,21 @@ t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * pa
 	payload += sizeof(uint32_t);
 
 	respuesta_info->afinidad_cocineros = malloc((respuesta_info->size_afinidad_cocineros) + 1);
-	memcpy(&(respuesta_info->afinidad_cocineros), payload, respuesta_info->size_afinidad_cocineros);
+	memcpy((respuesta_info->afinidad_cocineros), payload, respuesta_info->size_afinidad_cocineros);
 	payload += respuesta_info->size_afinidad_cocineros;
 
 	memcpy(&(respuesta_info->size_platos), payload, sizeof(uint32_t));
 	payload += sizeof(uint32_t);
 
 	respuesta_info->platos = malloc((respuesta_info->size_platos) + 1);
-	memcpy(&(respuesta_info->platos), payload, respuesta_info->size_platos);
+	memcpy((respuesta_info->platos), payload, respuesta_info->size_platos);
 	payload += respuesta_info->size_platos;
 
 	memcpy(&(respuesta_info->size_precio_platos), payload, sizeof(uint32_t));
 	payload += sizeof(uint32_t);
 
 	respuesta_info->precio_platos = malloc((respuesta_info->size_precio_platos) + 1);
-	memcpy(&(respuesta_info->precio_platos), payload, respuesta_info->size_precio_platos);
+	memcpy((respuesta_info->precio_platos), payload, respuesta_info->size_precio_platos);
 	payload += respuesta_info->size_precio_platos;
 
 	memcpy(&(respuesta_info->cantidad_hornos), payload, sizeof(uint32_t));

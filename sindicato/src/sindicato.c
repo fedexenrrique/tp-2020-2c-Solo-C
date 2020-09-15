@@ -118,6 +118,7 @@ void handleConexion(int socketCliente) {
 	printf("Nombre Restaurante Recibido: %s\n", headerRecibido->payload);
 
 	//Armo respuesta al restaurante
+	/*
 	t_header* headerRespuesta = malloc(sizeof(t_header));
 
 
@@ -127,9 +128,27 @@ void handleConexion(int socketCliente) {
 
 	armarBufferHardcodeadoRestaurante(headerRespuesta, info,stream);
 	int streamRespuestaSize = sizeof(uint32_t) * 4 + headerRespuesta->size;
+	*/
+	//ARMO RESPUESTA AL RESTAURANTE HARDCODEADA
+	t_header * respuesta_hardcodeada = malloc(sizeof(t_header));
+	t_respuesta_info_restaurante * resp_resto_hard = malloc(sizeof(t_respuesta_info_restaurante));
 
-	if (-1 == send(socketCliente, stream, streamRespuestaSize, 0)) {
-		log_error(logger, "Error al enviar pedido de info Resturante");
+	resp_resto_hard->cantidad_cocineros = 2;
+	resp_resto_hard->posicion_x = 3;
+	resp_resto_hard->posicion_y = 4;
+	resp_resto_hard->afinidad_cocineros = "[milanesas, otros]";
+	resp_resto_hard->size_afinidad_cocineros = 18;
+	resp_resto_hard->platos = "[cualquiera]";
+	resp_resto_hard->size_platos = 12;
+	resp_resto_hard->precio_platos = "[2,4]";
+	resp_resto_hard->size_precio_platos = 5;
+	resp_resto_hard->cantidad_hornos = 1;
+
+	respuesta_hardcodeada = serializar_respuesta_info_restaurante(resp_resto_hard);
+
+
+	if (enviar_buffer(socketCliente, respuesta_hardcodeada) == false) {
+		log_error(logger, "No se pudo enviar la respuesta al pedido de info del restaurante");
 	}
 
 }

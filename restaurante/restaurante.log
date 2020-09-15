@@ -190,3 +190,257 @@ ALGORIMO_PLANIFICACION: RR
 NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
 
 [INFO] 21:24:36:724 restaurante/(28130:28130): Se conecto correctamente
+[INFO] 23:27:38:960 restaurante/(4919:4919): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 23:33:12:582 restaurante/(5176:5176): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 23:33:28:434 restaurante/(5200:5200): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 23:34:43:68 restaurante/(5272:5272): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 23:35:28:922 restaurante/(5364:5364): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 23:41:43:743 restaurante/(5603:5603): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 23:42:03:330 restaurante/(5603:5603): Se conecto correctamente
+[INFO] 23:42:05:244 restaurante/(5603:5603): Se enviaron la cantidad de bytes: 37
+[INFO] 23:42:07:352 restaurante/(5603:5603): Se recibio mensaje del modulo: -1216997456
+[INFO] 23:42:08:441 restaurante/(5603:5603): Se recibio mensaje del modulo con id: -1216997456
+[INFO] 23:42:12:633 restaurante/(5603:5603): Se recibio el tipo de mensaje numero: 0
+[INFO] 23:42:13:851 restaurante/(5603:5603): Se recibio un payload del tama√±o: 0
+[INFO] 00:23:17:801 restaurante/(6563:6563): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:23:26:696 restaurante/(6563:6563): Se conecto correctamente
+[INFO] 00:23:26:696 restaurante/(6563:6563): Se enviaron la cantidad de bytes: 37
+[INFO] 00:23:26:698 restaurante/(6563:6563): Se recibio mensaje del modulo: 5
+[INFO] 00:23:26:698 restaurante/(6563:6563): Se recibio mensaje del modulo con id: 2
+[INFO] 00:23:26:698 restaurante/(6563:6563): Se recibio el tipo de mensaje numero: 3
+[INFO] 00:23:26:698 restaurante/(6563:6563): Se recibio un payload del tama√±o: 59
+[INFO] 00:23:26:698 restaurante/(6563:6563): Resturante cantidad cocineros: 2
+[INFO] 00:23:26:698 restaurante/(6563:6563): Resturante posicion x: 3
+[INFO] 00:23:26:698 restaurante/(6563:6563): Resturante posicion y: 4
+[INFO] 00:26:11:19 restaurante/(6628:6628): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:26:11:19 restaurante/(6628:6628): error
+[INFO] 00:26:15:127 restaurante/(6628:6628): Se enviaron la cantidad de bytes: -1
+[ERROR] 00:26:15:127 restaurante/(6628:6628): No se pudo enviar el pedido de info del restaurante
+[INFO] 00:26:27:278 restaurante/(6662:6662): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:26:28:391 restaurante/(6662:6662): error
+[INFO] 00:27:23:452 restaurante/(6707:6707): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:27:24:691 restaurante/(6707:6707): Se conecto correctamente
+[INFO] 00:27:24:692 restaurante/(6707:6707): Se enviaron la cantidad de bytes: 37
+[INFO] 00:27:24:692 restaurante/(6707:6707): Se recibio mensaje del modulo: 5
+[INFO] 00:27:24:692 restaurante/(6707:6707): Se recibio mensaje del modulo con id: 2
+[INFO] 00:27:24:692 restaurante/(6707:6707): Se recibio el tipo de mensaje numero: 3
+[INFO] 00:27:24:692 restaurante/(6707:6707): Se recibio un payload del tama√±o: 59
+[INFO] 00:37:38:702 restaurante/(6942:6942): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:37:39:915 restaurante/(6942:6942): Se conecto correctamente
+[INFO] 00:37:39:916 restaurante/(6942:6942): Se enviaron la cantidad de bytes: 37
+[INFO] 00:37:39:916 restaurante/(6942:6942): Se recibio mensaje del modulo: 5
+[INFO] 00:37:39:916 restaurante/(6942:6942): Se recibio mensaje del modulo con id: 2
+[INFO] 00:37:39:916 restaurante/(6942:6942): Se recibio el tipo de mensaje numero: 3
+[INFO] 00:37:39:916 restaurante/(6942:6942): Se recibio un payload del tama√±o: 59
+[INFO] 00:41:32:257 restaurante/(7066:7066): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:41:33:339 restaurante/(7066:7066): Se conecto correctamente
+[INFO] 00:41:33:339 restaurante/(7066:7066): Se enviaron la cantidad de bytes: 37
+[INFO] 00:41:33:340 restaurante/(7066:7066): Se recibio mensaje del modulo: 5
+[INFO] 00:41:33:340 restaurante/(7066:7066): Se recibio mensaje del modulo con id: 2
+[INFO] 00:41:33:340 restaurante/(7066:7066): Se recibio el tipo de mensaje numero: 3
+[INFO] 00:41:33:340 restaurante/(7066:7066): Se recibio un payload del tama√±o: 59
+[INFO] 00:43:57:158 restaurante/(7066:7066): Resturante cantidad cocineros: 2
+[INFO] 00:43:58:181 restaurante/(7066:7066): Resturante posicion x: 3
+[INFO] 00:43:59:174 restaurante/(7066:7066): Resturante posicion y: 4
+[INFO] 00:43:59:952 restaurante/(7066:7066): Resturante afinidad cocineros: [milanesas, otros]
+[INFO] 00:44:01:950 restaurante/(7066:7066): Resturante platos: cualquieraTA!
+[INFO] 00:44:03:237 restaurante/(7066:7066): Resturante precio platos: 2,4∑x»¯∑0:41)
+[INFO] 00:44:04:391 restaurante/(7066:7066): Resturante cantidad hornos: 1
+[INFO] 00:47:41:283 restaurante/(7223:7223): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:47:42:416 restaurante/(7223:7223): Se conecto correctamente
+[INFO] 00:47:42:416 restaurante/(7223:7223): Se enviaron la cantidad de bytes: 37
+[INFO] 00:47:42:416 restaurante/(7223:7223): Se recibio mensaje del modulo: 5
+[INFO] 00:47:42:416 restaurante/(7223:7223): Se recibio mensaje del modulo con id: 2
+[INFO] 00:47:42:416 restaurante/(7223:7223): Se recibio el tipo de mensaje numero: 3
+[INFO] 00:47:42:416 restaurante/(7223:7223): Se recibio un payload del tama√±o: 59
+[INFO] 00:48:42:165 restaurante/(7314:7314): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:48:43:187 restaurante/(7314:7314): error
+[INFO] 00:48:51:466 restaurante/(7314:7314): Se enviaron la cantidad de bytes: -1
+[INFO] 00:49:16:431 restaurante/(7362:7362): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:49:17:362 restaurante/(7362:7362): Se conecto correctamente
+[INFO] 00:49:17:363 restaurante/(7362:7362): Se enviaron la cantidad de bytes: 37
+[INFO] 00:49:17:364 restaurante/(7362:7362): Se recibio mensaje del modulo: 5
+[INFO] 00:49:17:364 restaurante/(7362:7362): Se recibio mensaje del modulo con id: 2
+[INFO] 00:49:17:364 restaurante/(7362:7362): Se recibio el tipo de mensaje numero: 3
+[INFO] 00:49:17:364 restaurante/(7362:7362): Se recibio un payload del tama√±o: 59
+[INFO] 00:49:39:273 restaurante/(7362:7362): Resturante cantidad cocineros: 2
+[INFO] 00:49:39:775 restaurante/(7362:7362): Resturante posicion x: 3
+[INFO] 00:49:40:441 restaurante/(7362:7362): Resturante posicion y: 4
+[INFO] 00:49:40:995 restaurante/(7362:7362): Resturante afinidad cocineros: [milanesas, otros]
+[INFO] 00:49:41:485 restaurante/(7362:7362): Resturante platos: cualquieraTA!
+[INFO] 00:49:41:916 restaurante/(7362:7362): Resturante precio platos: 2,4∑x»¯∑0:49)
+[INFO] 00:49:42:446 restaurante/(7362:7362): Resturante cantidad hornos: 1
+[INFO] 00:51:23:711 restaurante/(7592:7592): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: /utnso/logs/THEFOODTRUCKSTORE.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
+
+[INFO] 00:51:24:779 restaurante/(7592:7592): Se conecto correctamente
+[INFO] 00:51:24:780 restaurante/(7592:7592): Se enviaron la cantidad de bytes: 37
+[INFO] 00:51:24:780 restaurante/(7592:7592): Se recibio mensaje del modulo: 5
+[INFO] 00:51:24:780 restaurante/(7592:7592): Se recibio mensaje del modulo con id: 2
+[INFO] 00:51:24:780 restaurante/(7592:7592): Se recibio el tipo de mensaje numero: 3
+[INFO] 00:51:24:780 restaurante/(7592:7592): Se recibio un payload del tama√±o: 63
+[INFO] 00:51:28:407 restaurante/(7592:7592): Resturante cantidad cocineros: 2
+[INFO] 00:51:29:123 restaurante/(7592:7592): Resturante posicion x: 3
+[INFO] 00:51:29:542 restaurante/(7592:7592): Resturante posicion y: 4
+[INFO] 00:51:30:53 restaurante/(7592:7592): Resturante afinidad cocineros: [milanesas, otros]
+[INFO] 00:51:30:648 restaurante/(7592:7592): Resturante platos: [cualquiera]:24:780 
+[INFO] 00:51:31:204 restaurante/(7592:7592): Resturante precio platos: [2,4]:24
+[INFO] 00:51:31:636 restaurante/(7592:7592): Resturante cantidad hornos: 1

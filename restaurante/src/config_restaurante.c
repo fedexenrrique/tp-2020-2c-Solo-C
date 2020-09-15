@@ -17,22 +17,22 @@ void cargar_config(void) {
 		perror("config restaurante");
 	}
 
-	puerto_escucha = config_get_int_value(config_restaurante, "PUERTO_ESCUCHA");
+	puerto_escucha = config_get_string_value(config_restaurante, "PUERTO_ESCUCHA");
 	ip_sindicato = config_get_string_value(config_restaurante, "IP_SINDICATO");
-	puerto_sindicato = config_get_int_value(config_restaurante, "PUERTO_SINDICATO");
+	puerto_sindicato = config_get_string_value(config_restaurante, "PUERTO_SINDICATO");
 	ip_app = config_get_string_value(config_restaurante, "IP_APP");
-	puerto_app = config_get_int_value(config_restaurante, "PUERTO_APP");
+	puerto_app = config_get_string_value(config_restaurante, "PUERTO_APP");
 	quantum = config_get_int_value(config_restaurante, "QUANTUM");
 	archivo_log = config_get_string_value(config_restaurante, "ARCHIVO_LOG");
 	algoritmo_planificacion = config_get_string_value(config_restaurante, "ALGORITMO_PLANIFICACION");
 	nombre_restaurante = config_get_string_value(config_restaurante, "NOMBRE_RESTAURANTE");
 
 	log_info(logger_restaurante,
-		"\nPUERTO_ESCUCHA: %d\n"
+		"\nPUERTO_ESCUCHA: %s\n"
 		"IP_SINDICATO: %s\n"
-		"PUERTO_SINDICATO: %d\n"
+		"PUERTO_SINDICATO: %s\n"
 		"IP_APP: %s\n"
-		"PUERTO_APP: %d\n"
+		"PUERTO_APP: %s\n"
 		"QUANTUM: %d\n"
 		"PATH_ARCHIVO_LOG: %s\n"
 		"ALGORIMO_PLANIFICACION: %s\n"

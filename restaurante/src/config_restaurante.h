@@ -12,11 +12,11 @@
 
 t_log    	*	logger_restaurante;
 t_config	* 	config_restaurante;
-int			 	puerto_escucha;
+char		*	puerto_escucha;
 char 		*	ip_sindicato;
-int				puerto_sindicato;
+char		*	puerto_sindicato;
 char		*	ip_app;
-int				puerto_app;
+char		*	puerto_app;
 int				quantum;
 char		*	archivo_log;
 char		*	algoritmo_planificacion;
