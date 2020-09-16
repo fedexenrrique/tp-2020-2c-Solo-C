@@ -125,12 +125,15 @@ void administrar_guardar_pedido(t_header * encabezado){
 		bool buscar_restaurante(void * elemento){
 			t_restaurante * restaurante=(t_restaurante)elemento;
 
-			if(restaurante->nombre_restaurante==pedido->nombre_restaurante){
-
-			}
-
+			if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido->nombre_restaurante)){
+					return TRUE;
+					}
+			return FALSE;
 		}
-	list_find(lista_restarurantes,buscar_restaurante());
+	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);
+
+	if(restaurante==NULL)
+		crear_tabla_segmentos_restaurante();
 }
 
 
