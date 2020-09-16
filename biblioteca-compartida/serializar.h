@@ -77,7 +77,6 @@ typedef struct {
 	char     nombre_comida[24]    ;
 }t_comida;
 
-
 typedef struct {  // Me sirve para guardar pedido, consultar pedido, obtener pedido y finalizar pedido
 	uint32_t size_nombre_restaurante;
 	char *   nombre_restaurante     ;

@@ -35,6 +35,8 @@ int iniciar_comanda(){
 
 	log_info(logger,"el socket escucha es: %d",socket_comanda);
 
+	lista_restarurantes=list_create();
+
 	return socket_comanda;
 
 
@@ -72,7 +74,8 @@ void manejo_modulo_conectado(void * socket_cliente){
 	switch(mensaje_recibido->nro_msg){
 		case GUARDAR_PEDIDO:
 			aux=mensaje_recibido->payload;
-			recibir_consulta_pedido(mensaje_recibido->payload);
+			mensaje_recibido->payload=(void*)recibir_consulta_pedido(mensaje_recibido->payload);
+
 			free(aux);
 			break;
 		case GUARDAR_PLATO:
@@ -112,6 +115,27 @@ void manejo_modulo_conectado(void * socket_cliente){
 
 
 }
+
+
+
+void administrar_guardar_pedido(t_header * encabezado){
+
+	t_pedido * pedido=(t_pedido)encabezado->payload;
+
+		bool buscar_restaurante(void * elemento){
+			t_restaurante * restaurante=(t_restaurante)elemento;
+
+			if(restaurante->nombre_restaurante==pedido->nombre_restaurante){
+
+			}
+
+		}
+	list_find(lista_restarurantes,buscar_restaurante());
+}
+
+
+
+
 
 
 t_guardar_plato * administrar_guardar_plato(void * payload){
