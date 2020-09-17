@@ -89,6 +89,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		responder_consultar_platos( socket_aceptado, g_platos_default );
 		break;
 	case CREAR_PEDIDO:
+		recibir_crear_pedido_y_responder( socket_aceptado, 987 );
 		break;
 	case ANIADIR_PLATO:
 		break;

@@ -53,23 +53,24 @@ int main(int argc, char **argv) {
 		    		break;
 
 				case CREAR_PEDIDO:
-    		    	printf(" 05- CREAR_PEDIDO HACIA: SINDICATO \n");
+    		    	printf(" 05- CREAR_PEDIDO HACIA: APP, SINDICATO \n");
+    		    	enviar_crear_pedido( g_ip_app, g_puerto_app, g_id_proceso );
 		    		break;
     		    
 				case ANIADIR_PLATO:
-    		    	printf(" 07- ANIADIR_PLATO HACIA: SINDICATO \n");
+    		    	printf(" 07- ANIADIR_PLATO HACIA: APP, SINDICATO \n");
 		    		break;
 
 				case CONFIRMAR_PEDIDO:
-    		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: SINDICATO \n");
+    		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");
 		    		break;
 
 				case PLATO_LISTO:
-    		    	printf(" 10- PLATO_LISTO HACIA: SINDICATO \n");
+    		    	printf(" 10- PLATO_LISTO HACIA: APP, SINDICATO \n");
 		    		break;
 
 				case CONSULTAR_PEDIDO:
-    		    	printf(" 11- CONSULTAR_PEDIDO HACIA: SINDICATO \n");
+    		    	printf(" 11- CONSULTAR_PEDIDO HACIA: APP, SINDICATO \n");
 		    		break;
 
 				default:

@@ -144,6 +144,9 @@ void responder_seleccionar_restaurante( int socket_cliente, int p_size, void * p
 t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process );
 void responder_consultar_platos( int socket_cliente, char ** p_platos );
 
+uint32_t enviar_crear_pedido( char* p_ip, char* p_puerto, int p_id_process );
+void recibir_crear_pedido_y_responder( int socket_cliente, uint32_t p_id_pedido_creado );
+
 void 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
