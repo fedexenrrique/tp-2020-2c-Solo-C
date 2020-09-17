@@ -16,9 +16,9 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 
 			lista_restaurantes = list_create();
 
-			int despla = 0;
+			uint32_t despla = 0;
 
-			int cantidad_restaurantes = 0;
+			uint32_t cantidad_restaurantes = 0;
 
 			memcpy( &cantidad_restaurantes, header_restaurantes->payload + despla, sizeof(uint32_t) );
 
@@ -137,15 +137,17 @@ void recibir_consultar_restaurante_y_responder( int socket_cliente ) {
 
 	t_list * lista_de_restaurante = obtener_restaurante_hardcodeado();
 
-	uint32_t cant_restaurantes = _aux_longitud_acumulada(lista_de_restaurante);
+	uint32_t cant_restos = list_size(lista_de_restaurante);
+
+	uint32_t cant_letras = _aux_longitud_acumulada(lista_de_restaurante);
 
 	buffer_size = sizeof(uint32_t)
-			+ list_size(lista_de_restaurante) * sizeof(uint32_t)
-			+ cant_restaurantes;
+			+ cant_restos * sizeof(uint32_t)
+			+ cant_letras;
 
 	buffer_response = malloc(buffer_size);
 
-	memcpy( buffer_response + despla, &cant_restaurantes, sizeof(uint32_t) );
+	memcpy( buffer_response + despla, &cant_restos, sizeof(uint32_t) );
 
 	despla += sizeof(uint32_t);
 
