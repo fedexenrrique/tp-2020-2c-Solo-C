@@ -75,7 +75,7 @@ void manejo_modulo_conectado(void * socket_cliente){
 		case GUARDAR_PEDIDO:
 			aux=mensaje_recibido->payload;
 			mensaje_recibido->payload=(void*)recibir_consulta_pedido(mensaje_recibido->payload);
-
+			administrar_guardar_pedido(mensaje_recibido,*sock_cliente);
 			free(aux);
 			break;
 		case GUARDAR_PLATO:
@@ -118,12 +118,12 @@ void manejo_modulo_conectado(void * socket_cliente){
 
 
 
-void administrar_guardar_pedido(t_header * encabezado){
+void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
-	t_pedido * pedido=(t_pedido)encabezado->payload;
+	t_pedido * pedido=(t_pedido*)encabezado->payload;
 
 		bool buscar_restaurante(void * elemento){
-			t_restaurante * restaurante=(t_restaurante)elemento;
+			t_restaurante * restaurante=(t_restaurante*)elemento;
 
 			if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido->nombre_restaurante)){
 					return TRUE;
@@ -133,7 +133,26 @@ void administrar_guardar_pedido(t_header * encabezado){
 	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);
 
 	if(restaurante==NULL)
-		crear_tabla_segmentos_restaurante();
+		restaurante=crear_tabla_segmentos_restaurante(pedido->nombre_restaurante);
+
+	bool exito=agregar_pedido_a_tabla_segmentos(restaurante,pedido->id_pedido);
+
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	if(exito==TRUE)
+		nuevo_encabezado->nro_msg=OK;
+	else
+		nuevo_encabezado->nro_msg=FAIL;
+
+	nuevo_encabezado->size=0;
+	nuevo_encabezado->payload=NULL;
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+
 }
 
 

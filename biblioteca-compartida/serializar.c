@@ -703,7 +703,7 @@ void responder_consultar_platos( int socket_cliente, char ** p_platos ) {
 
 }
 
-void enviar_guardar_pedido   (char* p_ip,char* p_puerto){
+int enviar_guardar_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=GUARDAR_PEDIDO;
 	t_header * encabezado=serializar_pedido(nro_msg);
@@ -711,6 +711,8 @@ void enviar_guardar_pedido   (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+	return conexion;
 
 }
 
@@ -1085,3 +1087,5 @@ t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * 
 
 	return header;
 }
+
+

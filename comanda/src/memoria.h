@@ -18,7 +18,7 @@ typedef struct {
 
 
 typedef struct{
-	char * nombre_pedido;
+	uint32_t id_pedido         ;
 	t_list * comidas_del_pedido;
 }t_pedido_seg;
 
@@ -36,6 +36,10 @@ typedef struct {
 
 
 t_list * lista_restarurantes;
+
+
+t_restaurante * crear_tabla_segmentos_restaurante(char *                  );
+bool            agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
 
 
 #endif /* MEMORIA_H_ */

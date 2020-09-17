@@ -89,7 +89,9 @@ int main(int argc, char **argv) {
 			case GUARDAR_PEDIDO:
 
 				printf("  06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
-				enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
+				int conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
+				t_header * encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
 				break;
 
 			case GUARDAR_PLATO:

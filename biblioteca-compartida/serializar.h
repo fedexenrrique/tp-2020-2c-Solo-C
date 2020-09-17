@@ -58,6 +58,8 @@ typedef enum {
     OBTENER_PEDIDO                      = 12,
     FINALIZAR_PEDIDO                    = 13,
     TOMAR_PEDIDO                        = 14,
+	OK                                  = 15,
+    FAIL                                = 16,
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
 
@@ -130,7 +132,7 @@ int deserializar(void* buffer, const char* format, ...);
 t_list *   enviar_consultar_restaurante   (char* p_ip,char* p_puerto);
 void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
-void       enviar_guardar_pedido   (char* p_ip,char* p_puerto);
+int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);
 void       enviar_obtener_pedido   (char* p_ip,char* p_puerto);
 void       enviar_confirmar_pedido (char* p_ip,char* p_puerto);
 void       enviar_finalizar_pedido (char* p_ip,char* p_puerto);
@@ -161,6 +163,7 @@ int     detectar_comando               ( char * p_comando      );
 char *  nro_comando_a_texto            ( int    p_comando      );
 int     detectar_modulo                ( char * p_modulo       );
 char *  nro_modulo_a_texto             ( int    p_modulo       );
+
 
 t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * respuesta_info);
 
