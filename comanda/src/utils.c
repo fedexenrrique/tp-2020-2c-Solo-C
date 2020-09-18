@@ -130,12 +130,12 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 					}
 			return FALSE;
 		}
-	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);
+	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);   //Busca si existe el restaurante
 
 	if(restaurante==NULL)
-		restaurante=crear_tabla_segmentos_restaurante(pedido->nombre_restaurante);
+		restaurante=crear_tabla_segmentos_restaurante(pedido->nombre_restaurante);   //Si no existe el restaurant, lo crea
 
-	bool exito=agregar_pedido_a_tabla_segmentos(restaurante,pedido->id_pedido);
+	bool exito=agregar_pedido_a_tabla_segmentos(restaurante,pedido->id_pedido);  //Crea un nuevo segmento con el ID del pedido. EN caso de q exista, devuelve FALSE
 
 	t_header * nuevo_encabezado=malloc(sizeof(t_header));
 
