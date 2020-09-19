@@ -5,6 +5,8 @@ int main(void) {
 
 	prueba_biblioteca_compartida();
 
+	lista_pcbs = list_create();
+
 	g_sockets_abiertos = list_create();
 
 	signal(SIGINT, sigint);
@@ -67,7 +69,7 @@ t_config * leer_config(void) {
 
 void procesamiento_mensaje( void * p_socket_aceptado ) {
 
-	int socket_aceptado = * ( (int*) p_socket_aceptado );
+	uint32_t socket_aceptado = (uint32_t)(* ( (int*) p_socket_aceptado ));
 
 	t_header * header_recibido = recibir_buffer( socket_aceptado );
 
@@ -82,13 +84,16 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	case CONSULTAR_RESTAURANTES:
 		recibir_consultar_restaurante_y_responder( socket_aceptado );
 		break;
-	case SELECCIONAR_RESTAURANTE:
-		responder_seleccionar_restaurante( socket_aceptado, header_recibido->size, header_recibido->payload );
+	case SELECCIONAR_RESTAURANTE: ;
+		bool seleccionado = procedimiento_02_seleccionar_restaurante( header_recibido );
+		responder_seleccionar_restaurante( socket_aceptado, seleccionado );
 		break;
 	case CONSULTAR_PLATOS:
 		responder_consultar_platos( socket_aceptado, g_platos_default );
 		break;
 	case CREAR_PEDIDO:
+		// uint32_t socket_hacia_restaurante = crear_socket_y_conectar(char* p_ip, char* p_puerto);
+		// enviar_buffer ( ---------, header_recibido );
 		recibir_crear_pedido_y_responder( socket_aceptado, 987 );
 		break;
 	case ANIADIR_PLATO:
@@ -108,6 +113,62 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		free( header_recibido->payload );
 
 	close( socket_aceptado );
+
+}
+
+bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
+
+	char * l_restaurante_seleccionado;
+
+	t_list * _obtener_restaurante_hardcodeado() {
+
+		t_list * l_restaurantes = list_create();
+
+		list_add( l_restaurantes, "McDonals" );
+		list_add( l_restaurantes, "KFC" );
+		list_add( l_restaurantes, "Wendy's" );
+		list_add( l_restaurantes, "GreenEat" );
+
+		return l_restaurantes;
+
+	}
+
+	bool _detecta_restaurante_en_lista(void * p_elem) {
+
+		return string_equals_ignore_case( (char*)p_elem, l_restaurante_seleccionado );
+
+	}
+
+	l_restaurante_seleccionado = malloc(header_recibido->size + 1);
+
+	memcpy(l_restaurante_seleccionado, header_recibido->payload, header_recibido->size );
+
+	l_restaurante_seleccionado[header_recibido->size] = '\0';
+
+	t_list * lista_de_restaurante = _obtener_restaurante_hardcodeado();
+
+	bool esta_en_lista = list_any_satisfy(lista_de_restaurante, _detecta_restaurante_en_lista );
+
+	if ( esta_en_lista ) {
+
+		printf( "El restaurante recibido es: %s, y está en la lista.\n", l_restaurante_seleccionado );
+
+		t_pcb * l_pcb = malloc( sizeof(t_pcb) );
+
+		l_pcb->id_proceso = header_recibido->id_proceso;
+		l_pcb->restaurante_asociado = l_restaurante_seleccionado;
+
+		list_add( lista_pcbs, l_pcb );
+
+		return true;
+
+	} else {
+
+		printf( "El restaurante recibido es: %s, y no se encuentra en la lista.\n", l_restaurante_seleccionado );
+
+		return false;
+
+	}
 
 }
 

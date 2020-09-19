@@ -38,6 +38,13 @@ char ** g_platos_default;                // PLATOS_DEFAULT=3
 int     g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
 int     g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
 
+t_list * lista_pcbs;
+
+typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
+	uint32_t    id_proceso;
+	char*       restaurante_asociado;
+} t_pcb;
+
 // FUNCIONES
 
 t_config * leer_config         ( void );
@@ -45,6 +52,8 @@ t_config * leer_config         ( void );
 void       escuchar_cliente    ( int socket_cliente );
 
 t_list   * obtener_restaurante_hardcodeado();
+
+bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido );
 
 void procesamiento_mensaje( void * socket_cliente );
 
