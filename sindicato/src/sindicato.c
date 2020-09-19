@@ -11,8 +11,105 @@
 #include "sindicato.h"
 //#include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
 #define PATH_FILES "/Files/"
+
+int paramValidos(char** parametros){
+	int cantParametros=string_length(*parametros);
+	printf("Cant parametros: %d\n",cantParametros);
+	if(cantParametros==7) return 1;
+	else return 0;
+
+
+}
+
+
+void levantarConsola(){
+	printf("*************CONSOLA SINDICATO*************\n");
+
+	while(1){
+		char lineaComando[100];
+		int i;
+		for(i=0; i<=strlen(lineaComando);i++){
+					lineaComando[i]='\0';
+		}
+		printf("COMANDOS DISPONIBLES\n");
+		printf("1 - Crear Restaurante\n");
+		printf("2 - Crear Receta\n");
+		fgets(lineaComando,100,stdin);
+
+		lineaComando[strlen(lineaComando)-1]='\0';
+		char** substrings=string_n_split(lineaComando,8," ");
+		char* nombreComando= substrings[0];
+
+
+		log_info("Cantidad Parametros: %d\n",sizeof(substrings)/sizeof(substrings[0]));
+
+
+		if(string_equals_ignore_case(nombreComando,"crearRestaurante")){
+				log_info(logger,"Creación Restaurante");
+
+				char* nombreRestaurante=malloc(30);
+				nombreRestaurante=substrings[1];
+				//strcpy(nombreRestaurante,substrings[1]);
+				char* cantCocineros=malloc(4);
+				cantCocineros=substrings[2];
+				char* posicion=malloc(40);
+				posicion=substrings[3];
+				char* afinidadCocineros=malloc(80);
+				afinidadCocineros=substrings[4];
+				char* platos=malloc(80);
+				platos=substrings[5];
+				char* preciosPlatos=malloc(80);
+				preciosPlatos=substrings[6];
+				char* cantidadHornos=malloc(4);
+				cantidadHornos=substrings[7];
+
+				int parametrosValidos=paramValidos(substrings);
+
+				//if(parametrosValidos==1){
+					printf("Creando Reestaurante...\n");
+					printf("Nombre: %s\n",nombreRestaurante);
+					printf("Cantidad Cocineros: %d\n",atoi(cantCocineros));
+				//}else log_error(logger,"Cantidad incorrecta de parametros");
+
+				free(nombreRestaurante);
+				free(posicion);
+				free(afinidadCocineros);
+				free(preciosPlatos);
+				free(platos);
+
+
+
+			}
+
+		else if (string_equals_ignore_case(nombreComando,"CrearReceta")){
+				log_info(logger,"Creacion Receta");
+				char* nombre=malloc(60);
+				nombre=substrings[1];
+				char* pasos=malloc(60);
+				pasos=substrings[2];
+				char* tiemposPasos=malloc(40);
+				tiemposPasos=substrings[3];
+
+				printf("Creando receta...\n");
+				printf("Nombre receta: %s\n",nombre);
+				printf("Pasos receta: %s\n",pasos);
+
+
+			}else log_error(logger,"Ingrese un comando Valido\n");
+		//free(lineaComando);
+
+		free(substrings);
+
+		}
+
+}
 int main(int argc, char *argv[]) {
 	cargarConfiguracion();
+
+	pthread_t hiloConsola;
+	pthread_create(&hiloConsola,NULL,levantarConsola,NULL);
+
+	pthread_join(hiloConsola, NULL);
 
 	tPrueba* pedidoPrueba = malloc(sizeof(tPrueba));
 
@@ -157,6 +254,7 @@ void handleConexion(int socketCliente) {
 
 void armarBufferHardcodeadoRestaurante(t_header2* header,tMensajeInfoRestaurante* info,void* stream) {
 
+
 	llenarHeaderRespuesta(header);
 	info->cantCocineros = 20;
 	info->afinidadCocineros = string_new();
@@ -263,4 +361,5 @@ void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream) {
 	offset += sizeof(uint32_t);
 
 }
+
 
