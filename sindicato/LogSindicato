@@ -460,3 +460,281 @@ PUNTO_MONTAJE: /home/utnso/afip
 
 [INFO] 00:50:09:101 Sindicato/(7439:7439): Inicio Escucha de conexiones...
 [INFO] 00:50:09:101 Sindicato/(7439:7439): Handle conexion aceptada...
+[INFO] 01:12:22:582 Sindicato/(21849:21849): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:14:26:746 Sindicato/(21849:21862): Creación Restaurante
+[ERROR] 01:15:44:616 Sindicato/(21849:21862): Cantidad incorrecta de paramteros
+[ERROR] 01:16:56:281 Sindicato/(21849:21862): Ingrese un comando Valido
+
+[ERROR] 01:16:56:281 Sindicato/(21849:21862): Ingrese un comando Valido
+
+[ERROR] 01:16:56:281 Sindicato/(21849:21862): Ingrese un comando Valido
+
+[ERROR] 01:16:56:281 Sindicato/(21849:21862): Ingrese un comando Valido
+
+[ERROR] 01:16:56:281 Sindicato/(21849:21862): Ingrese un comando Valido
+
+[ERROR] 01:16:56:281 Sindicato/(21849:21862): Ingrese un comando Valido
+
+[ERROR] 01:16:56:281 Sindicato/(21849:21862): Ingrese un comando Valido
+
+[INFO] 01:17:26:392 Sindicato/(21997:21997): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:18:33:44 Sindicato/(22051:22051): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:18:57:488 Sindicato/(22051:22060): Creación Restaurante
+[ERROR] 01:18:57:488 Sindicato/(22051:22060): Cantidad incorrecta de paramteros
+[INFO] 01:19:32:327 Sindicato/(22114:22114): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:19:51:959 Sindicato/(22114:22123): Creación Restaurante
+[ERROR] 01:20:03:926 Sindicato/(22114:22123): Cantidad incorrecta de paramteros
+[ERROR] 01:20:16:713 Sindicato/(22114:22123): Ingrese un comando Valido
+
+[INFO] 01:38:58:120 Sindicato/(22759:22759): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:39:11:208 Sindicato/(22759:22767): Creación Restaurante
+[INFO] 01:39:37:106 Sindicato/(22797:22797): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:40:09:249 Sindicato/(22797:22805): Creación Restaurante
+[INFO] 01:41:37:322 Sindicato/(22904:22904): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:41:50:693 Sindicato/(22904:22912): Creación Restaurante
+[INFO] 01:43:40:14 Sindicato/(22983:22983): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:43:54:78 Sindicato/(22983:22991): Creación Restaurante
+[INFO] 01:44:31:451 Sindicato/(23034:23034): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:45:23:152 Sindicato/(23034:23042): Creación Restaurante
+[INFO] 01:46:25:989 Sindicato/(23119:23119): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:46:39:173 Sindicato/(23119:23128): Creación Restaurante
+[INFO] 01:47:53:670 Sindicato/(23239:23239): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:52:31:780 Sindicato/(23386:23386): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:53:02:428 Sindicato/(23386:23395): Creación Restaurante
+[INFO] 01:53:33:842 Sindicato/(23468:23468): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:53:47:11 Sindicato/(23468:23477): Creación Restaurante
+[INFO] 01:54:28:843 Sindicato/(23549:23549): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:54:41:430 Sindicato/(23549:23557): Creación Restaurante
+[INFO] 01:56:30:296 Sindicato/(23632:23632): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:56:59:200 Sindicato/(23632:23640): Creación Restaurante
+[INFO] 01:59:05:318 Sindicato/(23792:23792): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:59:34:647 Sindicato/(23792:23800): Creación Restaurante
+[INFO] 02:00:31:43 Sindicato/(23878:23878): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:00:46:73 Sindicato/(23878:23886): Creación Restaurante
+[INFO] 02:01:42:611 Sindicato/(23948:23948): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:02:27:415 Sindicato/(23948:23956): Creación Restaurante
+[INFO] 02:03:52:845 Sindicato/(24045:24045): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:04:26:457 Sindicato/(24045:24054): Creación Restaurante
+[ERROR] 02:05:08:430 Sindicato/(24045:24054): Cantidad incorrecta de parametros
+[INFO] 02:05:28:453 Sindicato/(24125:24125): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:06:03:323 Sindicato/(24125:24134): Creación Restaurante
+[ERROR] 02:06:56:955 Sindicato/(24125:24134): Cantidad incorrecta de parametros
+[INFO] 02:07:49:491 Sindicato/(24290:24290): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:08:30:53 Sindicato/(24290:24298): Creación Restaurante
+[ERROR] 02:08:56:739 Sindicato/(24290:24298): Cantidad incorrecta de parametros
+[INFO] 02:13:06:274 Sindicato/(24488:24488): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:14:07:181 Sindicato/(24488:24498): Creación Restaurante
+[ERROR] 02:14:26:437 Sindicato/(24488:24498): Cantidad incorrecta de parametros
+[INFO] 01:22:37:154 Sindicato/(31001:31001): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 01:23:32:756 Sindicato/(31001:31012): Ingrese un comando Valido
+
+[INFO] 01:24:57:919 Sindicato/(31100:31100): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 01:25:41:341 Sindicato/(31100:31109): Ingrese un comando Valido
+
+[INFO] 01:25:55:723 Sindicato/(31158:31158): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 01:26:25:452 Sindicato/(31158:31167): Ingrese un comando Valido
+
+[INFO] 01:34:53:942 Sindicato/(31316:31316): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:35:23:478 Sindicato/(31316:31324): Creación Restaurante
+[ERROR] 01:39:00:773 Sindicato/(31316:31324): Cantidad incorrecta de parametros
+[INFO] 01:39:17:531 Sindicato/(31420:31420): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 01:40:01:526 Sindicato/(31420:31428): Ingrese un comando Valido
+
+[INFO] 01:40:52:573 Sindicato/(31535:31535): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 01:41:41:540 Sindicato/(31535:31543): Ingrese un comando Valido
+
+[INFO] 01:42:24:134 Sindicato/(31616:31616): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:43:33:488 Sindicato/(31742:31742): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 01:43:51:452 Sindicato/(31742:31750): Ingrese un comando Valido
+
+[INFO] 01:44:23:746 Sindicato/(31806:31806): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:44:35:867 Sindicato/(31806:31814): Creación Restaurante
+[ERROR] 01:45:34:651 Sindicato/(31806:31814): Cantidad incorrecta de parametros
+[INFO] 01:46:20:467 Sindicato/(31915:31915): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:46:31:130 Sindicato/(31915:31923): Creación Restaurante
+[ERROR] 01:46:51:310 Sindicato/(31915:31923): Cantidad incorrecta de parametros
+[INFO] 01:47:49:357 Sindicato/(32013:32013): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:48:00:529 Sindicato/(32013:32022): Creación Restaurante
+[ERROR] 01:48:30:799 Sindicato/(32013:32022): Cantidad incorrecta de parametros
+[INFO] 01:50:32:888 Sindicato/(32156:32156): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:51:16:398 Sindicato/(32156:32165): Creación Restaurante
+[ERROR] 01:51:38:950 Sindicato/(32156:32165): Cantidad incorrecta de parametros
+[INFO] 02:01:27:490 Sindicato/(32213:32213): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:01:59:316 Sindicato/(32213:32427): Creación Restaurante
+[ERROR] 02:02:34:581 Sindicato/(32213:32427): Cantidad incorrecta de parametros
+[INFO] 02:04:16:81 Sindicato/(32567:32567): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:06:32:133 Sindicato/(32635:32635): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:08:48:517 Sindicato/(32740:32740): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 02:09:33:989 Sindicato/(32740:32759): Ingrese un comando Valido
+
+[INFO] 02:10:43:290 Sindicato/(658:658): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:10:57:903 Sindicato/(658:728): Creación Restaurante
+[ERROR] 02:13:55:160 Sindicato/(658:728): Cantidad incorrecta de parametros
+[INFO] 02:15:48:674 Sindicato/(1859:1859): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:16:03:887 Sindicato/(1859:1932): Creación Restaurante
+[INFO] 02:16:49:695 Sindicato/(2592:2592): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:17:07:395 Sindicato/(2592:2666): Creación Restaurante
+[INFO] 02:18:19:251 Sindicato/(3455:3455): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:18:32:731 Sindicato/(3455:3520): Creación Restaurante
+[INFO] 02:19:14:108 Sindicato/(4335:4335): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 02:19:33:131 Sindicato/(4335:4456): Ingrese un comando Valido
+
+[INFO] 02:19:58:568 Sindicato/(4735:4735): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:20:15:858 Sindicato/(4735:4800): Creación Restaurante
+[INFO] 02:27:38:569 Sindicato/(6531:6531): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:28:00:282 Sindicato/(6531:6599): Creacion Receta
+[INFO] 02:32:09:379 Sindicato/(7485:7485): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[ERROR] 02:32:26:107 Sindicato/(7485:7555): Ingrese un comando Valido
+
+[INFO] 02:32:47:709 Sindicato/(7823:7823): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:33:48:461 Sindicato/(7823:7897): Creacion Receta
+[INFO] 02:34:16:437 Sindicato/(8641:8641): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:35:05:154 Sindicato/(9004:9004): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:35:36:394 Sindicato/(9004:9071): Creacion Receta

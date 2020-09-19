@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 
 				case CREAR_PEDIDO:
     		    	printf(" 05- CREAR_PEDIDO HACIA: APP, SINDICATO \n");
-    		    	enviar_crear_pedido( g_ip_app, g_puerto_app, g_id_proceso );
+    		    	//enviar_crear_pedido( g_ip_app, g_puerto_app, g_id_proceso );
 		    		break;
     		    
 				case ANIADIR_PLATO:
@@ -90,7 +90,12 @@ int main(int argc, char **argv) {
 			case GUARDAR_PEDIDO:
 
 				printf("  06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
-				enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
+				int conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
+				t_header * encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente el guardado del pedido");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
 				break;
 
 			case GUARDAR_PLATO:

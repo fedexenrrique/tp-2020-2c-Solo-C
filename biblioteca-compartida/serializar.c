@@ -653,89 +653,7 @@ void responder_consultar_platos( int socket_cliente, char ** p_platos ) {
 
 }
 
-uint32_t enviar_crear_pedido( char* p_ip, char* p_puerto, int p_id_process ) {
-
-	uint32_t _recibir_id_pedido_creado( int p_conexion ) {
-
-		t_header * header_restaurantes = recibir_buffer( p_conexion );
-
-		printf( "Módulo:       %d.\n" , header_restaurantes->modulo     );
-		printf( "ID Proceso:   %d.\n" , header_restaurantes->id_proceso );
-		printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto(header_restaurantes->nro_msg) );
-		printf( "Bytes:        %d.\n" , header_restaurantes->size       );
-
-		if ( header_restaurantes->nro_msg != CREAR_PEDIDO ) {
-
-			perror("No es la respuesta esperada.");
-			exit(-1);
-
-		}
-
-		if ( header_restaurantes->size == 4 ) {
-
-			uint32_t id_crear_pedido;
-
-			memcpy( &id_crear_pedido, header_restaurantes->payload, sizeof(uint32_t) );
-
-			return id_crear_pedido;
-
-		} else return -1;
-
-	}
-
-	t_header l_header;
-
-	l_header.modulo     = CLIENTE;
-	l_header.id_proceso = p_id_process;
-	l_header.nro_msg    = CREAR_PEDIDO;
-	l_header.size       = 0;
-	l_header.payload    = NULL;
-
-	int conexion = crear_socket_y_conectar(p_ip, p_puerto);
-
-	if ( enviar_buffer( conexion, &l_header ) ) {
-
-		uint32_t id_pedido_creado = _recibir_id_pedido_creado(conexion);
-
-		printf("\nRecibí el ID de pedido: '%d'.\n", id_pedido_creado);
-
-		close(conexion);
-
-		return id_pedido_creado;
-
-	} else {
-
-		close(conexion);
-
-		return -1;
-
-	}
-
-}
-
-void recibir_crear_pedido_y_responder( int socket_cliente, uint32_t p_id_pedido_creado ) {
-
-	uint32_t buffer_size = sizeof(uint32_t);
-
-	void * buffer_response = malloc(buffer_size);
-
-	memcpy( buffer_response, &p_id_pedido_creado, sizeof(uint32_t) );
-
-	t_header header_response;
-
-	header_response.modulo     = APP;
-	header_response.id_proceso = 0;
-	header_response.nro_msg    = CREAR_PEDIDO;
-	header_response.size       = buffer_size;
-	header_response.payload    = buffer_response;
-
-	enviar_buffer( socket_cliente, &header_response);
-
-	free( buffer_response );
-
-}
-
-void enviar_guardar_pedido   (char* p_ip,char* p_puerto){
+int enviar_guardar_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=GUARDAR_PEDIDO;
 	t_header * encabezado=serializar_pedido(nro_msg);
@@ -743,6 +661,8 @@ void enviar_guardar_pedido   (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+	return conexion;
 
 }
 
@@ -1117,3 +1037,5 @@ t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * 
 
 	return header;
 }
+
+

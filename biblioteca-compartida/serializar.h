@@ -58,6 +58,8 @@ typedef enum {
     OBTENER_PEDIDO                      = 12,
     FINALIZAR_PEDIDO                    = 13,
     TOMAR_PEDIDO                        = 14,
+	OK                                  = 15,
+    FAIL                                = 16,
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
 
@@ -76,7 +78,6 @@ typedef struct {
 	uint32_t cantidad_lista_comida;
 	char     nombre_comida[24]    ;
 }t_comida;
-
 
 typedef struct {  // Me sirve para guardar pedido, consultar pedido, obtener pedido y finalizar pedido
 	uint32_t size_nombre_restaurante;
@@ -131,7 +132,7 @@ int deserializar(void* buffer, const char* format, ...);
 t_list *   enviar_consultar_restaurante   (char* p_ip,char* p_puerto);
 void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
-void       enviar_guardar_pedido   (char* p_ip,char* p_puerto);
+int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);
 void       enviar_obtener_pedido   (char* p_ip,char* p_puerto);
 void       enviar_confirmar_pedido (char* p_ip,char* p_puerto);
 void       enviar_finalizar_pedido (char* p_ip,char* p_puerto);
@@ -165,6 +166,7 @@ uint32_t  detectar_comando               ( char *   p_comando     );
 char *    nro_comando_a_texto            ( uint32_t p_comando     );
 uint32_t  detectar_modulo                ( char *   p_modulo      );
 char *    nro_modulo_a_texto             ( uint32_t p_modulo      );
+
 
 t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * respuesta_info);
 
