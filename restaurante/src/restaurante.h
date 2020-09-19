@@ -15,4 +15,6 @@ int									main										(void);
 void 								obtener_info_restaurante					(void);
 t_respuesta_info_restaurante 	* 	deserializar_respuesta_info_restaurante		(void *);
 
+void conectar_restaurante_a_applicación(void);
+
 #endif /* RESTAURANTE_H_ */

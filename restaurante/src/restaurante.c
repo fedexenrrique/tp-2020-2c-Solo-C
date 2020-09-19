@@ -19,7 +19,27 @@ int main(void) {
 
 	obtener_info_restaurante();
 
+	conectar_restaurante_a_applicación();
+
 	return 1;
+}
+
+void conectar_restaurante_a_applicación(void) {
+
+
+
+	uint32_t sock_conectado = crear_socket_y_conectar( ip_app, puerto_app );
+
+	t_header head;
+
+	head.id_proceso = g_id_proceso;
+	head.modulo = RESTAURANTE;
+	head.nro_msg = CONECTAR;
+	head.size = 999;
+	head.payload = NULL;
+
+	enviar_buffer(sock_conectado, &head);
+
 }
 
 void obtener_info_restaurante(void) {

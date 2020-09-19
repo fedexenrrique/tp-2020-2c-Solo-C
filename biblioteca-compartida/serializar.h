@@ -60,6 +60,7 @@ typedef enum {
     TOMAR_PEDIDO                        = 14,
 	OK                                  = 15,
     FAIL                                = 16,
+	CONECTAR                            = 17,
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
 

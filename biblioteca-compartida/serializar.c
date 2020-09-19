@@ -262,8 +262,6 @@ uint32_t aceptar_conexion ( uint32_t p_socket_para_escuchar ) {
 
 }
 
-
-
 uint32_t detectar_comando(char * p_comando) {
 
 	if ( string_equals_ignore_case(p_comando, "CONSULTAR_RESTAURANTES" ) ) return CONSULTAR_RESTAURANTES ; else

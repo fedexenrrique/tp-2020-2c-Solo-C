@@ -94,7 +94,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	case CREAR_PEDIDO:
 		// uint32_t socket_hacia_restaurante = crear_socket_y_conectar(char* p_ip, char* p_puerto);
 		// enviar_buffer ( ---------, header_recibido );
-		recibir_crear_pedido_y_responder( socket_aceptado, 987 );
+		// recibir_crear_pedido_y_responder( socket_aceptado, 987 );
 		break;
 	case ANIADIR_PLATO:
 		break;
