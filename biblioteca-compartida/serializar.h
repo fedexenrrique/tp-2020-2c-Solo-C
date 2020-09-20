@@ -125,12 +125,13 @@ typedef struct{
 }t_respuesta_info_restaurante;
 
 
-
 t_log    * logger;
 t_config * config;
 
 t_list   * g_sockets_abiertos;
-int        g_socket_cliente;
+uint32_t   g_socket_cliente;
+
+uint32_t   g_tiempo_reconexion;
 
 // FUNCIONES
 
@@ -181,6 +182,7 @@ t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * 
 bool       enviar_buffer            ( uint32_t p_conexion, t_header * p_header );
 t_header * recibir_buffer           ( uint32_t socket_cliente );
 
+void sigint(int a);
 
 
 

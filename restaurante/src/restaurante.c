@@ -3,15 +3,24 @@
 
 int main(void) {
 
-	prueba_biblioteca_compartida();
-
 	cargar_config();
 
+	g_sockets_abiertos = list_create();
+
+	g_tiempo_reconexion = 3;
+
+	signal(SIGINT, sigint);
+
 	// obtener_info_restaurante();
+
+	// pthread_t  receptor_modulo_cliente_h;
+
+	// pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
 
 	conectar_restaurante_a_applicacion();
 
 	return 1;
+
 }
 
 void conectar_restaurante_a_applicacion(void) {
@@ -33,14 +42,9 @@ void conectar_restaurante_a_applicacion(void) {
 	memcpy( payload + despla, nombre_restaurante, resto_nombre_size );
 	despla += string_length(nombre_restaurante);
 
-	mem_hexdump(payload, buffer_size);
-
 	uint32_t sock_conectado = crear_socket_y_conectar( ip_app, puerto_app );
 
-	// log_info(logger, "IP: '%s'\n", ip_app);
-	// log_info(logger, "PUERTO: '%s'\n", puerto_app);
-
-	// uint32_t sock_conectado = crear_socket_y_conectar( "127.0.0.1", "5004" );
+	g_socket_cliente = sock_conectado;
 
 	if ( -1 == sock_conectado ) exit(-1);
 
@@ -54,7 +58,61 @@ void conectar_restaurante_a_applicacion(void) {
 
 	enviar_buffer( sock_conectado, &head);
 
+	while (1) {
+
+		recibir_buffer( sock_conectado );
+
+	}
+
 	free(payload);
+
+
+
+
+
+
+
+
+	t_header * header_recibido = recibir_buffer( sock_conectado );
+
+	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
+	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
+	printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
+	printf( "Bytes:        %d.\n" , header_recibido->size       );
+
+	mem_hexdump(header_recibido->payload, header_recibido->size);
+
+	switch ( header_recibido->nro_msg ) {
+	case CONSULTAR_PLATOS:
+		// responder_consultar_platos( sock_conectado, g_platos_default );
+		break;
+	case CREAR_PEDIDO:
+		break;
+	case ANIADIR_PLATO:
+		break;
+	case CONFIRMAR_PEDIDO:
+		break;
+	case PLATO_LISTO:
+		break;
+	case CONSULTAR_PEDIDO:
+		break;
+	case CONECTAR:
+		break;
+	default:
+		printf("Mensaje no compatible con módulo RESTAURANTE.\n");
+	}
+
+	if ( header_recibido->size > 0 || header_recibido->payload != NULL )
+
+		free( header_recibido->payload );
+
+	free( header_recibido );
+
+
+
+
+
+
 	close( sock_conectado );
 
 }
@@ -143,6 +201,7 @@ t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * pa
 	memcpy(&(respuesta_info->cantidad_hornos), payload, sizeof(uint32_t));
 
 	return respuesta_info;
+
 }
 
 

@@ -38,6 +38,13 @@ char ** g_platos_default;                // PLATOS_DEFAULT=3
 int     g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
 int     g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
 
+typedef struct {
+	uint32_t    posx;
+	uint32_t    posy;
+	char     *  resto_nombre;
+	uint32_t    socket_conectado;
+} t_info_restarante;
+
 t_list * lista_pcbs;
 
 t_list * lista_resto_conectados;

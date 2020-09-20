@@ -8,7 +8,7 @@ int main(void) {
 	lista_pcbs             = list_create();
 	lista_resto_conectados = list_create();
 
-	g_sockets_abiertos = list_create();
+	g_sockets_abiertos     = list_create();
 
 	signal(SIGINT, sigint);
 
@@ -125,7 +125,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socket_aceptado ) {
 
-	t_resto_conex * l_resto = malloc( sizeof(l_resto) );
+	t_info_restarante * l_resto = malloc( sizeof(l_resto) );
 	uint32_t despla = 0;
 
 	memcpy( &l_resto->posx, header_recibido->payload + despla, sizeof(uint32_t) );
@@ -134,15 +134,19 @@ void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socke
 	memcpy( &l_resto->posy, header_recibido->payload + despla, sizeof(uint32_t) );
 	despla += sizeof(uint32_t);
 
-	memcpy( &l_resto->resto_nombre_size, header_recibido->payload + despla, sizeof(uint32_t) );
+	uint32_t resto_nombre_size = 0;
+
+	memcpy( &resto_nombre_size, header_recibido->payload + despla, sizeof(uint32_t) );
 	despla += sizeof(uint32_t);
 
-	l_resto->resto_nombre = malloc( l_resto->resto_nombre_size +1 );
+	l_resto->resto_nombre = malloc( resto_nombre_size +1 );
 
-	memcpy( l_resto->resto_nombre, header_recibido->payload + despla, l_resto->resto_nombre_size );
+	memcpy( l_resto->resto_nombre, header_recibido->payload + despla, resto_nombre_size );
 	despla += sizeof(uint32_t);
 
-	l_resto->resto_nombre[l_resto->resto_nombre_size] = '\0';
+	l_resto->resto_nombre[resto_nombre_size] = '\0';
+
+	l_resto->socket_conectado = p_socket_aceptado;
 
 	printf("Se incorporó el restaurante '%s' en la posición (%d,%d) del mapa.\n", l_resto->resto_nombre, l_resto->posx, l_resto->posy);
 
@@ -209,18 +213,6 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 void sigint(int a) {
 
-	/*
-	void _cerrar_socket(void * p_elem) {
-
-		int * socket = (int*)p_elem;
-		close( * socket );
-
-	}
-
-	printf ("\nCerrando File Descriptor abiertos.\n");
-
-	list_iterate( g_sockets_abiertos, _cerrar_socket );
-*/
 	log_destroy(logger);
 	config_destroy(config);
 	close( g_socket_cliente );

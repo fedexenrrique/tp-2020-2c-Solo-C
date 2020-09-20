@@ -179,8 +179,23 @@ uint32_t crear_socket_y_conectar(char* p_ip, char* p_puerto) {
 
 	getaddrinfo(p_ip, p_puerto, &hints, &server_info);
 
-	int socket_cliente   = socket (server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
-	int validar_conexion = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+	int socket_cliente   = -1;
+	int validar_conexion = -1;
+
+	while ( validar_conexion == -1 || socket_cliente == -1 ) {
+
+		socket_cliente   = socket (server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
+		validar_conexion = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+
+		if ( g_tiempo_reconexion == 0 ) break;
+
+		if( validar_conexion == -1 || socket_cliente == -1 ){
+
+			sleep(g_tiempo_reconexion);
+
+		}
+
+	}
 
 	freeaddrinfo(server_info);
 
@@ -192,7 +207,7 @@ uint32_t crear_socket_y_conectar(char* p_ip, char* p_puerto) {
 
 	} else
 
-		log_info(logger,"Se conecto correctamente");
+		log_info(logger,"Conexión exitosa!");
 
 	return socket_cliente;
 
@@ -1042,4 +1057,12 @@ t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * 
 	return header;
 }
 
+void sigint(int a) {
 
+	log_destroy(logger);
+	config_destroy(config);
+	close( g_socket_cliente );
+
+	exit(1);
+
+}
