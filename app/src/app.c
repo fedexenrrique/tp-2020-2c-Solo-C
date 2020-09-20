@@ -106,8 +106,27 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	case CONSULTAR_PEDIDO:
 		break;
 	case CONECTAR:
-		printf("tratamiento de conexión.....");
+
+		printf("tratamiento de conexión.....\n");
+
 		manejar_restaurante_conectado(header_recibido, socket_aceptado);
+
+		t_header aux_head;
+
+		aux_head.id_proceso = 99999;
+		aux_head.modulo = APP;
+		aux_head.nro_msg = CONECTAR;
+		aux_head.size = 0;
+		aux_head.payload = NULL;
+
+		enviar_buffer( socket_aceptado, &aux_head );
+
+		while ( recv( socket_aceptado, NULL, 0, MSG_PEEK | MSG_DONTWAIT ) != 0 ) {
+
+			bucle_resto_conectado( socket_aceptado );
+
+		}
+
 		break;
 	default:
 		printf("Mensaje no compatible con módulo APP.\n");
@@ -152,6 +171,15 @@ void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socke
 
 	list_add( lista_resto_conectados, l_resto );
 
+
+}
+
+void bucle_resto_conectado ( uint32_t sock_aceptado ) {
+
+	sem_wait( &g_semaphore_envios_resto );
+	// list_iterate(p_msg_queue, _control_mensaje_individual);
+	sleep(5);
+	sem_post( &g_semaphore_envios_resto );
 
 }
 
