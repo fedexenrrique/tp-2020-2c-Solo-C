@@ -815,7 +815,7 @@ void 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
 	plato->pedido->nombre_restaurante="Mataderos";
 	plato->size_nombre_plato=4;
-	plato->nombre_plato="papa";
+	plato->nombre_plato="fideos moñitos";
 	plato->cantidad_plato=5;
 
 	int size_buffer=4*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;

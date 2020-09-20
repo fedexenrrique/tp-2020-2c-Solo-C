@@ -79,8 +79,10 @@ void manejo_modulo_conectado(void * socket_cliente){
 			free(aux);
 			break;
 		case GUARDAR_PLATO:
-			administrar_guardar_plato(mensaje_recibido->payload);
-			free(mensaje_recibido->payload);
+			aux=mensaje_recibido->payload;
+			mensaje_recibido->payload=(void*)recibir_guardar_plato(mensaje_recibido->payload);
+			administrar_guardar_plato(mensaje_recibido,*sock_cliente);
+			free(aux);
 			break;
 		case OBTENER_PEDIDO:
 			aux=mensaje_recibido->payload;
@@ -160,11 +162,67 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
 
 
-t_guardar_plato * administrar_guardar_plato(void * payload){
+void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 
-	t_guardar_plato * plato=recibir_guardar_plato(payload);
+	t_guardar_plato * plato=(t_guardar_plato*)encabezado->payload;
 
-	return plato;
+			bool buscar_restaurante(void * elemento){
+				t_restaurante * restaurante=(t_restaurante*)elemento;
+
+				if(string_equals_ignore_case(restaurante->nombre_restaurante,plato->pedido->nombre_restaurante)){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+			bool buscar_pedido(void * elemento){
+				t_pedido * pedido=(t_pedido*)elemento;
+
+				if(pedido->id_pedido==plato->pedido->id_pedido){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+			bool buscar_comida(void * elemento){
+				t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
+				t_comida * comida=(t_comida*)adm_comida->contenido;
+
+				if(string_equals_ignore_case(comida->nombre_comida,plato->nombre_plato)){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);
+
+	if(restaurante==NULL)
+		;//Se informa que no existe el restaurante
+
+
+	t_pedido_seg * pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+
+	if(pedido==NULL)
+		;//Se informa que no existe el pedido
+
+	t_pagina_comida * comida=list_find(pedido->comidas_del_pedido,buscar_comida);
+
+	if(comida!=NULL)
+		;//El caso de que ya exista ese plato en el pedido
+	else{
+		t_pagina_comida * adm_comida=malloc(sizeof(t_pagina_comida));
+		adm_comida->esta_en_memoria=FALSE;
+		adm_comida->direccion_memoria=NULL;
+
+		t_comida * comida=malloc(sizeof(t_comida));
+		comida->cantidad_lista_comida=0;
+		comida->cantidad_total_comida=plato->cantidad_plato;
+		comida->
+
+		adm_comida->contenido;
+	}
+
+
 }
 
 t_plato_listo * administrar_plato_listo(void * payload){
