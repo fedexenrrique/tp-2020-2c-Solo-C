@@ -155,6 +155,8 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
+	free(nuevo_encabezado);
+
 }
 
 
@@ -194,6 +196,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 				return FALSE;
 			}
 
+	bool exito=FALSE;
 	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);
 
 	if(restaurante==NULL)
@@ -217,11 +220,35 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 		t_comida * comida=malloc(sizeof(t_comida));
 		comida->cantidad_lista_comida=0;
 		comida->cantidad_total_comida=plato->cantidad_plato;
-		comida->
+		comida->nombre_comida[0]=*(plato->nombre_plato);
 
-		adm_comida->contenido;
+		printf("El nombre de la comida es: %s",comida->nombre_comida);
+
+		adm_comida->contenido=(void*)comida;
+
+		list_add(pedido->comidas_del_pedido,adm_comida);            //Guardo la nueva comida en el pedido
+
+		exito=TRUE;
 	}
 
+
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	if(exito==TRUE)
+		nuevo_encabezado->nro_msg=OK;
+	else
+		nuevo_encabezado->nro_msg=FAIL;
+
+	nuevo_encabezado->size=0;
+	nuevo_encabezado->payload=NULL;
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+
+	free(nuevo_encabezado);
 
 }
 

@@ -12,8 +12,12 @@
 
 int main(int argc, char **argv) {
 
+	int conexion;
+	t_header * encabezado;
+
 	logger = log_create("cliente.log","CLIENTE",1,LOG_LEVEL_INFO);
 	config = leer_config();
+
 
 	if ( argc == 1 ) {
 
@@ -90,8 +94,8 @@ int main(int argc, char **argv) {
 			case GUARDAR_PEDIDO:
 
 				printf("  06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
-				int conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
-				t_header * encabezado=recibir_buffer(conexion);
+				conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
 				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
 				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente el guardado del pedido");
@@ -101,7 +105,12 @@ int main(int argc, char **argv) {
 			case GUARDAR_PLATO:
 
 				printf(" 08- GUARDAR_PLATO           HACIA: COMANDA, SINDICATO                     \n");
-				enviar_guardar_plato(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_guardar_plato(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente el guardado del pedido");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
 				break;
 
 			case CONFIRMAR_PEDIDO:

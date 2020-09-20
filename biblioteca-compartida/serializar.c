@@ -759,7 +759,7 @@ t_header * serializar_pedido       (uint32_t nro_msg        ){
 	pedido->id_pedido=1;
 	pedido->size_nombre_restaurante=6;
 	pedido->nombre_restaurante=malloc(pedido->size_nombre_restaurante);
-	pedido->nombre_restaurante="Farola";
+	pedido->nombre_restaurante="FAROLA";
 
 	int size_buffer=2*sizeof(uint32_t)+pedido->size_nombre_restaurante;
 	void * buffer=malloc(size_buffer);
@@ -803,7 +803,7 @@ t_pedido * recibir_pedido  (void * payload         ){
 
 }
 
-void 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
+int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 
 	t_guardar_plato * plato=malloc(sizeof(t_guardar_plato));
 	plato->pedido=malloc(sizeof(t_pedido));
@@ -813,8 +813,8 @@ void 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	plato->pedido->id_pedido=1;
 	plato->pedido->size_nombre_restaurante=9;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
-	plato->pedido->nombre_restaurante="Mataderos";
-	plato->size_nombre_plato=4;
+	plato->pedido->nombre_restaurante="FAROLA";
+	plato->size_nombre_plato=14;
 	plato->nombre_plato="fideos moñitos";
 	plato->cantidad_plato=5;
 
@@ -847,6 +847,8 @@ void 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del plato");
+
+	return conexion;
 
 }
 
