@@ -1,15 +1,5 @@
-/*
- ============================================================================
- Name        : restaurante.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
 
 #include "restaurante.h"
-
 
 int main(void) {
 
@@ -17,28 +7,55 @@ int main(void) {
 
 	cargar_config();
 
-	obtener_info_restaurante();
+	// obtener_info_restaurante();
 
-	conectar_restaurante_a_applicación();
+	conectar_restaurante_a_applicacion();
 
 	return 1;
 }
 
-void conectar_restaurante_a_applicación(void) {
+void conectar_restaurante_a_applicacion(void) {
 
+	uint32_t despla = 0;
+	uint32_t resto_nombre_size = string_length(nombre_restaurante);
+	uint32_t buffer_size = sizeof(uint32_t) * 3 + resto_nombre_size ;
+	void * payload = malloc(buffer_size);
 
+	memcpy( payload + despla, &g_pos_x, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( payload + despla, &g_pos_y, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( payload + despla, &resto_nombre_size, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( payload + despla, nombre_restaurante, resto_nombre_size );
+	despla += string_length(nombre_restaurante);
+
+	mem_hexdump(payload, buffer_size);
 
 	uint32_t sock_conectado = crear_socket_y_conectar( ip_app, puerto_app );
+
+	// log_info(logger, "IP: '%s'\n", ip_app);
+	// log_info(logger, "PUERTO: '%s'\n", puerto_app);
+
+	// uint32_t sock_conectado = crear_socket_y_conectar( "127.0.0.1", "5004" );
+
+	if ( -1 == sock_conectado ) exit(-1);
 
 	t_header head;
 
 	head.id_proceso = g_id_proceso;
-	head.modulo = RESTAURANTE;
-	head.nro_msg = CONECTAR;
-	head.size = 999;
-	head.payload = NULL;
+	head.modulo     = RESTAURANTE;
+	head.nro_msg    = CONECTAR;
+	head.size       = buffer_size;
+	head.payload    = payload;
 
-	enviar_buffer(sock_conectado, &head);
+	enviar_buffer( sock_conectado, &head);
+
+	free(payload);
+	close( sock_conectado );
 
 }
 

@@ -66,6 +66,13 @@ typedef enum {
 
 } cod_msg;
 
+typedef struct {
+	uint32_t    posx;
+	uint32_t    posy;
+	uint32_t    resto_nombre_size;
+	char     *  resto_nombre;
+} t_resto_conex;
+
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t    modulo;
 	uint32_t    id_proceso;

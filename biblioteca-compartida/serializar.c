@@ -182,12 +182,17 @@ uint32_t crear_socket_y_conectar(char* p_ip, char* p_puerto) {
 	int socket_cliente   = socket (server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 	int validar_conexion = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
 
-	if( validar_conexion== -1|| socket_cliente==-1)
-		log_info(logger,"error");
-	else
-		log_info(logger,"Se conecto correctamente");
-
 	freeaddrinfo(server_info);
+
+	if( validar_conexion == -1 || socket_cliente == -1) {
+
+		log_info(logger,"[ BIBLIO - crear_socket_y_conectar] No se pudo establecer la conexión al módulo servidor.");
+
+		return -1;
+
+	} else
+
+		log_info(logger,"Se conecto correctamente");
 
 	return socket_cliente;
 
@@ -300,6 +305,7 @@ char * nro_comando_a_texto(uint32_t p_comando) {
 		case OBTENER_PEDIDO: 			return "OBTENER_PEDIDO"         ;break;
 		case FINALIZAR_PEDIDO: 			return "FINALIZAR_PEDIDO"       ;break;
 		case TOMAR_PEDIDO: 				return "TOMAR_PEDIDO"           ;break;
+		case CONECTAR:                  return "CONECTAR"               ;break;
 		default: 						return NULL ;break;
 	}
 
@@ -406,7 +412,7 @@ t_header * recibir_buffer ( uint32_t socket_cliente ) {
 
 		l_header->payload= malloc(size);
 
-		int bytes_recibidos=recv( socket_cliente, l_header->payload, size, MSG_WAITALL );
+		int bytes_recibidos = recv( socket_cliente, l_header->payload, size, 0 );
 
 		mem_hexdump(l_header->payload, size);
 

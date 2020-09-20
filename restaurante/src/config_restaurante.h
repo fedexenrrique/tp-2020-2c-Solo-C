@@ -23,6 +23,8 @@ char		*	algoritmo_planificacion;
 char		*	nombre_restaurante;
 
 uint32_t        g_id_proceso;
+uint32_t        g_pos_x;
+uint32_t        g_pos_y;
 
 void      		cargar_config	(void);
 int				config_valida	(t_config*);

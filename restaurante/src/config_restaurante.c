@@ -28,6 +28,8 @@ void cargar_config(void) {
 	nombre_restaurante = config_get_string_value(config_restaurante, "NOMBRE_RESTAURANTE");
 
 	g_id_proceso = ( config_has_property(config_restaurante, "ID_PROCESO") ) ? config_get_int_value(config_restaurante, "ID_PROCESO") : 4444;
+	g_pos_x = ( config_has_property(config_restaurante, "POSICION_X") ) ? config_get_int_value(config_restaurante, "POSICION_X") : -5;
+	g_pos_y = ( config_has_property(config_restaurante, "POSICION_Y") ) ? config_get_int_value(config_restaurante, "POSICION_Y") : -5;
 
 	log_info(logger_restaurante,
 		"\nPUERTO_ESCUCHA: %s\n"

@@ -5,7 +5,8 @@ int main(void) {
 
 	prueba_biblioteca_compartida();
 
-	lista_pcbs = list_create();
+	lista_pcbs             = list_create();
+	lista_resto_conectados = list_create();
 
 	g_sockets_abiertos = list_create();
 
@@ -104,6 +105,10 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		break;
 	case CONSULTAR_PEDIDO:
 		break;
+	case CONECTAR:
+		printf("tratamiento de conexión.....");
+		manejar_restaurante_conectado(header_recibido, socket_aceptado);
+		break;
 	default:
 		printf("Mensaje no compatible con módulo APP.\n");
 	}
@@ -112,7 +117,37 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 		free( header_recibido->payload );
 
+	free( header_recibido );
+
 	close( socket_aceptado );
+
+}
+
+void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socket_aceptado ) {
+
+	t_resto_conex * l_resto = malloc( sizeof(l_resto) );
+	uint32_t despla = 0;
+
+	memcpy( &l_resto->posx, header_recibido->payload + despla, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( &l_resto->posy, header_recibido->payload + despla, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( &l_resto->resto_nombre_size, header_recibido->payload + despla, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	l_resto->resto_nombre = malloc( l_resto->resto_nombre_size +1 );
+
+	memcpy( l_resto->resto_nombre, header_recibido->payload + despla, l_resto->resto_nombre_size );
+	despla += sizeof(uint32_t);
+
+	l_resto->resto_nombre[l_resto->resto_nombre_size] = '\0';
+
+	printf("Se incorporó el restaurante '%s' en la posición (%d,%d) del mapa.\n", l_resto->resto_nombre, l_resto->posx, l_resto->posy);
+
+	list_add( lista_resto_conectados, l_resto );
+
 
 }
 
