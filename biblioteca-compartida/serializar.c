@@ -811,10 +811,11 @@ int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	int offset=0;
 
 	plato->pedido->id_pedido=1;
-	plato->pedido->size_nombre_restaurante=9;
+	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
 	plato->pedido->nombre_restaurante="FAROLA";
 	plato->size_nombre_plato=14;
+	plato->nombre_plato=malloc(plato->size_nombre_plato);
 	plato->nombre_plato="fideos moñitos";
 	plato->cantidad_plato=5;
 
@@ -889,11 +890,12 @@ void 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
 	int offset=0;
 
 	plato->pedido->id_pedido=15;
-	plato->pedido->size_nombre_restaurante=7;
+	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
-	plato->pedido->nombre_restaurante="Tinajas";
-	plato->size_nombre_plato=6;
-	plato->nombre_plato="batata";
+	plato->pedido->nombre_restaurante="FAROLA";
+	plato->size_nombre_plato=14;
+	plato->nombre_plato=malloc(plato->size_nombre_plato);
+	plato->nombre_plato="fideos moñitos";
 
 	int size_buffer=3*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
 	void * buffer=malloc(size_buffer);
