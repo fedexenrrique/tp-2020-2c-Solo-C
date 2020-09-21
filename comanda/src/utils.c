@@ -164,9 +164,10 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
 
 
-void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
+void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //-------------------------Falta mandar a memoria
 
 	t_guardar_plato * plato=(t_guardar_plato*)encabezado->payload;
+	bool exito=FALSE;
 
 			bool buscar_restaurante(void * elemento){
 				t_restaurante * restaurante=(t_restaurante*)elemento;
@@ -179,7 +180,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 
 			bool buscar_pedido(void * elemento){
 				t_pedido_seg * pedido=(t_pedido_seg*)elemento;
-				printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
+				//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
 
 				if(pedido->id_pedido==plato->pedido->id_pedido){
 						return TRUE;
@@ -197,7 +198,6 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 				return FALSE;
 			}
 
-	bool exito=FALSE;
 
 	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
 		goto envio_de_respuesta;
@@ -206,8 +206,9 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 	restaurante=list_find(lista_restarurantes,buscar_restaurante);
 
 
-	if(restaurante==NULL)
+	if(restaurante==NULL){
 		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
+		goto envio_de_respuesta;}
 	else
 		printf("Se encontro el restaurant: %s \n",restaurante->nombre_restaurante);
 
@@ -217,35 +218,34 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 	t_pedido_seg * pedido=NULL;
 	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
 
-	if(pedido==NULL)
+	if(pedido==NULL){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
+		goto envio_de_respuesta;}
 	else
 		printf("Se encontro el pedido numero: %d\n",pedido->id_pedido);
 
-	t_pagina_comida * comida=NULL;
+	t_pagina_comida * adm_comida=NULL;
 
 	if(!list_is_empty(pedido->comidas_del_pedido))						//Verifico que no este vacia la lista
-			comida=list_find(pedido->comidas_del_pedido,buscar_comida);
+			adm_comida=list_find(pedido->comidas_del_pedido,buscar_comida);
 
-	if(comida!=NULL)
-		printf("Se encontro el plato de comida en el pedido\n");//El caso de que ya exista ese plato en el pedido
+	if(adm_comida!=NULL){
+		printf("Se encontro el plato de comida en el pedido. Se va a sumar la nueva cantidad.\n");//El caso de que ya exista ese plato en el pedido
+		t_comida * comida=(t_comida *)adm_comida->contenido;
+		comida->cantidad_total_comida+=plato->cantidad_plato;
+		log_info(logger,"El plato %s ahora tiene una cantidad total de: %d",comida->nombre_comida,comida->cantidad_total_comida);
+		}
 	else{
 		printf("No se encontro el plato de comida en el pedido, asique se va a crear\n");
-		t_pagina_comida * adm_comida=malloc(sizeof(t_pagina_comida));
+		adm_comida=malloc(sizeof(t_pagina_comida));
 		adm_comida->esta_en_memoria=FALSE;
 		adm_comida->direccion_memoria=NULL;
 
 		t_comida * comida=malloc(sizeof(t_comida));
 		comida->cantidad_lista_comida=0;
 		comida->cantidad_total_comida=plato->cantidad_plato;
-		strcpy(comida->nombre_comida,plato->nombre_plato);  //----------------TENGO Q VER ACA COMO PASO EL STRING AL VECTOR
+		strcpy(comida->nombre_comida,plato->nombre_plato);
 
-		/*int indice=0;
-		for(int i=0;i>23;i++){
-			comida->nombre_comida[i]=*(plato->nombre_plato+indice);
-			if(++indice==plato->size_nombre_plato)
-				i=23;
-		}*/
 		printf("El nombre de la comida es: %s",comida->nombre_comida);
 
 		adm_comida->contenido=(void*)comida;
