@@ -128,7 +128,8 @@ int main(int argc, char **argv) {
 			case OBTENER_PEDIDO:
 
 				printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                    \n");
-				enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
 				break;
 
 			case FINALIZAR_PEDIDO:

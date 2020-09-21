@@ -61,6 +61,7 @@ typedef enum {
 	OK                                  = 15,
     FAIL                                = 16,
 	CONECTAR                            = 17,
+	RESPUESTA_OBTENER_PEDIDO            = 18,
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
 
@@ -142,11 +143,11 @@ t_list *   enviar_consultar_restaurante   (char* p_ip,char* p_puerto);
 void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
 int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);
-void       enviar_obtener_pedido   (char* p_ip,char* p_puerto);
+int        enviar_obtener_pedido   (char* p_ip,char* p_puerto);
 void       enviar_confirmar_pedido (char* p_ip,char* p_puerto);
 void       enviar_finalizar_pedido (char* p_ip,char* p_puerto);
-t_header * serializar_pedido       (uint32_t nro_msg       );
-t_pedido * recibir_pedido          (void * payload         );
+t_header * serializar_pedido       (uint32_t nro_msg         );
+t_pedido * recibir_pedido          (void * payload           );
 
 bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_process, char * p_restaurante );
 void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );

@@ -685,7 +685,7 @@ int enviar_guardar_pedido   (char* p_ip,char* p_puerto){
 
 }
 
-void enviar_obtener_pedido   (char* p_ip,char* p_puerto){
+int enviar_obtener_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=OBTENER_PEDIDO;
 	t_header * encabezado=serializar_pedido(nro_msg);
@@ -693,6 +693,8 @@ void enviar_obtener_pedido   (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+	return conexion;
 }
 
 void enviar_confirmar_pedido   (char* p_ip,char* p_puerto){

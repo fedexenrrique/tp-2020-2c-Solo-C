@@ -86,7 +86,8 @@ void manejo_modulo_conectado(void * socket_cliente){
 			break;
 		case OBTENER_PEDIDO:
 			aux=mensaje_recibido->payload;
-			recibir_consulta_pedido(mensaje_recibido->payload);
+			mensaje_recibido->payload=(void*)recibir_consulta_pedido(mensaje_recibido->payload);
+			administrar_obtener_pedido(mensaje_recibido,*sock_cliente);
 			free(aux);
 			break;
 		case CONFIRMAR_PEDIDO:
@@ -276,6 +277,96 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 	free(nuevo_encabezado);
 
 }
+
+void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
+
+	t_pedido * pedido_solicitado=(t_pedido*)encabezado->payload;
+	void * buffer=NULL;
+	int offset=0;
+	uint32_t size_payload=0;
+
+			bool buscar_restaurante(void * elemento){
+				t_restaurante * restaurante=(t_restaurante*)elemento;
+
+				if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido_solicitado->nombre_restaurante)){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+			bool buscar_pedido(void * elemento){
+				t_pedido_seg * pedido=(t_pedido_seg*)elemento;
+				//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
+
+				if(pedido->id_pedido==pedido_solicitado->id_pedido){
+						return TRUE;
+						}
+				return FALSE;
+			}
+			void serializar_tabla_comida(void * elemento){
+				t_comida * comida=(t_comida *)elemento;
+
+				memcpy(buffer+offset,&comida->cantidad_lista_comida,sizeof(uint32_t));
+				offset+=sizeof(uint32_t);
+
+				memcpy(buffer+offset,&comida->cantidad_total_comida,sizeof(uint32_t));
+				offset+=sizeof(uint32_t);
+
+				memcpy(buffer+offset,comida->nombre_comida,sizeof(comida->nombre_comida));
+				offset+=sizeof(comida->nombre_comida);
+
+
+			}
+
+
+	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_restaurante * restaurante=NULL;
+	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+
+
+	if(restaurante==NULL){
+		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
+		goto envio_de_respuesta;}
+	else
+		printf("Se encontro el restaurant: %s \n",restaurante->nombre_restaurante);
+
+	if(list_is_empty(restaurante->tabla_pedidos))						//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_pedido_seg * pedido=NULL;
+	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+
+	if(pedido==NULL){
+		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
+		goto envio_de_respuesta;}
+	else{
+		printf("Se encontro el pedido numero: %d\n",pedido->id_pedido);
+
+		int size_lista_pedido=list_size(pedido->comidas_del_pedido);
+		buffer=malloc(sizeof(t_comida)*size_lista_pedido);
+		list_iterate(pedido->comidas_del_pedido,serializar_tabla_comida);
+	    }
+
+
+	envio_de_respuesta:
+	;
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	nuevo_encabezado->nro_msg=RESPUESTA_OBTENER_PEDIDO;
+	nuevo_encabezado->size=size_payload;
+	nuevo_encabezado->payload=buffer;
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+
+	free(nuevo_encabezado);
+}
+
 
 t_plato_listo * administrar_plato_listo(void * payload){
 

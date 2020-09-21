@@ -26,6 +26,7 @@ t_pedido       * recibir_consulta_pedido   (void*);
 
 void administrar_guardar_pedido (t_header*,int);
 void administrar_guardar_plato  (t_header*,int);
+void administrar_obtener_pedido (t_header*,int);
 
 
 
