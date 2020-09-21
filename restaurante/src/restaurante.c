@@ -1,25 +1,120 @@
-/*
- ============================================================================
- Name        : restaurante.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
 
 #include "restaurante.h"
 
-
 int main(void) {
-
-	prueba_biblioteca_compartida();
 
 	cargar_config();
 
-	obtener_info_restaurante();
+	g_sockets_abiertos = list_create();
+
+	g_tiempo_reconexion = 3;
+
+	signal(SIGINT, sigint);
+
+	// obtener_info_restaurante();
+
+	// pthread_t  receptor_modulo_cliente_h;
+
+	// pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
+
+	conectar_restaurante_a_applicacion();
 
 	return 1;
+
+}
+
+void conectar_restaurante_a_applicacion(void) {
+
+	uint32_t despla = 0;
+	uint32_t resto_nombre_size = string_length(nombre_restaurante);
+	uint32_t buffer_size = sizeof(uint32_t) * 3 + resto_nombre_size ;
+	void * payload = malloc(buffer_size);
+
+	memcpy( payload + despla, &g_pos_x, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( payload + despla, &g_pos_y, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( payload + despla, &resto_nombre_size, sizeof(uint32_t) );
+	despla += sizeof(uint32_t);
+
+	memcpy( payload + despla, nombre_restaurante, resto_nombre_size );
+	despla += string_length(nombre_restaurante);
+
+	uint32_t sock_conectado = crear_socket_y_conectar( ip_app, puerto_app );
+
+	g_socket_cliente = sock_conectado;
+
+	if ( -1 == sock_conectado ) exit(-1);
+
+	t_header head;
+
+	head.id_proceso = g_id_proceso;
+	head.modulo     = RESTAURANTE;
+	head.nro_msg    = CONECTAR;
+	head.size       = buffer_size;
+	head.payload    = payload;
+
+	enviar_buffer( sock_conectado, &head);
+
+	while (1) {
+
+		recibir_buffer( sock_conectado );
+
+	}
+
+	free(payload);
+
+
+
+
+
+
+
+
+	t_header * header_recibido = recibir_buffer( sock_conectado );
+
+	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
+	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
+	printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
+	printf( "Bytes:        %d.\n" , header_recibido->size       );
+
+	mem_hexdump(header_recibido->payload, header_recibido->size);
+
+	switch ( header_recibido->nro_msg ) {
+	case CONSULTAR_PLATOS:
+		// responder_consultar_platos( sock_conectado, g_platos_default );
+		break;
+	case CREAR_PEDIDO:
+		break;
+	case ANIADIR_PLATO:
+		break;
+	case CONFIRMAR_PEDIDO:
+		break;
+	case PLATO_LISTO:
+		break;
+	case CONSULTAR_PEDIDO:
+		break;
+	case CONECTAR:
+		break;
+	default:
+		printf("Mensaje no compatible con módulo RESTAURANTE.\n");
+	}
+
+	if ( header_recibido->size > 0 || header_recibido->payload != NULL )
+
+		free( header_recibido->payload );
+
+	free( header_recibido );
+
+
+
+
+
+
+	close( sock_conectado );
+
 }
 
 void obtener_info_restaurante(void) {
@@ -106,6 +201,7 @@ t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * pa
 	memcpy(&(respuesta_info->cantidad_hornos), payload, sizeof(uint32_t));
 
 	return respuesta_info;
+
 }
 
 
