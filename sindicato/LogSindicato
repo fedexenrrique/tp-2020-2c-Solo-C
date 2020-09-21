@@ -738,3 +738,210 @@ PUERTO_ESCUCHA: 5003
 PUNTO_MONTAJE: /home/utnso/afip
 
 [INFO] 02:35:36:394 Sindicato/(9004:9071): Creacion Receta
+[INFO] 22:09:17:652 Sindicato/(9304:9304): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:10:29:370 Sindicato/(9375:9375): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:10:29:372 Sindicato/(9375:9375): Preparando punto de montaje.
+[WARNING] 22:10:29:372 Sindicato/(9375:9375): El punto de montaje no existe. Se creará el directorio.
+[INFO] 22:10:29:372 Sindicato/(9375:9375): El directorio se creó satisfactoriamente.
+[ERROR] 22:10:29:372 Sindicato/(9375:9375): Error al crear el directorio Metadata
+[INFO] 22:10:29:372 Sindicato/(9375:9375): Creando directorio de files...
+[INFO] 22:10:29:372 Sindicato/(9375:9375): Se creo el directorio para almacenar los restaurantes y las recetas
+[ERROR] 22:10:29:372 Sindicato/(9375:9375): Error al crear el directorio de Bloques
+[INFO] 22:10:29:372 Sindicato/(9375:9375): Directorio de restaurantes creado
+[INFO] 22:10:29:373 Sindicato/(9375:9375): Directorio de recetas creado
+[INFO] 22:11:38:338 Sindicato/(9417:9417): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:11:44:731 Sindicato/(9417:9417): Preparando punto de montaje.
+[WARNING] 22:11:50:548 Sindicato/(9417:9417): El punto de montaje no existe. Se creará el directorio.
+[INFO] 22:11:57:653 Sindicato/(9417:9417): El directorio se creó satisfactoriamente.
+[ERROR] 22:11:58:845 Sindicato/(9417:9417): Error al crear el directorio Metadata
+[INFO] 22:12:02:30 Sindicato/(9417:9417): Creando directorio de files...
+[INFO] 22:12:02:30 Sindicato/(9417:9417): Se creo el directorio para almacenar los restaurantes y las recetas
+[ERROR] 22:12:05:28 Sindicato/(9417:9417): Error al crear el directorio de Bloques
+[ERROR] 22:12:10:541 Sindicato/(9417:9417): Error al crear el directorio de restaurantes
+[ERROR] 22:12:13:988 Sindicato/(9417:9417): Error al crear el directorio de recetas
+[INFO] 22:12:56:869 Sindicato/(9492:9492): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:13:04:942 Sindicato/(9492:9492): Preparando punto de montaje.
+[WARNING] 22:13:07:54 Sindicato/(9492:9492): El punto de montaje no existe. Se creará el directorio.
+[INFO] 22:13:11:901 Sindicato/(9492:9492): El directorio se creó satisfactoriamente.
+[ERROR] 22:13:55:372 Sindicato/(9492:9492): Error al crear el directorio Metadata
+[INFO] 22:14:01:857 Sindicato/(9492:9492): Creando directorio de files...
+[INFO] 22:19:06:470 Sindicato/(9711:9711): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:19:13:347 Sindicato/(9711:9711): Preparando punto de montaje.
+[INFO] 22:19:13:347 Sindicato/(9711:9711): Punto de montaje encontrado.
+[INFO] 22:19:58:755 Sindicato/(9780:9780): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:20:04:959 Sindicato/(9780:9780): Preparando punto de montaje.
+[WARNING] 22:20:07:687 Sindicato/(9780:9780): El punto de montaje no existe. Se creará el directorio.
+[INFO] 22:20:11:214 Sindicato/(9780:9780): El directorio se creó satisfactoriamente.
+[INFO] 22:21:27:634 Sindicato/(9856:9856): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:21:27:635 Sindicato/(9856:9856): Preparando punto de montaje.
+[INFO] 22:21:27:635 Sindicato/(9856:9856): Punto de montaje encontrado.
+[INFO] 22:21:50:617 Sindicato/(9905:9905): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:21:50:618 Sindicato/(9905:9905): Preparando punto de montaje.
+[WARNING] 22:21:50:618 Sindicato/(9905:9905): El punto de montaje no existe. Se creará el directorio.
+[INFO] 22:21:50:618 Sindicato/(9905:9905): El directorio se creó satisfactoriamente.
+[INFO] 22:21:53:258 Sindicato/(9905:9905): Directorio creado
+[INFO] 22:21:55:211 Sindicato/(9905:9905): Creando directorio de files...
+[INFO] 22:21:55:211 Sindicato/(9905:9905): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 22:21:59:362 Sindicato/(9905:9905): Directorio de bloques creado
+[INFO] 22:22:02:18 Sindicato/(9905:9905): Directorio de restaurantes creado
+[INFO] 22:22:04:242 Sindicato/(9905:9905): Directorio de recetas creado
+[INFO] 22:22:56:105 Sindicato/(9979:9979): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:22:56:106 Sindicato/(9979:9979): Preparando punto de montaje.
+[INFO] 22:22:56:106 Sindicato/(9979:9979): Punto de montaje encontrado.
+[INFO] 01:09:37:5 Sindicato/(14918:14918): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:15:08:318 Sindicato/(15199:15199): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:17:02:971 Sindicato/(15335:15335): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:17:28:933 Sindicato/(15394:15394): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:20:05:788 Sindicato/(15548:15548): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:20:54:748 Sindicato/(15548:15548): Preparando punto de montaje.
+[INFO] 01:20:54:749 Sindicato/(15548:15548): Punto de montaje encontrado.
+[INFO] 01:23:03:128 Sindicato/(15548:15594): Creación Restaurante
+[INFO] 01:24:45:398 Sindicato/(15712:15712): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:24:45:399 Sindicato/(15712:15712): Preparando punto de montaje.
+[INFO] 01:24:45:399 Sindicato/(15712:15712): Punto de montaje encontrado.
+[INFO] 01:24:56:178 Sindicato/(15712:15720): Creación Restaurante
+[INFO] 01:25:31:96 Sindicato/(15712:15720): Creando directorio de restaursnte nuevo...
+[INFO] 01:25:37:336 Sindicato/(15712:15720): Punto de montaje encontrado.
+[INFO] 01:27:08:351 Sindicato/(15908:15908): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:27:08:351 Sindicato/(15908:15908): Preparando punto de montaje.
+[INFO] 01:27:08:351 Sindicato/(15908:15908): Punto de montaje encontrado.
+[INFO] 01:27:23:83 Sindicato/(15908:15916): Creación Restaurante
+[INFO] 01:27:37:505 Sindicato/(15908:15916): Creando directorio de restaursnte nuevo...
+[WARNING] 01:27:42:841 Sindicato/(15908:15916): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:27:48:35 Sindicato/(15908:15916): El directorio de Restaurante
+[INFO] 01:29:27:857 Sindicato/(16079:16079): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:29:27:857 Sindicato/(16079:16079): Preparando punto de montaje.
+[INFO] 01:29:27:857 Sindicato/(16079:16079): Punto de montaje encontrado.
+[INFO] 01:29:52:700 Sindicato/(16079:16089): Creación Restaurante
+[INFO] 01:30:07:416 Sindicato/(16079:16089): Creando directorio de restaursnte nuevo...
+[INFO] 01:30:07:417 Sindicato/(16079:16089): Punto de montaje encontrado.
+[INFO] 01:30:44:583 Sindicato/(16178:16178): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:30:44:584 Sindicato/(16178:16178): Preparando punto de montaje.
+[INFO] 01:30:44:584 Sindicato/(16178:16178): Punto de montaje encontrado.
+[INFO] 01:30:53:504 Sindicato/(16178:16188): Creación Restaurante
+[INFO] 01:31:44:520 Sindicato/(16291:16291): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:31:44:521 Sindicato/(16291:16291): Preparando punto de montaje.
+[INFO] 01:31:44:521 Sindicato/(16291:16291): Punto de montaje encontrado.
+[INFO] 01:31:58:853 Sindicato/(16291:16301): Creación Restaurante
+[INFO] 01:32:03:402 Sindicato/(16291:16301): Creando directorio de restaursnte nuevo...
+[WARNING] 01:32:03:402 Sindicato/(16291:16301): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:32:03:403 Sindicato/(16291:16301): El directorio de Restaurante
+[INFO] 01:33:57:445 Sindicato/(16457:16457): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:33:57:445 Sindicato/(16457:16457): Preparando punto de montaje.
+[INFO] 01:33:57:445 Sindicato/(16457:16457): Punto de montaje encontrado.
+[INFO] 01:34:08:737 Sindicato/(16457:16463): Creación Restaurante
+[INFO] 01:34:10:584 Sindicato/(16457:16463): Creando directorio de restaursnte nuevo...
+[INFO] 01:34:10:584 Sindicato/(16457:16463): Punto de montaje encontrado.
+[INFO] 01:34:36:673 Sindicato/(16457:16463): Creación Restaurante
+[INFO] 01:34:42:274 Sindicato/(16457:16463): Creando directorio de restaursnte nuevo...
+[WARNING] 01:34:42:274 Sindicato/(16457:16463): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:34:42:274 Sindicato/(16457:16463): El directorio de Restaurante
+[INFO] 01:35:56:560 Sindicato/(16596:16596): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:35:56:560 Sindicato/(16596:16596): Preparando punto de montaje.
+[INFO] 01:35:56:560 Sindicato/(16596:16596): Punto de montaje encontrado.
+[INFO] 01:36:10:362 Sindicato/(16596:16605): Creación Restaurante
+[INFO] 01:36:27:651 Sindicato/(16596:16605): Creando directorio de restaursnte nuevo...
+[WARNING] 01:36:27:652 Sindicato/(16596:16605): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:36:27:652 Sindicato/(16596:16605): El directorio de Restaurante
+[INFO] 01:38:45:273 Sindicato/(16785:16785): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:38:45:273 Sindicato/(16785:16785): Preparando punto de montaje.
+[INFO] 01:38:45:273 Sindicato/(16785:16785): Punto de montaje encontrado.
+[INFO] 01:38:54:962 Sindicato/(16785:16795): Creación Restaurante
+[INFO] 01:39:11:247 Sindicato/(16785:16795): Creando directorio de restaursnte nuevo...
+[WARNING] 01:39:11:248 Sindicato/(16785:16795): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:39:11:248 Sindicato/(16785:16795): El directorio de Restaurante
+[INFO] 01:45:12:785 Sindicato/(17043:17043): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:45:12:785 Sindicato/(17043:17043): Preparando punto de montaje.
+[INFO] 01:45:12:785 Sindicato/(17043:17043): Punto de montaje encontrado.
+[INFO] 01:45:28:234 Sindicato/(17043:17052): Creación Restaurante
+[INFO] 01:45:32:18 Sindicato/(17043:17052): Creando directorio de restaursnte nuevo...
+[WARNING] 01:45:32:18 Sindicato/(17043:17052): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:45:32:18 Sindicato/(17043:17052): El directorio de Restaurante
+[ERROR] 01:46:28:301 Sindicato/(17043:17052): Error al escribir en el archivo info de restaurante
+[INFO] 01:49:04:102 Sindicato/(17249:17249): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:49:04:103 Sindicato/(17249:17249): Preparando punto de montaje.
+[INFO] 01:49:04:104 Sindicato/(17249:17249): Punto de montaje encontrado.
+[INFO] 01:49:10:910 Sindicato/(17249:17254): Creación Restaurante
+[INFO] 01:49:10:911 Sindicato/(17249:17254): Creando directorio de restaursnte nuevo...
+[WARNING] 01:49:10:911 Sindicato/(17249:17254): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:49:10:911 Sindicato/(17249:17254): El directorio de Restaurante
+[INFO] 01:49:53:720 Sindicato/(17249:17254): Creación Restaurante
+[INFO] 01:49:53:721 Sindicato/(17249:17254): Creando directorio de restaursnte nuevo...
+[WARNING] 01:49:53:721 Sindicato/(17249:17254): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:49:53:721 Sindicato/(17249:17254): El directorio de Restaurante
+[INFO] 01:51:19:479 Sindicato/(17249:17254): Creación Restaurante
+[INFO] 01:51:19:479 Sindicato/(17249:17254): Creando directorio de restaursnte nuevo...
+[WARNING] 01:51:19:479 Sindicato/(17249:17254): El punto de montaje no existe. Se creará el directorio.
+[INFO] 01:51:19:479 Sindicato/(17249:17254): El directorio de Restaurante

@@ -12,102 +12,125 @@
 //#include "/home/utnso/tp-2020-2c-Solo-C/biblioteca-compartida/serializar.h"
 #define PATH_FILES "/Files/"
 
-int paramValidos(char** parametros){
-	int cantParametros=string_length(*parametros);
-	printf("Cant parametros: %d\n",cantParametros);
-	if(cantParametros==7) return 1;
-	else return 0;
-
+int paramValidos(char** parametros) {
+	int cantParametros = string_length(*parametros);
+	printf("Cant parametros: %d\n", cantParametros);
+	if (cantParametros == 7)
+		return 1;
+	else
+		return 0;
 
 }
 
-
-void levantarConsola(){
+void levantarConsola() {
 	printf("*************CONSOLA SINDICATO*************\n");
 
-	while(1){
+	while (1) {
 		char lineaComando[100];
 		int i;
-		for(i=0; i<=strlen(lineaComando);i++){
-					lineaComando[i]='\0';
+		for (i = 0; i <= strlen(lineaComando); i++) {
+			lineaComando[i] = '\0';
 		}
 		printf("COMANDOS DISPONIBLES\n");
 		printf("1 - Crear Restaurante\n");
 		printf("2 - Crear Receta\n");
-		fgets(lineaComando,100,stdin);
+		fgets(lineaComando, 100, stdin);
 
-		lineaComando[strlen(lineaComando)-1]='\0';
-		char** substrings=string_n_split(lineaComando,8," ");
-		char* nombreComando= substrings[0];
+		lineaComando[strlen(lineaComando) - 1] = '\0';
+		char** substrings = string_n_split(lineaComando, 8, " ");
+		char* nombreComando = substrings[0];
 
+		log_info("Cantidad Parametros: %d\n",
+				sizeof(substrings) / sizeof(substrings[0]));
 
-		log_info("Cantidad Parametros: %d\n",sizeof(substrings)/sizeof(substrings[0]));
+		if (string_equals_ignore_case(nombreComando, "crearRestaurante")) {
+			log_info(logger, "Creación Restaurante");
 
-
-		if(string_equals_ignore_case(nombreComando,"crearRestaurante")){
-				log_info(logger,"Creación Restaurante");
-
-				char* nombreRestaurante=malloc(30);
-				nombreRestaurante=substrings[1];
-				//strcpy(nombreRestaurante,substrings[1]);
-				char* cantCocineros=malloc(4);
-				cantCocineros=substrings[2];
-				char* posicion=malloc(40);
-				posicion=substrings[3];
-				char* afinidadCocineros=malloc(80);
-				afinidadCocineros=substrings[4];
-				char* platos=malloc(80);
-				platos=substrings[5];
-				char* preciosPlatos=malloc(80);
-				preciosPlatos=substrings[6];
-				char* cantidadHornos=malloc(4);
-				cantidadHornos=substrings[7];
-
-				int parametrosValidos=paramValidos(substrings);
-
-				//if(parametrosValidos==1){
-					printf("Creando Reestaurante...\n");
-					printf("Nombre: %s\n",nombreRestaurante);
-					printf("Cantidad Cocineros: %d\n",atoi(cantCocineros));
-				//}else log_error(logger,"Cantidad incorrecta de parametros");
-
-				free(nombreRestaurante);
-				free(posicion);
-				free(afinidadCocineros);
-				free(preciosPlatos);
-				free(platos);
+			tCreacionRestaurante* restaurante=malloc(sizeof(tCreacionRestaurante));
 
 
+			//char* nombreRestaurante = malloc(30);
+			restaurante->nombreRestaurante = substrings[1];
+			//strcpy(nombreRestaurante,substrings[1]);
+			//char* cantCocineros = malloc(4);
+			restaurante->cantCocineros = atoi(substrings[2]);
+			//char* posicion = malloc(40);
+			restaurante->posicion = substrings[3];
+			//char* afinidadCocineros = malloc(80);
+			restaurante->afinidadCocineros = substrings[4];
+			//char* platos = malloc(80);
+			restaurante->platos = substrings[5];
+			char* preciosPlatos = malloc(80);
+			restaurante->preciosPlatos = substrings[6];
+			//char* cantidadHornos = malloc(4);
+			restaurante->cantidadHornos = atoi(substrings[7]);
 
-			}
+			int parametrosValidos = paramValidos(substrings);
 
-		else if (string_equals_ignore_case(nombreComando,"CrearReceta")){
-				log_info(logger,"Creacion Receta");
-				char* nombre=malloc(60);
-				nombre=substrings[1];
-				char* pasos=malloc(60);
-				pasos=substrings[2];
-				char* tiemposPasos=malloc(40);
-				tiemposPasos=substrings[3];
+			//if(parametrosValidos==1){
+			printf("Creando Reestaurante...\n");
+			printf("Nombre: %s\n", restaurante->nombreRestaurante);
+			printf("Cantidad Cocineros: %d\n", restaurante->cantCocineros);
+			//}else log_error(logger,"Cantidad incorrecta de parametros");
 
-				printf("Creando receta...\n");
-				printf("Nombre receta: %s\n",nombre);
-				printf("Pasos receta: %s\n",pasos);
+			grabarArchivoRestaurante(restaurante);
+
+			free(restaurante);
 
 
-			}else log_error(logger,"Ingrese un comando Valido\n");
+		}
+
+		else if (string_equals_ignore_case(nombreComando, "CrearReceta")) {
+			log_info(logger, "Creacion Receta");
+			char* nombre = malloc(60);
+			nombre = substrings[1];
+			char* pasos = malloc(60);
+			pasos = substrings[2];
+			char* tiemposPasos = malloc(40);
+			tiemposPasos = substrings[3];
+
+			printf("Creando receta...\n");
+			printf("Nombre receta: %s\n", nombre);
+			printf("Pasos receta: %s\n", pasos);
+
+		} else
+			log_error(logger, "Ingrese un comando Valido\n");
 		//free(lineaComando);
 
 		free(substrings);
 
-		}
+	}
 
 }
 int main(int argc, char *argv[]) {
 	cargarConfiguracion();
+	pathFiles = string_new();
+	pathBloques = string_new();
+	pathMetadata = string_new();
+	pathRestaurantes=string_new();
+	pathRecetas=string_new();
+	string_append(&pathFiles, configuracion->puntoMontaje);
+	string_append(&pathFiles, "/Files/");
+
+	string_append(&pathBloques, configuracion->puntoMontaje);
+	string_append(&pathBloques, "/Bloques/");
+
+	string_append(&pathMetadata, configuracion->puntoMontaje);
+	string_append(&pathMetadata, "/Metadata/");
+
+	string_append(&pathRestaurantes,pathFiles);
+	string_append(&pathRestaurantes,"Restaurantes/");
+
+	string_append(&pathRecetas,pathFiles);
+	string_append(&pathRecetas,"Recetas/");
+
+
+
+	//Si no le paso los argumentos BLOCKSIZE, BLOCKS + MAGIC_NUMBER no monto el FS de nuevo
+	int fs = montarFS(*argv[1], *argv[2], argv[3]);
 
 	pthread_t hiloConsola;
-	pthread_create(&hiloConsola,NULL,levantarConsola,NULL);
+	pthread_create(&hiloConsola, NULL, levantarConsola, NULL);
 
 	pthread_join(hiloConsola, NULL);
 
@@ -149,26 +172,11 @@ int main(int argc, char *argv[]) {
 	printf("Nombre restaurante deserializado: %s\n",
 			nombreRestauranteDeserializado);
 
-	pathFiles = string_new();
-	pathBloques = string_new();
-	pathMetadata = string_new();
-	string_append(&pathFiles, configuracion->puntoMontaje);
-	string_append(&pathFiles, "/Files/");
-
-	string_append(&pathBloques, configuracion->puntoMontaje);
-	string_append(&pathBloques, "/Bloques/");
-
-	string_append(&pathMetadata, configuracion->puntoMontaje);
-	string_append(&pathMetadata, "/Metadata/");
-
-	//Si no le paso los argumentos BLOCKSIZE, BLOCKS + MAGIC_NUMBER no monto el FS de nuevo
-//	if (*argv[1]!=NULL && *argv[2]!=NULL && argv[3]!=NULL ){
-//		int fs=montarFS(*argv[1],*argv[2],argv[3]);
-//	}
 
 	//Escucho conexiones
 	log_info(logger, "Inicio Escucha de conexiones...");
-	int socketServer = crear_socket_escucha("127.0.0.1",configuracion->puertoEscucha);
+	int socketServer = crear_socket_escucha("127.0.0.1",
+			configuracion->puertoEscucha);
 
 	while (1) {
 		int socketConectado = aceptar_conexion(socketServer);
@@ -216,19 +224,20 @@ void handleConexion(int socketCliente) {
 
 	//Armo respuesta al restaurante
 	/*
-	t_header* headerRespuesta = malloc(sizeof(t_header));
+	 t_header* headerRespuesta = malloc(sizeof(t_header));
 
 
-	tMensajeInfoRestaurante* info = malloc(sizeof(tMensajeInfoRestaurante));
+	 tMensajeInfoRestaurante* info = malloc(sizeof(tMensajeInfoRestaurante));
 
-	void* stream=malloc(92);  //SACAR ESTE HARDCODEO
+	 void* stream=malloc(92);  //SACAR ESTE HARDCODEO
 
-	armarBufferHardcodeadoRestaurante(headerRespuesta, info,stream);
-	int streamRespuestaSize = sizeof(uint32_t) * 4 + headerRespuesta->size;
-	*/
+	 armarBufferHardcodeadoRestaurante(headerRespuesta, info,stream);
+	 int streamRespuestaSize = sizeof(uint32_t) * 4 + headerRespuesta->size;
+	 */
 	//ARMO RESPUESTA AL RESTAURANTE HARDCODEADA
 	t_header * respuesta_hardcodeada = malloc(sizeof(t_header));
-	t_respuesta_info_restaurante * resp_resto_hard = malloc(sizeof(t_respuesta_info_restaurante));
+	t_respuesta_info_restaurante * resp_resto_hard = malloc(
+			sizeof(t_respuesta_info_restaurante));
 
 	resp_resto_hard->cantidad_cocineros = 2;
 	resp_resto_hard->posicion_x = 3;
@@ -241,19 +250,18 @@ void handleConexion(int socketCliente) {
 	resp_resto_hard->size_precio_platos = 5;
 	resp_resto_hard->cantidad_hornos = 1;
 
-	respuesta_hardcodeada = serializar_respuesta_info_restaurante(resp_resto_hard);
-
+	respuesta_hardcodeada = serializar_respuesta_info_restaurante(
+			resp_resto_hard);
 
 	if (enviar_buffer(socketCliente, respuesta_hardcodeada) == false) {
-		log_error(logger, "No se pudo enviar la respuesta al pedido de info del restaurante");
+		log_error(logger,
+				"No se pudo enviar la respuesta al pedido de info del restaurante");
 	}
 
 }
 
-
-
-void armarBufferHardcodeadoRestaurante(t_header2* header,tMensajeInfoRestaurante* info,void* stream) {
-
+void armarBufferHardcodeadoRestaurante(t_header2* header,
+		tMensajeInfoRestaurante* info, void* stream) {
 
 	llenarHeaderRespuesta(header);
 	info->cantCocineros = 20;
@@ -269,7 +277,7 @@ void armarBufferHardcodeadoRestaurante(t_header2* header,tMensajeInfoRestaurante
 	string_append(&info->preciosPlatos, "200,40,30");
 
 	//int payloadSize = (sizeof(int) * 6) + strlen(info->afinidadCocineros)+ strlen(info->posicion + strlen(info->platos)+ strlen(info->preciosPlatos));
-	int payloadSize=76; // SACAR ESTE SIZE HARDCODEADO
+	int payloadSize = 76; // SACAR ESTE SIZE HARDCODEADO
 	void * payload = malloc(payloadSize);
 
 	memset(payload, 0, payloadSize);
@@ -316,10 +324,10 @@ void armarBufferHardcodeadoRestaurante(t_header2* header,tMensajeInfoRestaurante
 	}
 
 }
-void llenarHeaderRespuesta(t_header2* header){
-	header->id_proceso=0;
-	header->modulo=5;
-	header->nro_msg=1;
+void llenarHeaderRespuesta(t_header2* header) {
+	header->id_proceso = 0;
+	header->modulo = 5;
+	header->nro_msg = 1;
 
 }
 void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream) {
@@ -332,28 +340,30 @@ void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream) {
 	memcpy(stream, &valor, sizeof(uint32_t));
 	offset += sizeof(uint32_t);
 
-	valor= string_length(info->posicion);
-	memcpy(stream+offset, &valor,sizeof(uint32_t));
-	offset+=sizeof(uint32_t);
+	valor = string_length(info->posicion);
+	memcpy(stream + offset, &valor, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
 	memcpy(stream + offset, info->posicion, string_length(info->posicion));
 	offset += string_length(info->posicion);
 
-	valor= string_length(info->afinidadCocineros);
-	memcpy(stream+offset, &valor,sizeof(uint32_t));
-	offset+=sizeof(uint32_t);
-	memcpy(stream + offset, info->afinidadCocineros,string_length(info->afinidadCocineros));
+	valor = string_length(info->afinidadCocineros);
+	memcpy(stream + offset, &valor, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+	memcpy(stream + offset, info->afinidadCocineros,
+			string_length(info->afinidadCocineros));
 	offset += string_length(info->afinidadCocineros);
 
-	valor= string_length(info->platos);
-	memcpy(stream+offset, &valor,sizeof(uint32_t));
-	offset+=sizeof(uint32_t);
+	valor = string_length(info->platos);
+	memcpy(stream + offset, &valor, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
 	memcpy(stream + offset, info->platos, string_length(info->platos));
 	offset += string_length(info->platos);
 
-	valor= string_length(info->preciosPlatos);
-	memcpy(stream+offset, &valor,sizeof(uint32_t));
-	offset+=sizeof(uint32_t);
-	memcpy(stream + offset, info->preciosPlatos,string_length(info->preciosPlatos));
+	valor = string_length(info->preciosPlatos);
+	memcpy(stream + offset, &valor, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+	memcpy(stream + offset, info->preciosPlatos,
+			string_length(info->preciosPlatos));
 	offset += string_length(info->preciosPlatos);
 
 	valor = info->cantidadHornos;
@@ -361,5 +371,4 @@ void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream) {
 	offset += sizeof(uint32_t);
 
 }
-
 
