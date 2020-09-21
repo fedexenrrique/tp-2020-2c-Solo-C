@@ -167,7 +167,7 @@ void recibir_consultar_restaurante_y_responder( int socket_cliente ) {
 
 }
 
-int crear_socket_y_conectar(char* p_ip, char* p_puerto) {
+uint32_t crear_socket_y_conectar(char* p_ip, char* p_puerto) {
 
 	struct addrinfo hints;
 	struct addrinfo *server_info;
@@ -179,27 +179,47 @@ int crear_socket_y_conectar(char* p_ip, char* p_puerto) {
 
 	getaddrinfo(p_ip, p_puerto, &hints, &server_info);
 
-	int socket_cliente   = socket (server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
-	int validar_conexion = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+	int socket_cliente   = -1;
+	int validar_conexion = -1;
 
-	if( validar_conexion== -1|| socket_cliente==-1)
-		log_info(logger,"error");
-	else
-		log_info(logger,"Se conecto correctamente");
+	while ( validar_conexion == -1 || socket_cliente == -1 ) {
+
+		socket_cliente   = socket (server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
+		validar_conexion = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+
+		if ( g_tiempo_reconexion == 0 ) break;
+
+		if( validar_conexion == -1 || socket_cliente == -1 ){
+
+			sleep(g_tiempo_reconexion);
+
+		}
+
+	}
 
 	freeaddrinfo(server_info);
+
+	if( validar_conexion == -1 || socket_cliente == -1) {
+
+		log_info(logger,"[ BIBLIO - crear_socket_y_conectar] No se pudo establecer la conexión al módulo servidor.");
+
+		return -1;
+
+	} else
+
+		log_info(logger,"Conexión exitosa!");
 
 	return socket_cliente;
 
 }
 
-int recibir_confirmacion(int socket_cliente) {
+uint32_t recibir_confirmacion(uint32_t socket_cliente) {
 
 	return 000;
 
 }
 
-int crear_socket_escucha( char * p_ip, char * p_puerto ) {
+uint32_t crear_socket_escucha( char * p_ip, char * p_puerto ) {
 
 	int socket_servidor;
 
@@ -262,9 +282,7 @@ uint32_t aceptar_conexion ( uint32_t p_socket_para_escuchar ) {
 
 }
 
-
-
-int detectar_comando(char * p_comando) {
+uint32_t detectar_comando(char * p_comando) {
 
 	if ( string_equals_ignore_case(p_comando, "CONSULTAR_RESTAURANTES" ) ) return CONSULTAR_RESTAURANTES ; else
 	if ( string_equals_ignore_case(p_comando, "SELECCIONAR_RESTAURANTE") ) return SELECCIONAR_RESTAURANTE; else
@@ -285,7 +303,7 @@ int detectar_comando(char * p_comando) {
 
 }
 
-char * nro_comando_a_texto(int p_comando) {
+char * nro_comando_a_texto(uint32_t p_comando) {
 
 	switch (p_comando) {
 		case CONSULTAR_RESTAURANTES:  	return "CONSULTAR_RESTAURANTES" ;break;
@@ -302,12 +320,13 @@ char * nro_comando_a_texto(int p_comando) {
 		case OBTENER_PEDIDO: 			return "OBTENER_PEDIDO"         ;break;
 		case FINALIZAR_PEDIDO: 			return "FINALIZAR_PEDIDO"       ;break;
 		case TOMAR_PEDIDO: 				return "TOMAR_PEDIDO"           ;break;
+		case CONECTAR:                  return "CONECTAR"               ;break;
 		default: 						return NULL ;break;
 	}
 
 }
 
-int detectar_modulo( char * p_modulo ) {
+uint32_t detectar_modulo( char * p_modulo ) {
 
 	if ( string_equals_ignore_case(p_modulo, "APP"          ) ) return APP         ; else
 	if ( string_equals_ignore_case(p_modulo, "COMANDA"      ) ) return COMANDA     ; else
@@ -318,7 +337,7 @@ int detectar_modulo( char * p_modulo ) {
 
 }
 
-char * nro_modulo_a_texto( int p_modulo ) {
+char * nro_modulo_a_texto( uint32_t p_modulo ) {
 
 	switch ( p_modulo ) {
 		case APP:         return "APP"          ;break;
@@ -330,7 +349,7 @@ char * nro_modulo_a_texto( int p_modulo ) {
 
 }
 
-bool enviar_buffer ( int p_conexion, t_header * p_header ) {
+bool enviar_buffer ( uint32_t p_conexion, t_header * p_header ) {
 
 	int    stream_size = sizeof( uint32_t ) * 4 + p_header->size;
 	void * stream      = malloc( stream_size );
@@ -388,7 +407,7 @@ bool enviar_buffer ( int p_conexion, t_header * p_header ) {
 
 }
 
-t_header * recibir_buffer ( int socket_cliente ) {
+t_header * recibir_buffer ( uint32_t socket_cliente ) {
 
 	uint32_t modulo, id_proceso, nro_msg, size;
 
@@ -408,7 +427,7 @@ t_header * recibir_buffer ( int socket_cliente ) {
 
 		l_header->payload= malloc(size);
 
-		int bytes_recibidos=recv( socket_cliente, l_header->payload, size, MSG_WAITALL );
+		int bytes_recibidos = recv( socket_cliente, l_header->payload, size, 0 );
 
 		mem_hexdump(l_header->payload, size);
 
@@ -488,65 +507,13 @@ bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_proces
 
 }
 
-void responder_seleccionar_restaurante( int socket_cliente, int p_size, void * p_paylod ) {
-
-	char * l_restaurante_seleccionado;
-
-	void _aux_mostrar_restaurantes( void * p_elem ) {
-
-		printf( "Palabra: '%s'; Longitud: %d\n", (char*)p_elem , string_length( (char*)p_elem ) );
-
-	}
-
-
-	t_list * obtener_restaurante_hardcodeado() {
-
-		t_list * l_restaurantes = list_create();
-
-		list_add( l_restaurantes, "McDonals" );
-		list_add( l_restaurantes, "KFC" );
-		list_add( l_restaurantes, "Wendy's" );
-		list_add( l_restaurantes, "GreenEat" );
-
-		return l_restaurantes;
-
-	}
-
-	bool _detecta_restaurante_en_lista(void * p_elem) {
-
-		return string_equals_ignore_case( (char*)p_elem, l_restaurante_seleccionado );
-
-	}
-
-
-
-	l_restaurante_seleccionado = malloc(p_size + 1);
-
-	memcpy(l_restaurante_seleccionado, p_paylod, p_size);
-
-	l_restaurante_seleccionado[p_size] = '\0';
-
-	t_list * lista_de_restaurante = obtener_restaurante_hardcodeado();
-
-	bool esta_en_lista = list_any_satisfy(lista_de_restaurante, _detecta_restaurante_en_lista );
-
-	if ( esta_en_lista ) {
-
-		printf( "El restaurante recibido es: %s, y está en la lista.\n", l_restaurante_seleccionado );
-
-	} else {
-
-		printf( "El restaurante recibido es: %s, y no se encuentra en la lista.\n", l_restaurante_seleccionado );
-
-	}
-
-	list_iterate( lista_de_restaurante, _aux_mostrar_restaurantes );
+void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado ) {
 
 	t_header header_response;
 
 	header_response.modulo     = APP;
 	header_response.id_proceso = 0;
-	header_response.nro_msg    = (esta_en_lista) ? SELECCIONAR_RESTAURANTE_OK : SELECCIONAR_RESTAURANTE_FAIL ;
+	header_response.nro_msg    = ( seleccionado ) ? SELECCIONAR_RESTAURANTE_OK : SELECCIONAR_RESTAURANTE_FAIL ;
 	header_response.size       = 0;
 	header_response.payload    = NULL;
 
@@ -759,7 +726,7 @@ t_header * serializar_pedido       (uint32_t nro_msg        ){
 	pedido->id_pedido=1;
 	pedido->size_nombre_restaurante=6;
 	pedido->nombre_restaurante=malloc(pedido->size_nombre_restaurante);
-	pedido->nombre_restaurante="Farola";
+	pedido->nombre_restaurante="FAROLA";
 
 	int size_buffer=2*sizeof(uint32_t)+pedido->size_nombre_restaurante;
 	void * buffer=malloc(size_buffer);
@@ -803,7 +770,7 @@ t_pedido * recibir_pedido  (void * payload         ){
 
 }
 
-void 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
+int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 
 	t_guardar_plato * plato=malloc(sizeof(t_guardar_plato));
 	plato->pedido=malloc(sizeof(t_pedido));
@@ -811,11 +778,12 @@ void 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	int offset=0;
 
 	plato->pedido->id_pedido=1;
-	plato->pedido->size_nombre_restaurante=9;
+	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
-	plato->pedido->nombre_restaurante="Mataderos";
-	plato->size_nombre_plato=4;
-	plato->nombre_plato="papa";
+	plato->pedido->nombre_restaurante="FAROLA";
+	plato->size_nombre_plato=14;
+	plato->nombre_plato=malloc(plato->size_nombre_plato);
+	plato->nombre_plato="fideos moñitos";
 	plato->cantidad_plato=5;
 
 	int size_buffer=4*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
@@ -847,6 +815,8 @@ void 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del plato");
+
+	return conexion;
 
 }
 
@@ -887,11 +857,12 @@ void 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
 	int offset=0;
 
 	plato->pedido->id_pedido=15;
-	plato->pedido->size_nombre_restaurante=7;
+	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
-	plato->pedido->nombre_restaurante="Tinajas";
-	plato->size_nombre_plato=6;
-	plato->nombre_plato="batata";
+	plato->pedido->nombre_restaurante="FAROLA";
+	plato->size_nombre_plato=14;
+	plato->nombre_plato=malloc(plato->size_nombre_plato);
+	plato->nombre_plato="fideos moñitos";
 
 	int size_buffer=3*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
 	void * buffer=malloc(size_buffer);
@@ -1090,4 +1061,12 @@ t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * 
 	return header;
 }
 
+void sigint(int a) {
 
+	log_destroy(logger);
+	config_destroy(config);
+	close( g_socket_cliente );
+
+	exit(1);
+
+}

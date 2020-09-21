@@ -17,11 +17,14 @@ char 		*	ip_sindicato;
 char		*	puerto_sindicato;
 char		*	ip_app;
 char		*	puerto_app;
-int				quantum;
+uint32_t        quantum;
 char		*	archivo_log;
 char		*	algoritmo_planificacion;
 char		*	nombre_restaurante;
 
+uint32_t        g_id_proceso;
+uint32_t        g_pos_x;
+uint32_t        g_pos_y;
 
 void      		cargar_config	(void);
 int				config_valida	(t_config*);

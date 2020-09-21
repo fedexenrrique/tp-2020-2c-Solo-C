@@ -60,10 +60,18 @@ typedef enum {
     TOMAR_PEDIDO                        = 14,
 	OK                                  = 15,
     FAIL                                = 16,
+	CONECTAR                            = 17,
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
 
 } cod_msg;
+
+typedef struct {
+	uint32_t    posx;
+	uint32_t    posy;
+	uint32_t    resto_nombre_size;
+	char     *  resto_nombre;
+} t_resto_conex;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t    modulo;
@@ -117,12 +125,13 @@ typedef struct{
 }t_respuesta_info_restaurante;
 
 
-
 t_log    * logger;
 t_config * config;
 
 t_list   * g_sockets_abiertos;
-int        g_socket_cliente;
+uint32_t   g_socket_cliente;
+
+uint32_t   g_tiempo_reconexion;
 
 // FUNCIONES
 
@@ -140,7 +149,7 @@ t_header * serializar_pedido       (uint32_t nro_msg       );
 t_pedido * recibir_pedido          (void * payload         );
 
 bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_process, char * p_restaurante );
-void responder_seleccionar_restaurante( int socket_cliente, int p_size, void * p_paylod );
+void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );
 
 t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process );
 void responder_consultar_platos( int socket_cliente, char ** p_platos );
@@ -148,7 +157,7 @@ void responder_consultar_platos( int socket_cliente, char ** p_platos );
 uint32_t enviar_crear_pedido( char* p_ip, char* p_puerto, int p_id_process );
 void recibir_crear_pedido_y_responder( int socket_cliente, uint32_t p_id_pedido_creado );
 
-void 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
+int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
 void 	        enviar_plato_listo      (char* p_ip,char* p_puerto);
@@ -156,23 +165,24 @@ t_plato_listo *	recibir_plato_listo     (void * payload         );
 
 void       prueba_biblioteca_compartida   (void                   );
 
-int        crear_socket_y_conectar        (char* ip, char* puerto   );
-int        crear_socket_escucha           ( char * p_ip, char * p_puerto );
+uint32_t   crear_socket_y_conectar        (char* ip, char* puerto   );
+uint32_t   crear_socket_escucha           ( char * p_ip, char * p_puerto );
 uint32_t   aceptar_conexion               ( uint32_t p_socket_para_escuchar   );
-int        recibir_confirmacion           ( int   socket_cliente  );
-int        detectar_comando               ( char * p_comando      );
+uint32_t   recibir_confirmacion           ( uint32_t socket_cliente  );
+uint32_t   detectar_comando               ( char *   p_comando       );
 
-int     detectar_comando               ( char * p_comando      );
-char *  nro_comando_a_texto            ( int    p_comando      );
-int     detectar_modulo                ( char * p_modulo       );
-char *  nro_modulo_a_texto             ( int    p_modulo       );
+uint32_t  detectar_comando               ( char *   p_comando     );
+char *    nro_comando_a_texto            ( uint32_t p_comando     );
+uint32_t  detectar_modulo                ( char *   p_modulo      );
+char *    nro_modulo_a_texto             ( uint32_t p_modulo      );
 
 
 t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * respuesta_info);
 
-bool       enviar_buffer            ( int p_conexion, t_header * p_header );
-t_header * recibir_buffer           ( int socket_cliente );
+bool       enviar_buffer            ( uint32_t p_conexion, t_header * p_header );
+t_header * recibir_buffer           ( uint32_t socket_cliente );
 
+void sigint(int a);
 
 
 

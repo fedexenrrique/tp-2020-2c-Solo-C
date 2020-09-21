@@ -79,8 +79,10 @@ void manejo_modulo_conectado(void * socket_cliente){
 			free(aux);
 			break;
 		case GUARDAR_PLATO:
-			administrar_guardar_plato(mensaje_recibido->payload);
-			free(mensaje_recibido->payload);
+			aux=mensaje_recibido->payload;
+			mensaje_recibido->payload=(void*)recibir_guardar_plato(mensaje_recibido->payload);
+			administrar_guardar_plato(mensaje_recibido,*sock_cliente);
+			free(aux);
 			break;
 		case OBTENER_PEDIDO:
 			aux=mensaje_recibido->payload;
@@ -153,6 +155,8 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
+	free(nuevo_encabezado);
+
 }
 
 
@@ -160,11 +164,117 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
 
 
-t_guardar_plato * administrar_guardar_plato(void * payload){
+void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 
-	t_guardar_plato * plato=recibir_guardar_plato(payload);
+	t_guardar_plato * plato=(t_guardar_plato*)encabezado->payload;
 
-	return plato;
+			bool buscar_restaurante(void * elemento){
+				t_restaurante * restaurante=(t_restaurante*)elemento;
+
+				if(string_equals_ignore_case(restaurante->nombre_restaurante,plato->pedido->nombre_restaurante)){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+			bool buscar_pedido(void * elemento){
+				t_pedido_seg * pedido=(t_pedido_seg*)elemento;
+				printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
+
+				if(pedido->id_pedido==plato->pedido->id_pedido){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+			bool buscar_comida(void * elemento){
+				t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
+				t_comida * comida=(t_comida*)adm_comida->contenido;
+
+				if(string_equals_ignore_case(comida->nombre_comida,plato->nombre_plato)){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+	bool exito=FALSE;
+
+	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_restaurante * restaurante=NULL;
+	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+
+
+	if(restaurante==NULL)
+		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
+	else
+		printf("Se encontro el restaurant: %s \n",restaurante->nombre_restaurante);
+
+	if(list_is_empty(restaurante->tabla_pedidos))						//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_pedido_seg * pedido=NULL;
+	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+
+	if(pedido==NULL)
+		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
+	else
+		printf("Se encontro el pedido numero: %d\n",pedido->id_pedido);
+
+	t_pagina_comida * comida=NULL;
+
+	if(!list_is_empty(pedido->comidas_del_pedido))						//Verifico que no este vacia la lista
+			comida=list_find(pedido->comidas_del_pedido,buscar_comida);
+
+	if(comida!=NULL)
+		printf("Se encontro el plato de comida en el pedido\n");//El caso de que ya exista ese plato en el pedido
+	else{
+		printf("No se encontro el plato de comida en el pedido, asique se va a crear\n");
+		t_pagina_comida * adm_comida=malloc(sizeof(t_pagina_comida));
+		adm_comida->esta_en_memoria=FALSE;
+		adm_comida->direccion_memoria=NULL;
+
+		t_comida * comida=malloc(sizeof(t_comida));
+		comida->cantidad_lista_comida=0;
+		comida->cantidad_total_comida=plato->cantidad_plato;
+		strcpy(comida->nombre_comida,plato->nombre_plato);  //----------------TENGO Q VER ACA COMO PASO EL STRING AL VECTOR
+
+		/*int indice=0;
+		for(int i=0;i>23;i++){
+			comida->nombre_comida[i]=*(plato->nombre_plato+indice);
+			if(++indice==plato->size_nombre_plato)
+				i=23;
+		}*/
+		printf("El nombre de la comida es: %s",comida->nombre_comida);
+
+		adm_comida->contenido=(void*)comida;
+
+		list_add(pedido->comidas_del_pedido,adm_comida);            //Guardo la nueva comida en el pedido
+
+		exito=TRUE;
+	}
+
+	envio_de_respuesta:
+	;
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	if(exito==TRUE)
+		nuevo_encabezado->nro_msg=OK;
+	else
+		nuevo_encabezado->nro_msg=FAIL;
+
+	nuevo_encabezado->size=0;
+	nuevo_encabezado->payload=NULL;
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+
+	free(nuevo_encabezado);
+
 }
 
 t_plato_listo * administrar_plato_listo(void * payload){
