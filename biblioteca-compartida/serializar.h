@@ -31,6 +31,7 @@
 
 #define TRUE  1
 #define FALSE 0
+#define SIZE_VECTOR_NOMBRE_PLATO 24
 
 typedef enum {
 
@@ -85,7 +86,7 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 typedef struct {
 	uint32_t cantidad_total_comida;
 	uint32_t cantidad_lista_comida;
-	char     nombre_comida[24]    ;
+	char     nombre_comida[SIZE_VECTOR_NOMBRE_PLATO]    ;
 }t_comida;
 
 typedef struct {  // Me sirve para guardar pedido, consultar pedido, obtener pedido y finalizar pedido
@@ -142,18 +143,20 @@ int deserializar(void* buffer, const char* format, ...);
 t_list *   enviar_consultar_restaurante   (char* p_ip,char* p_puerto);
 void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
 
-int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);
-int        enviar_obtener_pedido   (char* p_ip,char* p_puerto);
-void       enviar_confirmar_pedido (char* p_ip,char* p_puerto);
-void       enviar_finalizar_pedido (char* p_ip,char* p_puerto);
-t_header * serializar_pedido       (uint32_t nro_msg         );
-t_pedido * recibir_pedido          (void * payload           );
+int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);//serializa pedido, le agrega el nro de mensaje y lo envia
+int        enviar_obtener_pedido   (char* p_ip,char* p_puerto);//                 ""
+void       enviar_confirmar_pedido (char* p_ip,char* p_puerto);//                 ""
+void       enviar_finalizar_pedido (char* p_ip,char* p_puerto);//                 ""
+t_header * serializar_pedido       (uint32_t nro_msg         );//Serializa id pedido, size nombre restaurant, nombre restaurant
+t_pedido * recibir_pedido          (void * payload           );//Deserializa id pedido, size nombre restaurant, nombre restaurant
+void       deserializar_respuesta_obtener_pedido(t_header *  );//Deserializa y muestra toda la informacion de un pedido
+
 
 bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_process, char * p_restaurante );
 void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );
 
 t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process );
-void responder_consultar_platos( int socket_cliente, char ** p_platos );
+void responder_consultaar_platos( int socket_cliente, char ** p_platos );
 
 uint32_t enviar_crear_pedido( char* p_ip, char* p_puerto, int p_id_process );
 void recibir_crear_pedido_y_responder( int socket_cliente, uint32_t p_id_pedido_creado );

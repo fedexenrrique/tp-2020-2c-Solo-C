@@ -920,6 +920,43 @@ t_plato_listo *	recibir_plato_listo     (void * payload){
 
 }
 
+void deserializar_respuesta_obtener_pedido(t_header * encabezado){
+
+	t_list * lista_platos_del_pedido=list_create();
+	int cantidad_total_platos=encabezado->size/sizeof(t_comida);
+
+			void mostrar_platos_pedido(void * elemento){
+				t_comida * comida=(t_comida*)elemento;
+
+				log_info(logger,"El plato es: %s",comida->nombre_comida);
+				log_info(logger,"La cantidad total pedida del plato es: %d",comida->cantidad_total_comida);
+				log_info(logger,"La cantidad total pedida que ya se encuentra lista es: %d",comida->cantidad_lista_comida);
+			}
+
+	log_error(logger,"Por empezar a deserializar");
+	log_error(logger,"cantidad total de plato: %d",cantidad_total_platos);
+	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
+	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
+	for(int i=0;i<cantidad_total_platos;i++){
+		t_comida * comida=malloc(sizeof(t_comida));
+
+		memcpy(&(comida->cantidad_lista_comida),encabezado->payload,sizeof(uint32_t));
+		encabezado->payload+=sizeof(uint32_t);
+
+		memcpy(&(comida->cantidad_total_comida),encabezado->payload,sizeof(uint32_t));
+		encabezado->payload+=sizeof(uint32_t);
+
+		memcpy(&(comida->nombre_comida),encabezado->payload,sizeof(SIZE_VECTOR_NOMBRE_PLATO));
+		encabezado->payload+=sizeof(SIZE_VECTOR_NOMBRE_PLATO);
+
+		list_add(lista_platos_del_pedido,comida);
+		log_error(logger,"El numero de iteracion es: %d",i);
+	}
+
+	list_iterate(lista_platos_del_pedido,mostrar_platos_pedido);
+
+	list_destroy(lista_platos_del_pedido);
+}
 
 int serializar(void* buffer, const char* format, ...){
 	va_list objs;

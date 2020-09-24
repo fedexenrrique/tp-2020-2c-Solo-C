@@ -303,7 +303,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 						}
 				return FALSE;
 			}
-			void serializar_tabla_comida(void * elemento){
+			void _serializar_tabla_comida(void * elemento){
 				t_comida * comida=(t_comida *)elemento;
 
 				memcpy(buffer+offset,&comida->cantidad_lista_comida,sizeof(uint32_t));
@@ -312,8 +312,8 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 				memcpy(buffer+offset,&comida->cantidad_total_comida,sizeof(uint32_t));
 				offset+=sizeof(uint32_t);
 
-				memcpy(buffer+offset,comida->nombre_comida,sizeof(comida->nombre_comida));
-				offset+=sizeof(comida->nombre_comida);
+				memcpy(buffer+offset,comida->nombre_comida,sizeof(SIZE_VECTOR_NOMBRE_PLATO));
+				offset+=sizeof(SIZE_VECTOR_NOMBRE_PLATO);
 
 
 			}
@@ -345,8 +345,10 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 		printf("Se encontro el pedido numero: %d\n",pedido->id_pedido);
 
 		int size_lista_pedido=list_size(pedido->comidas_del_pedido);
-		buffer=malloc(sizeof(t_comida)*size_lista_pedido);
-		list_iterate(pedido->comidas_del_pedido,serializar_tabla_comida);
+		log_error(logger,"El tamaño de la lista del pedido es: %d",size_lista_pedido);
+		size_payload=(sizeof(t_comida))*size_lista_pedido;
+		buffer=malloc(size_payload);
+		list_iterate(pedido->comidas_del_pedido,_serializar_tabla_comida);
 	    }
 
 
@@ -359,6 +361,8 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 	nuevo_encabezado->nro_msg=RESPUESTA_OBTENER_PEDIDO;
 	nuevo_encabezado->size=size_payload;
 	nuevo_encabezado->payload=buffer;
+
+	mem_hexdump(buffer, size_payload);
 
 	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
 

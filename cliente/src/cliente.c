@@ -130,6 +130,8 @@ int main(int argc, char **argv) {
 				printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                    \n");
 				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda);
 				encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio el mensaje nro: %d",encabezado->nro_msg);
+				deserializar_respuesta_obtener_pedido(encabezado);
 				break;
 
 			case FINALIZAR_PEDIDO:
