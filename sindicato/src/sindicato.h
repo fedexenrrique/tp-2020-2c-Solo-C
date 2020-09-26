@@ -45,6 +45,17 @@ typedef struct{
 
 }tMensajeInfoRestaurante;
 
+typedef struct{
+	char* nombreRestaurante;
+	int cantCocineros;
+	char* posicion;
+	char* afinidadCocineros;
+	char* platos;
+	char* preciosPlatos;
+	int cantidadHornos;
+
+}tCreacionRestaurante;
+
 tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;

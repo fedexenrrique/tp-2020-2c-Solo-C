@@ -38,6 +38,8 @@ char ** g_platos_default;                // PLATOS_DEFAULT=3
 int     g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
 int     g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
 
+sem_t g_semaphore_envios_resto;
+
 typedef struct {
 	uint32_t    posx;
 	uint32_t    posy;
@@ -45,14 +47,14 @@ typedef struct {
 	uint32_t    socket_conectado;
 } t_info_restarante;
 
-t_list * lista_pcbs;
+t_list * lista_par_cliente_resto;
 
 t_list * lista_resto_conectados;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t    id_proceso;
 	char*       restaurante_asociado;
-} t_pcb;
+} t_cliente_resto;
 
 // FUNCIONES
 
@@ -64,7 +66,11 @@ t_list   * obtener_restaurante_hardcodeado();
 
 void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socket_aceptado );
 
+void bucle_resto_conectado ( uint32_t sock_aceptado );
+
 bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido );
+
+uint32_t procedimiento_05_crear_pedido( t_header * header_recibido );
 
 void procesamiento_mensaje( void * socket_cliente );
 

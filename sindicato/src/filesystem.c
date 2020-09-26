@@ -88,8 +88,6 @@ int crearDirectorioRestaurantes(){
 	int e = 0;
 	pathRestaurantes=string_new();
 
-	string_append_with_format(&pathRestaurantes,"%s%s",pathFiles,"Restaurantes/");
-
 	e = mkdir(pathRestaurantes, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
 	if (e != 0) {
@@ -123,31 +121,111 @@ int crearDirectorioRecetas(){
 }
 
 int montarFS(int blockSize, int cantBloques,char* magicNumber){
-	int e;
-	struct stat info;
 
+		int e;
+		struct stat info;
 
+		log_info(logger,"Preparando punto de montaje.");
+		e = stat(configuracion->puntoMontaje, &info);
 
+		if (e == 0) {
+			if (info.st_mode & S_IFREG) {
+				log_error(logger,"El punto de montaje es un archivo.");
+				return 0;
+			}
+			if (info.st_mode & S_IFDIR)
+				log_info(logger,"Punto de montaje encontrado.");
+		}
+		else {
+			if (errno == ENOENT) {
+				log_warning(logger,"El punto de montaje no existe. Se creará el directorio.");
+				e = mkdir(configuracion->puntoMontaje, ACCESSPERMS | S_IRWXU);
+				if (e != 0) {
+					log_error(logger,"Se produjo un error al crear el directorio. [%d - %s]", errno, strerror(errno));
+					return 0;
+				}
+				else
+					log_info(logger,"El directorio se creó satisfactoriamente.");
+				int statusMetadata=crearDirectorioMetadata();
+						int statusFiles=crearDirectorioFiles();
+						int statusBloques=crearDirectorioBloques();
+						int statusRestaurantes=crearDirectorioRestaurantes();
+						int statusRecetas=crearDirectorioRecetas();
+						crearArchivoMetadata(blockSize, cantBloques,magicNumber);
 
-	log_info(logger, "Preparando punto de montaje.");
-	e = stat(configuracion->puntoMontaje, &info);
-
-	if (errno == ENOENT) {
-		log_warning(logger,
-				"El punto de montaje no existe. Se creará el directorio.");
-		//e = mkdir(config_LS.PUNTO_MONTAJE,  ACCESSPERMS | S_IRWXU);
-		e = mkdir(configuracion->puntoMontaje, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-		int statusMetadata=crearDirectorioMetadata();
-		int statusFiles=crearDirectorioFiles();
-		int statusBloques=crearDirectorioBloques();
-		int statusRestaurantes=crearDirectorioRestaurantes();
-		int statusRecetas=crearDirectorioRecetas();
-
-		crearArchivoMetadata(blockSize, cantBloques,magicNumber);
-
+			}
+			else {
+				log_error(logger,"Se produjo un error accediendo al punto de montaje. [%d - %s]", errno, strerror(errno));
+				return 0;
+			}
+		}
+		return 1;
 	}
 
-	return e;
+int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathRestoNuevo){
+	char* propiedades = malloc(strlen("CANTIDAD_COCINEROS=POSICION=AFINIDAD_COCINEROS=PLATOS=PRECIO_PLATOS=CANTIDAD_HORNOS=")*2);
+	char* pathArchivoInfo=malloc(80);
+	strcpy(pathArchivoInfo,pathRestoNuevo);
+	string_append(&pathArchivoInfo,"Info.txt");
+
+	FILE* archivoRestauranteNuevo = fopen(pathArchivoInfo, "w");
+	int length=sprintf(propiedades,"%s%d%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%d"
+														,"CANTIDAD_COCINEROS=",restauranteNuevo->cantCocineros,"\n",
+														"POSICION=","[",restauranteNuevo->posicion,"]","\n",
+														"AFINIDAD_COCINEROS=","[",restauranteNuevo->afinidadCocineros,"]","\n",
+														"PLATOS=","[",restauranteNuevo->platos,"]","\n",
+														"PRECIO_PLATOS=","[",restauranteNuevo->preciosPlatos,"]","\n",
+														"CANTIDAD_HORNOS=",restauranteNuevo->cantidadHornos);
+
+	if(fwrite(propiedades,length,1,archivoRestauranteNuevo)==0){
+		log_error(logger,"Error al escribir en el archivo info de restaurante");
+	}
+
+	fclose(archivoRestauranteNuevo);
+
+
+}
+
+
+void grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
+
+	int e;
+	struct  stat info;
+	char* pathRestoNuevo=malloc(60);
+	strcpy(pathRestoNuevo,pathRestaurantes);
+	string_append_with_format(&pathRestoNuevo,"%s%s",restauranteNuevo->nombreRestaurante,"/"),
+	log_info(logger, "Creando directorio de restaursnte nuevo...");
+	e = stat(pathRestoNuevo, &info);
+
+		if (e == 0) {
+				if (info.st_mode & S_IFREG) {
+					log_error(logger,"El punto de montaje es un archivo.");
+					return 0;
+				}
+				if (info.st_mode & S_IFDIR)
+					log_info(logger,"Punto de montaje encontrado.");
+			}
+		else {
+				if (errno == ENOENT) {
+					log_warning(logger,"El punto de montaje no existe. Se creará el directorio.");
+
+					e = mkdir(pathRestoNuevo, ACCESSPERMS | S_IRWXU);
+					if (e != 0) {
+						log_error(logger,"Se produjo un error al crear el directorio. [%d - %s]", errno, strerror(errno));
+						return 0;
+					}
+					else
+						log_info(logger,"El directorio de Restaurante",restauranteNuevo->nombreRestaurante,"se creó correctamente.");
+						int restoCreado=grabarInfoRestaurante(restauranteNuevo,pathRestoNuevo);
+
+
+				}
+				else {
+					log_error(logger,"Se produjo un error accediendo al punto de montaje. [%d - %s]", errno, strerror(errno));
+					return 0;
+				}
+			}
+			return 1;
 
 
 }

@@ -27,6 +27,9 @@
 #include <setjmp.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include <semaphore.h>
+
 // AMBIENTE
 
 #define TRUE  1
@@ -139,7 +142,7 @@ int serializar(void* buffer, const char* format, ...);
 int deserializar(void* buffer, const char* format, ...);
 
 t_list *   enviar_consultar_restaurante   (char* p_ip,char* p_puerto);
-void       recibir_consultar_restaurante_y_responder ( int socket_cliente );
+void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_restaurantes );
 
 int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);
 void       enviar_obtener_pedido   (char* p_ip,char* p_puerto);
@@ -157,7 +160,7 @@ void responder_consultar_platos( int socket_cliente, char ** p_platos );
 uint32_t enviar_crear_pedido( char* p_ip, char* p_puerto, int p_id_process );
 void recibir_crear_pedido_y_responder( int socket_cliente, uint32_t p_id_pedido_creado );
 
-void 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
+int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
 void 	        enviar_plato_listo      (char* p_ip,char* p_puerto);
@@ -183,6 +186,8 @@ bool       enviar_buffer            ( uint32_t p_conexion, t_header * p_header )
 t_header * recibir_buffer           ( uint32_t socket_cliente );
 
 void sigint(int a);
+
+void _string_destroyer( void * );
 
 
 
