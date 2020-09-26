@@ -187,6 +187,8 @@ t_header * recibir_buffer           ( uint32_t socket_cliente );
 
 void sigint(int a);
 
+uint32_t random_id_generator( void );
+
 void _string_destroyer( void * );
 
 
