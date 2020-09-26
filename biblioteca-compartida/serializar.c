@@ -80,7 +80,7 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 
 }
 
-void recibir_consultar_restaurante_y_responder( int socket_cliente ) {
+void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_restaurantes ) {
 
 	void * buffer_response;
 	int    buffer_size;
@@ -122,24 +122,9 @@ void recibir_consultar_restaurante_y_responder( int socket_cliente ) {
 
 	}
 
-	t_list * obtener_restaurante_hardcodeado() {
+	uint32_t cant_restos = list_size( p_list_restaurantes );
 
-		t_list * l_restaurantes = list_create();
-
-		list_add( l_restaurantes, "McDonals" );
-		list_add( l_restaurantes, "KFC" );
-		list_add( l_restaurantes, "Wendy's" );
-		list_add( l_restaurantes, "GreenEat" );
-
-		return l_restaurantes;
-
-	}
-
-	t_list * lista_de_restaurante = obtener_restaurante_hardcodeado();
-
-	uint32_t cant_restos = list_size(lista_de_restaurante);
-
-	uint32_t cant_letras = _aux_longitud_acumulada(lista_de_restaurante);
+	uint32_t cant_letras = _aux_longitud_acumulada( p_list_restaurantes );
 
 	buffer_size = sizeof(uint32_t)
 			+ cant_restos * sizeof(uint32_t)
@@ -151,9 +136,9 @@ void recibir_consultar_restaurante_y_responder( int socket_cliente ) {
 
 	despla += sizeof(uint32_t);
 
-	list_iterate( lista_de_restaurante, _aux_cargar_buffer );
+	list_iterate( p_list_restaurantes, _aux_cargar_buffer );
 
-	list_iterate( lista_de_restaurante, _aux_mostrar_restaurantes );
+	list_iterate( p_list_restaurantes, _aux_mostrar_restaurantes );
 
 	t_header header_response;
 
@@ -473,11 +458,19 @@ bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_proces
 
 	}
 
-	int size_resto = string_length( p_restaurante );
+	int size_resto = 0;
 
-	void * l_payload = malloc( size_resto );
+	void * l_payload = NULL;
 
-	memcpy( l_payload, p_restaurante, size_resto );
+	if ( p_restaurante != NULL ) {
+
+		size_resto = string_length( p_restaurante );
+
+		l_payload = malloc( size_resto );
+
+		memcpy( l_payload, p_restaurante, size_resto );
+
+	}
 
 	t_header l_header;
 
@@ -1109,3 +1102,11 @@ void sigint(int a) {
 	exit(1);
 
 }
+
+void _string_destroyer( void * p_elem ) {
+
+	if ( p_elem != NULL ) free(p_elem);
+
+}
+
+

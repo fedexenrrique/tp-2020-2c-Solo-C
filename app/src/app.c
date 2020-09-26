@@ -70,6 +70,12 @@ t_config * leer_config(void) {
 
 void procesamiento_mensaje( void * p_socket_aceptado ) {
 
+	void * _aux_nombres_restos ( void * p_elem ) {
+
+		return ((t_info_restarante *) p_elem)->resto_nombre;
+
+	}
+
 	uint32_t socket_aceptado = (uint32_t)(* ( (int*) p_socket_aceptado ));
 
 	t_header * header_recibido = recibir_buffer( socket_aceptado );
@@ -82,8 +88,10 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	mem_hexdump(header_recibido->payload, header_recibido->size);
 
 	switch ( header_recibido->nro_msg ) {
-	case CONSULTAR_RESTAURANTES:
-		recibir_consultar_restaurante_y_responder( socket_aceptado );
+	case CONSULTAR_RESTAURANTES: ;
+		t_list * nombres_restos = list_map( lista_resto_conectados, _aux_nombres_restos );
+		responder_consultar_restaurante ( socket_aceptado, nombres_restos );
+		list_destroy_and_destroy_elements( nombres_restos, _string_destroyer );
 		break;
 	case SELECCIONAR_RESTAURANTE: ;
 		bool seleccionado = procedimiento_02_seleccionar_restaurante( header_recibido );
@@ -94,7 +102,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		break;
 	case CREAR_PEDIDO: ;
 		uint32_t id_ped_creado = procedimiento_05_crear_pedido( header_recibido );
-		responder_05_crear_pedido( socket_aceptado, id_ped_creado );
+		// responder_05_crear_pedido( socket_aceptado, id_ped_creado );
 		break;
 	case ANIADIR_PLATO:
 		break;
@@ -192,32 +200,42 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 	}
 
-	l_restaurante_seleccionado = malloc(header_recibido->size + 1);
+	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) {
 
-	memcpy(l_restaurante_seleccionado, header_recibido->payload, header_recibido->size );
+		l_restaurante_seleccionado = malloc(header_recibido->size + 1);
 
-	l_restaurante_seleccionado[header_recibido->size] = '\0';
+		memcpy(l_restaurante_seleccionado, header_recibido->payload, header_recibido->size );
 
-	bool esta_en_lista = list_any_satisfy(lista_resto_conectados, _detecta_restaurante_en_lista );
+		l_restaurante_seleccionado[header_recibido->size] = '\0';
 
-	if ( esta_en_lista ) {
+		bool esta_en_lista = list_any_satisfy(lista_resto_conectados, _detecta_restaurante_en_lista );
 
-		printf( "Cliente Nro.: '%d' asociado a restaurante: '%s'.\n", header_recibido->id_proceso, l_restaurante_seleccionado );
+		if ( esta_en_lista ) {
 
-		t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
+			printf( "Cliente Nro.: '%d' asociado a restaurante: '%s'.\n", header_recibido->id_proceso, l_restaurante_seleccionado );
 
-		l_asociar->id_proceso = header_recibido->id_proceso;
-		l_asociar->restaurante_asociado = l_restaurante_seleccionado;
+			t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
 
-		list_add( lista_par_cliente_resto, l_asociar );
+			l_asociar->id_proceso = header_recibido->id_proceso;
+			l_asociar->restaurante_asociado = l_restaurante_seleccionado;
 
-		return true;
+			list_add( lista_par_cliente_resto, l_asociar );
+
+			return true;
+
+		} else {
+
+			printf( "El restaurante recibido es: %s, y no se encuentra en la lista.\n", l_restaurante_seleccionado );
+
+			return false;
+
+		}
 
 	} else {
 
-		printf( "El restaurante recibido es: %s, y no se encuentra en la lista.\n", l_restaurante_seleccionado );
+		printf("Restaurante Default seleccionado. Puede realizar su pedido.\n");
 
-		return false;
+		return true;
 
 	}
 
