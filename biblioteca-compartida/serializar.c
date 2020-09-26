@@ -458,11 +458,19 @@ bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_proces
 
 	}
 
-	int size_resto = string_length( p_restaurante );
+	int size_resto = 0;
 
-	void * l_payload = malloc( size_resto );
+	void * l_payload = NULL;
 
-	memcpy( l_payload, p_restaurante, size_resto );
+	if ( p_restaurante != NULL ) {
+
+		size_resto = string_length( p_restaurante );
+
+		l_payload = malloc( size_resto );
+
+		memcpy( l_payload, p_restaurante, size_resto );
+
+	}
 
 	t_header l_header;
 

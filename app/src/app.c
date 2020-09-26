@@ -200,32 +200,42 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 	}
 
-	l_restaurante_seleccionado = malloc(header_recibido->size + 1);
+	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) {
 
-	memcpy(l_restaurante_seleccionado, header_recibido->payload, header_recibido->size );
+		l_restaurante_seleccionado = malloc(header_recibido->size + 1);
 
-	l_restaurante_seleccionado[header_recibido->size] = '\0';
+		memcpy(l_restaurante_seleccionado, header_recibido->payload, header_recibido->size );
 
-	bool esta_en_lista = list_any_satisfy(lista_resto_conectados, _detecta_restaurante_en_lista );
+		l_restaurante_seleccionado[header_recibido->size] = '\0';
 
-	if ( esta_en_lista ) {
+		bool esta_en_lista = list_any_satisfy(lista_resto_conectados, _detecta_restaurante_en_lista );
 
-		printf( "Cliente Nro.: '%d' asociado a restaurante: '%s'.\n", header_recibido->id_proceso, l_restaurante_seleccionado );
+		if ( esta_en_lista ) {
 
-		t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
+			printf( "Cliente Nro.: '%d' asociado a restaurante: '%s'.\n", header_recibido->id_proceso, l_restaurante_seleccionado );
 
-		l_asociar->id_proceso = header_recibido->id_proceso;
-		l_asociar->restaurante_asociado = l_restaurante_seleccionado;
+			t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
 
-		list_add( lista_par_cliente_resto, l_asociar );
+			l_asociar->id_proceso = header_recibido->id_proceso;
+			l_asociar->restaurante_asociado = l_restaurante_seleccionado;
 
-		return true;
+			list_add( lista_par_cliente_resto, l_asociar );
+
+			return true;
+
+		} else {
+
+			printf( "El restaurante recibido es: %s, y no se encuentra en la lista.\n", l_restaurante_seleccionado );
+
+			return false;
+
+		}
 
 	} else {
 
-		printf( "El restaurante recibido es: %s, y no se encuentra en la lista.\n", l_restaurante_seleccionado );
+		printf("Restaurante Default seleccionado. Puede realizar su pedido.\n");
 
-		return false;
+		return true;
 
 	}
 
