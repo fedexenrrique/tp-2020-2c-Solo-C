@@ -70,6 +70,12 @@ t_config * leer_config(void) {
 
 void procesamiento_mensaje( void * p_socket_aceptado ) {
 
+	void * _aux_nombres_restos ( void * p_elem ) {
+
+		return ((t_info_restarante *) p_elem)->resto_nombre;
+
+	}
+
 	uint32_t socket_aceptado = (uint32_t)(* ( (int*) p_socket_aceptado ));
 
 	t_header * header_recibido = recibir_buffer( socket_aceptado );
@@ -82,8 +88,10 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	mem_hexdump(header_recibido->payload, header_recibido->size);
 
 	switch ( header_recibido->nro_msg ) {
-	case CONSULTAR_RESTAURANTES:
-		recibir_consultar_restaurante_y_responder( socket_aceptado );
+	case CONSULTAR_RESTAURANTES: ;
+		t_list * nombres_restos = list_map( lista_resto_conectados, _aux_nombres_restos );
+		responder_consultar_restaurante ( socket_aceptado, nombres_restos );
+		list_destroy_and_destroy_elements( nombres_restos, _string_destroyer );
 		break;
 	case SELECCIONAR_RESTAURANTE: ;
 		bool seleccionado = procedimiento_02_seleccionar_restaurante( header_recibido );
@@ -94,7 +102,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		break;
 	case CREAR_PEDIDO: ;
 		uint32_t id_ped_creado = procedimiento_05_crear_pedido( header_recibido );
-		responder_05_crear_pedido( socket_aceptado, id_ped_creado );
+		// responder_05_crear_pedido( socket_aceptado, id_ped_creado );
 		break;
 	case ANIADIR_PLATO:
 		break;
