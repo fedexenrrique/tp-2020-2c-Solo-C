@@ -53,6 +53,7 @@ bool agregar_pedido_a_tabla_segmentos(t_restaurante * restaurante, uint32_t id_p
 	int lista_size=list_size(restaurante->tabla_pedidos);
 	printf("El tamaño de la Lista es: %d\n", lista_size);
 
+
 	return TRUE;
 
 }

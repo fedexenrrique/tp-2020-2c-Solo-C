@@ -245,7 +245,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		t_comida * comida=malloc(sizeof(t_comida));
 		comida->cantidad_lista_comida=0;
 		comida->cantidad_total_comida=plato->cantidad_plato;
-		strcpy(comida->nombre_comida,plato->nombre_plato);
+		strncpy(comida->nombre_comida,plato->nombre_plato,SIZE_VECTOR_NOMBRE_PLATO);
 
 		printf("El nombre de la comida es: %s",comida->nombre_comida);
 
@@ -304,7 +304,8 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 				return FALSE;
 			}
 			void _serializar_tabla_comida(void * elemento){
-				t_comida * comida=(t_comida *)elemento;
+				t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
+				t_comida * comida=(t_comida*)adm_comida->contenido;
 
 				memcpy(buffer+offset,&comida->cantidad_lista_comida,sizeof(uint32_t));
 				offset+=sizeof(uint32_t);
@@ -314,6 +315,11 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 
 				memcpy(buffer+offset,comida->nombre_comida,sizeof(SIZE_VECTOR_NOMBRE_PLATO));
 				offset+=sizeof(SIZE_VECTOR_NOMBRE_PLATO);
+
+				printf("Estoy iterando la lista del pedido\n");
+				printf("Cantidad lista de comida: %d\n",comida->cantidad_lista_comida);
+				printf("Cantidad total de comida: %d\n", comida->cantidad_total_comida);
+				printf("Nombre del plato: %s\n",comida->nombre_comida);
 
 
 			}
@@ -347,6 +353,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 		int size_lista_pedido=list_size(pedido->comidas_del_pedido);
 		log_error(logger,"El tamaño de la lista del pedido es: %d",size_lista_pedido);
 		size_payload=(sizeof(t_comida))*size_lista_pedido;
+		log_info(logger,"El size del payload es: %d",size_payload);
 		buffer=malloc(size_payload);
 		list_iterate(pedido->comidas_del_pedido,_serializar_tabla_comida);
 	    }

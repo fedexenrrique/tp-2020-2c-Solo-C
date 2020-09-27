@@ -778,7 +778,7 @@ int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	plato->pedido->nombre_restaurante="FAROLA";
 	plato->size_nombre_plato=14;
 	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	plato->nombre_plato="fideos moñitos";
+	plato->nombre_plato="fideos_moñitos";
 	plato->cantidad_plato=5;
 
 	int size_buffer=4*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
@@ -828,7 +828,7 @@ t_guardar_plato * recibir_guardar_plato   (void * payload         ){
 	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
 	payload+=sizeof(uint32_t);
 
-	plato->nombre_plato=malloc(plato->size_nombre_plato+1);
+	plato->nombre_plato=malloc((plato->size_nombre_plato)+1);
 	memcpy(plato->nombre_plato,payload,plato->size_nombre_plato);
 	plato->nombre_plato[plato->size_nombre_plato]='\0';
 	payload+=plato->size_nombre_plato;
