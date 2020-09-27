@@ -5,7 +5,7 @@ int main(void) {
 
 	prueba_biblioteca_compartida();
 
-	lista_par_cliente_resto = list_create();
+	lista_asociaciones_cliente_resto = list_create();
 	lista_resto_conectados  = list_create();
 
 	g_sockets_abiertos      = list_create();
@@ -102,9 +102,11 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		break;
 	case CREAR_PEDIDO: ;
 		uint32_t id_ped_creado = procedimiento_05_crear_pedido( header_recibido );
-		// responder_05_crear_pedido( socket_aceptado, id_ped_creado );
+		printf( "Se obtuvo el ID '%d'.\n", id_ped_creado );
+		responder_05_crear_pedido( socket_aceptado, id_ped_creado );
 		break;
 	case ANIADIR_PLATO:
+		responder_07_aniadir_plato( socket_aceptado, true );
 		break;
 	case CONFIRMAR_PEDIDO:
 		break;
@@ -194,13 +196,21 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 	char * l_restaurante_seleccionado;
 
-	bool _detecta_restaurante_en_lista(void * p_elem) {
+	bool _detecta_restaurante_en_lista(void * p_elem) { // detecta si el restaurante está disponible en la APP
 
 		return string_equals_ignore_case( ((t_info_restarante*)p_elem)->resto_nombre , l_restaurante_seleccionado );
 
 	}
 
-	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) {
+	bool _detecta_asociacion_previa_de_id ( void * p_elem ) {
+
+		return ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ;
+
+	}
+
+	list_remove_by_condition( lista_asociaciones_cliente_resto, _detecta_asociacion_previa_de_id ); // Elimina asociación previa
+
+	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) { // Restaurante
 
 		l_restaurante_seleccionado = malloc(header_recibido->size + 1);
 
@@ -208,7 +218,7 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 		l_restaurante_seleccionado[header_recibido->size] = '\0';
 
-		bool esta_en_lista = list_any_satisfy(lista_resto_conectados, _detecta_restaurante_en_lista );
+		bool esta_en_lista = list_any_satisfy( lista_resto_conectados, _detecta_restaurante_en_lista );
 
 		if ( esta_en_lista ) {
 
@@ -219,7 +229,7 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 			l_asociar->id_proceso = header_recibido->id_proceso;
 			l_asociar->restaurante_asociado = l_restaurante_seleccionado;
 
-			list_add( lista_par_cliente_resto, l_asociar );
+			list_add( lista_asociaciones_cliente_resto, l_asociar );
 
 			return true;
 
@@ -231,9 +241,17 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 		}
 
-	} else {
+	} else { // Restaurante Default
 
-		printf("Restaurante Default seleccionado. Puede realizar su pedido.\n");
+		printf( "Cliente Nro.: '%d' asociado a restaurante predeterminado.\n", header_recibido->id_proceso );
+
+		t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
+
+		l_asociar->id_proceso = header_recibido->id_proceso;
+
+		l_asociar->restaurante_asociado = NULL;
+
+		list_add( lista_asociaciones_cliente_resto, l_asociar );
 
 		return true;
 
@@ -242,7 +260,23 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 }
 
 uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
-	return 4398;
+
+	bool _chequeo_existencia_asociacion ( void * p_elem ) {
+
+		return ((t_cliente_resto *) p_elem)->id_proceso == header_recibido->id_proceso;
+
+	}
+
+	t_cliente_resto * asociacion = (t_cliente_resto *) list_find( lista_asociaciones_cliente_resto, _chequeo_existencia_asociacion );
+
+	if ( asociacion == NULL ) return -1;
+
+	// crear pedido
+
+	uint32_t id_gen = random_id_generator();
+
+	return id_gen;
+
 }
 
 void sigint(int a) {

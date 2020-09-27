@@ -47,7 +47,7 @@ typedef struct {
 	uint32_t    socket_conectado;
 } t_info_restarante;
 
-t_list * lista_par_cliente_resto;
+t_list * lista_asociaciones_cliente_resto;
 
 t_list * lista_resto_conectados;
 
