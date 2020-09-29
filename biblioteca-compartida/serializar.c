@@ -1266,6 +1266,8 @@ void sigint(int a) {
 
 uint32_t random_id_generator( void ) {
 
+	sleep(1);
+
 	srand(time(NULL));    // Initialization, should only be called once.
 	uint32_t r = rand();  // Returns a pseudo-random integer between 0 and RAND_MAX.
 

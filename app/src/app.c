@@ -3,8 +3,6 @@
 
 int main(void) {
 
-	prueba_biblioteca_compartida();
-
 	lista_asociaciones_cliente_resto = list_create();
 	lista_resto_conectados  = list_create();
 
@@ -14,6 +12,11 @@ int main(void) {
 
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
 	config = leer_config();
+
+	// lanzar planificador a largo plazo
+	// lanzar planificador a mediano plazo
+	// lanzar planificador a corto plazo
+	// lanzar repartidores
 
 	g_socket_cliente = crear_socket_escucha("127.0.0.1", g_puerto_escucha );
 
@@ -64,7 +67,59 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_X"     ) ) g_posicion_rest_default_x     = config_get_int_value(config, "POSICION_REST_DEFAULT_X");
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_Y"     ) ) g_posicion_rest_default_y     = config_get_int_value(config, "POSICION_REST_DEFAULT_Y");
 
+	sem_init( &g_nro_cpus , 0, 1 ); // arreglar
+
+	uint32_t posicion = 0;
+
+	while ( g_repartidores           [posicion] != NULL
+		 && g_frecuencia_de_descanso [posicion] != NULL
+		 && g_tiempo_de_descanso     [posicion] != NULL ) {
+
+		t_pcb_repartidor * l_repartidor = malloc( sizeof(t_pcb_repartidor) );
+
+		char ** repartidor_posiciones = (char **) string_split ( g_repartidores[posicion] , "|" );
+
+		l_repartidor->id_repartidor = random_id_generator();
+		l_repartidor->pos_x = (uint32_t) atoi( repartidor_posiciones[0] );
+		l_repartidor->pos_y = (uint32_t) atoi( repartidor_posiciones[1] );
+		l_repartidor->freq_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
+		l_repartidor->tiempo_descanso = (uint32_t) atoi( g_tiempo_de_descanso     [posicion] );
+
+		free( repartidor_posiciones[0] );
+		free( repartidor_posiciones[1] );
+		free( repartidor_posiciones );
+
+		sem_init( &l_repartidor->semaforo, 0, 0 );
+
+		mostrar_info_pcb_repartidor( l_repartidor );
+
+		posicion++;
+
+	}
+
+	if ( ! ( g_repartidores           [posicion] != NULL
+	      && g_frecuencia_de_descanso [posicion] != NULL
+		  && g_tiempo_de_descanso     [posicion] != NULL )
+	  &&   ( g_repartidores           [posicion] != NULL
+	      || g_frecuencia_de_descanso [posicion] != NULL
+	      || g_tiempo_de_descanso     [posicion] != NULL ) ) {
+
+		printf("Información de repartidores incompleta. Corrija la configuración del módulo.\n");
+		exit(-1);
+
+	}
+
+	exit(-1);
+
 	return config;
+
+}
+
+void mostrar_info_pcb_repartidor ( t_pcb_repartidor * p_repa ) {
+
+	printf("\nInformación del repartidor '%d'.\n", p_repa->id_repartidor );
+	printf("Se encuentra posicionado en ( %d, %d ).\n", p_repa->pos_x, p_repa->pos_y );
+	printf("Descansa cada %d metros un tiempo de %d minutos.\n", p_repa->freq_descanso, p_repa->tiempo_descanso );
 
 }
 
@@ -101,11 +156,15 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		responder_consultar_platos( socket_aceptado, g_platos_default );
 		break;
 	case CREAR_PEDIDO: ;
+		// "CREAR_PEDIDO" Hacia Restaurante ( y "GUARDAR_PEDIDO" Hacia Sindicato).
+		// "GUARDAR_PEDIDO" Hacia comanda.
 		uint32_t id_ped_creado = procedimiento_05_crear_pedido( header_recibido );
 		printf( "Se obtuvo el ID '%d'.\n", id_ped_creado );
 		responder_05_crear_pedido( socket_aceptado, id_ped_creado );
 		break;
 	case ANIADIR_PLATO:
+		// "ANIADIR_PLATO" Hacia Restaurante.
+		// "GUARDAR_PLATO" Hacia comanda.
 		responder_07_aniadir_plato( socket_aceptado, true );
 		break;
 	case CONFIRMAR_PEDIDO:
@@ -271,7 +330,9 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	if ( asociacion == NULL ) return -1;
 
-	// crear pedido
+
+
+	// "GUARDAR_PEDIDO" Hacia Comanda.
 
 	uint32_t id_gen = random_id_generator();
 
