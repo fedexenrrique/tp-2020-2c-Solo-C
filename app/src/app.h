@@ -47,7 +47,7 @@ typedef struct {
 	uint32_t    socket_conectado;
 } t_info_restarante;
 
-t_list * lista_par_cliente_resto;
+t_list * lista_asociaciones_cliente_resto;
 
 t_list * lista_resto_conectados;
 
@@ -55,6 +55,19 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t    id_proceso;
 	char*       restaurante_asociado;
 } t_cliente_resto;
+
+sem_t g_nro_cpus;
+
+typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
+	uint32_t    id_repartidor;
+	uint32_t    pos_x;
+	uint32_t    pos_y;
+	uint32_t    freq_descanso;
+	uint32_t    tiempo_descanso;
+	sem_t       semaforo;
+} t_pcb_repartidor;
+
+t_list * g_cola_nuevos;
 
 // FUNCIONES
 
@@ -73,6 +86,7 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido );
 uint32_t procedimiento_05_crear_pedido( t_header * header_recibido );
 
 void procesamiento_mensaje( void * socket_cliente );
+void mostrar_info_pcb_repartidor ( t_pcb_repartidor * p_repa );
 
 void sigint(int a);
 

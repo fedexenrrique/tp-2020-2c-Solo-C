@@ -945,3 +945,15 @@ PUNTO_MONTAJE: /home/utnso/afip
 [INFO] 01:51:19:479 Sindicato/(17249:17254): Creando directorio de restaursnte nuevo...
 [WARNING] 01:51:19:479 Sindicato/(17249:17254): El punto de montaje no existe. Se creará el directorio.
 [INFO] 01:51:19:479 Sindicato/(17249:17254): El directorio de Restaurante
+[INFO] 01:57:05:459 Sindicato/(17810:17810): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:57:05:460 Sindicato/(17810:17810): Preparando punto de montaje.
+[INFO] 01:57:05:460 Sindicato/(17810:17810): Punto de montaje encontrado.
+[INFO] 02:06:21:104 Sindicato/(18409:18409): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 02:06:21:108 Sindicato/(18409:18409): Preparando punto de montaje.
+[INFO] 02:06:21:109 Sindicato/(18409:18409): Punto de montaje encontrado.

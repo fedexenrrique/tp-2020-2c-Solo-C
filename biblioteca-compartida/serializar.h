@@ -161,8 +161,11 @@ void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );
 t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process );
 void responder_consultaar_platos( int socket_cliente, char ** p_platos );
 
-uint32_t enviar_crear_pedido( char* p_ip, char* p_puerto, int p_id_process );
-void recibir_crear_pedido_y_responder( int socket_cliente, uint32_t p_id_pedido_creado );
+uint32_t enviar_05_crear_pedido( char* p_ip, char* p_puerto, uint32_t p_id_process );
+void responder_05_crear_pedido( int socket_cliente, uint32_t p_id_pedido_creado );
+
+bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proceso, uint32_t p_id_pedido, char * p_plato );
+void responder_07_aniadir_plato( uint32_t socket_cliente, bool p_resultado );
 
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
@@ -190,6 +193,8 @@ bool       enviar_buffer            ( uint32_t p_conexion, t_header * p_header )
 t_header * recibir_buffer           ( uint32_t socket_cliente );
 
 void sigint(int a);
+
+uint32_t random_id_generator( void );
 
 void _string_destroyer( void * );
 

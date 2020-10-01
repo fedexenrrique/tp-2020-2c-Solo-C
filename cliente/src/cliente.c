@@ -58,12 +58,23 @@ int main(int argc, char **argv) {
 
 				case CREAR_PEDIDO:
     		    	printf(" 05- CREAR_PEDIDO HACIA: APP, SINDICATO \n");
-    		    	//enviar_crear_pedido( g_ip_app, g_puerto_app, g_id_proceso );
-		    		break;
+    		    	uint32_t id_pedido = enviar_05_crear_pedido( g_ip_app, g_puerto_app, g_id_proceso );
+    		    	g_id_pedido_actual = id_pedido;
+
+    		    	if ( id_pedido == -1 )
+    		    		printf("No se pudo crear el pedido.\n");
+    		    	else
+    		    		printf("Se creó el pedido con ID '%d'.\n", id_pedido );
+
+    		    	break;
     		    
 				case ANIADIR_PLATO:
-    		    	printf(" 07- ANIADIR_PLATO HACIA: APP, SINDICATO \n");
-		    		break;
+
+					printf(" 07- ANIADIR_PLATO HACIA: APP, SINDICATO \n");
+    		    	bool se_aniadio = enviar_07_aniadir_plato( g_ip_app, g_puerto_app, g_id_proceso, g_id_pedido_actual, argv[3] );
+    		    	printf( se_aniadio ? "Plato agregado al pedido.\n" : "No es posible agregar el plato.\n" );
+
+    		    	break;
 
 				case CONFIRMAR_PEDIDO:
     		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");
