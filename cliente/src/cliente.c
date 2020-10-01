@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 				case CONSULTAR_RESTAURANTES: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
 
 					printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP \n");
-    		    	enviar_consultar_restaurante(g_ip_app, g_puerto_app);
+					enviar_01_consultar_restaurantes (g_ip_app, g_puerto_app);
     		    	break;
     		    
 				case SELECCIONAR_RESTAURANTE:

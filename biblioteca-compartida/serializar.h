@@ -142,8 +142,8 @@ uint32_t   g_tiempo_reconexion;
 int serializar(void* buffer, const char* format, ...);
 int deserializar(void* buffer, const char* format, ...);
 
-t_list *   enviar_consultar_restaurante   (char* p_ip,char* p_puerto);
-void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_restaurantes );
+t_list * enviar_01_consultar_restaurantes   (char* p_ip,char* p_puerto);
+void responder_01_consultar_restaurantes ( uint32_t socket_cliente, t_list * p_list_restaurantes );
 
 int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);
 void       enviar_obtener_pedido   (char* p_ip,char* p_puerto);

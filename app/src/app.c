@@ -78,7 +78,7 @@ t_config * leer_config(void) {
 
 	resto_default->posx = g_posicion_rest_default_x;
 	resto_default->posy = g_posicion_rest_default_y;
-	resto_default->resto_nombre     = NULL;
+	resto_default->resto_nombre     = "default";
 	resto_default->socket_conectado = 0;
 	resto_default->list_platos = g_platos_default;
 
@@ -118,8 +118,8 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	switch ( header_recibido->nro_msg ) {
 	case CONSULTAR_RESTAURANTES: ;
 		t_list * nombres_restos = list_map( lista_resto_conectados, _aux_nombres_restos );
-		responder_consultar_restaurante ( socket_aceptado, nombres_restos );
-		list_destroy_and_destroy_elements( nombres_restos, _string_destroyer );
+		responder_01_consultar_restaurantes ( socket_aceptado, nombres_restos );
+		list_destroy( nombres_restos );
 		break;
 	case SELECCIONAR_RESTAURANTE: ;
 		bool seleccionado = procedimiento_02_seleccionar_restaurante( header_recibido );

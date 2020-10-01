@@ -4,7 +4,7 @@ void prueba_biblioteca_compartida(void) {
 	printf("\n!!!Texto impreso desde la biblioteca compartida!!!\n");
 }
 
-t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
+t_list * enviar_01_consultar_restaurantes(char* p_ip, char* p_puerto) {
 
 	t_list * _recibir_lista_restaurantes( int p_conexion ) {
 
@@ -90,7 +90,7 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 
 }
 
-void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_restaurantes ) {
+void responder_01_consultar_restaurantes ( uint32_t socket_cliente, t_list * p_list_restaurantes ) {
 
 	void * buffer_response;
 	int    buffer_size;
@@ -163,6 +163,8 @@ void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_resta
 	header_response.payload    = buffer_response;
 
 	enviar_buffer( socket_cliente, &header_response);
+
+	free(buffer_response);
 
 }
 

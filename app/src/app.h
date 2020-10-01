@@ -54,7 +54,7 @@ typedef struct {
 
 t_list * lista_asociaciones_cliente_resto;
 
-t_list * lista_resto_conectados;
+t_list * lista_resto_conectados; // t_info_restarante
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t            id_proceso;
