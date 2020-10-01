@@ -166,7 +166,7 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 	char* propiedades = malloc(strlen("CANTIDAD_COCINEROS=POSICION=AFINIDAD_COCINEROS=PLATOS=PRECIO_PLATOS=CANTIDAD_HORNOS=")*2);
 	char* pathArchivoInfo=malloc(80);
 	strcpy(pathArchivoInfo,pathRestoNuevo);
-	string_append(&pathArchivoInfo,"Info.txt");
+	string_append(&pathArchivoInfo,"Info.AFIP");
 
 	FILE* archivoRestauranteNuevo = fopen(pathArchivoInfo, "w");
 	int length=sprintf(propiedades,"%s%d%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%d"
@@ -187,7 +187,7 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 }
 
 
-void grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
+int grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
 
 	int e;
 	struct  stat info;
@@ -203,11 +203,11 @@ void grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
 					return 0;
 				}
 				if (info.st_mode & S_IFDIR)
-					log_info(logger,"Punto de montaje encontrado.");
+					log_warning(logger,"El restaurante ya existe...saliendo");
 			}
 		else {
 				if (errno == ENOENT) {
-					log_warning(logger,"El punto de montaje no existe. Se creará el directorio.");
+					log_info(logger,"El restaurante no existe. Se creará el directorio.");
 
 					e = mkdir(pathRestoNuevo, ACCESSPERMS | S_IRWXU);
 					if (e != 0) {
@@ -215,9 +215,8 @@ void grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
 						return 0;
 					}
 					else
-						log_info(logger,"El directorio de Restaurante",restauranteNuevo->nombreRestaurante,"se creó correctamente.");
+						log_info(logger,"El directorio de Restaurante se creó correctamente.");
 						int restoCreado=grabarInfoRestaurante(restauranteNuevo,pathRestoNuevo);
-
 
 				}
 				else {
@@ -229,7 +228,163 @@ void grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
 
 
 }
+int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva){
+	char* propiedades = malloc(strlen("PASOS=TIEMPO_PASOS=")*2);
+	char* pathArchivoInfo=malloc(80);
 
 
+	FILE* archivoRecetaNueva = fopen(pathRecetaNueva, "w");
+	int length=sprintf(propiedades,"%s%s%s%s%s%s%s%s%s"
+														,"PASOS=","[",recetaNueva->pasos,"]","\n",
+														"TIEMPO_PASOS=","[",recetaNueva->tiemposPasos,"]");
+
+	if(fwrite(propiedades,length,1,archivoRecetaNueva)==0){
+		log_error(logger,"Error al escribir en el archivo info de restaurante");
+	}
+
+	fclose(archivoRecetaNueva);
+
+
+}
+int grabarArchivoReceta(tCreacionReceta* recetaNueva){
+
+	int e;
+	struct  stat info;
+	char* pathRecetaNueva=malloc(60);
+	strcpy(pathRecetaNueva,pathRecetas);
+	string_append_with_format(&pathRecetaNueva,"%s%s",recetaNueva->nombreReceta,".AFIP"),
+	log_info(logger, "Creando directorio de receta nuevo...");
+	e = stat(pathRecetaNueva, &info);
+	int iLineaArch=0;
+
+		if (e == 0) {
+				if (info.st_mode & S_IFREG) {
+					log_error(logger,"El punto de montaje es un archivo.");
+					return 0;
+				}
+				if (info.st_mode & S_IFDIR)
+					log_warning(logger,"El restaurante ya existe...saliendo");
+			}
+		else {
+				if (errno == ENOENT) {
+					log_info(logger,"El restaurante no existe. Se creará el directorio.");
+
+					e = grabarInfoReceta(recetaNueva,pathRecetaNueva);
+					if (e != 0) {
+						log_error(logger,"Se produjo un error al crear el directorio. [%d - %s]", errno, strerror(errno));
+						return 0;
+					}
+					else
+						log_info(logger,"La receta se creó correctamente.");
+
+				}
+				else {
+					log_error(logger,"Se produjo un error accediendo alk diorectorio. [%d - %s]", errno, strerror(errno));
+					return 0;
+				}
+			}
+			return 1;
+
+
+}
+
+char* quitarCaracter(char* cadena,char caracter){
+	int i=0;
+	int tam=strlen(cadena);
+	char* final=malloc(30);
+	while (i<=tam){
+
+		if(cadena[i]==caracter){
+			final[i]=' ';
+		}else final[i]=cadena[i];
+
+		i++;
+	}
+
+	string_trim(&final);
+
+	return final;
+}
+
+void mapearParametrosDeLista(t_list* lista,t_respuesta_info_restaurante* info){
+	char* cadenaPosicion=malloc(30);
+	char* cadenaAfinidad=malloc(30);
+	char* cadenaPlatos=malloc(30);
+	char* cadenaPreciosPlatos=malloc(30);
+
+
+	info->cantidad_cocineros=atoi(list_get(lista,0));
+
+	char* posicion=list_get(lista,1);
+	cadenaPosicion=quitarCaracter(posicion,'[');
+	cadenaPosicion=quitarCaracter(cadenaPosicion,']');
+	char** posicionXY= string_split(cadenaPosicion,",");
+	info->posicion_x=atoi(posicionXY[0]);
+	info->posicion_y=atoi(posicionXY[1]);
+
+	char* afinidad=list_get(lista,2);
+	cadenaAfinidad=quitarCaracter(afinidad,'[');
+	cadenaAfinidad=quitarCaracter(cadenaAfinidad,']');
+	info->afinidad_cocineros=cadenaAfinidad;
+	info->size_afinidad_cocineros=strlen(cadenaAfinidad);
+
+
+	char* platos=list_get(lista,3);
+	cadenaPlatos=quitarCaracter(platos,'[');
+	cadenaPlatos=quitarCaracter(cadenaPlatos,']');
+	info->platos=cadenaPlatos;
+	info->size_platos=strlen(cadenaPlatos);
+
+	char* preciosPlatos=list_get(lista,4);
+	cadenaPreciosPlatos=quitarCaracter(preciosPlatos,'[');
+	cadenaPreciosPlatos=quitarCaracter(cadenaPreciosPlatos,']');
+	info->precio_platos=cadenaPreciosPlatos;
+	info->size_precio_platos=strlen(cadenaPreciosPlatos);
+
+
+	info->cantidad_hornos=atoi(list_get(lista,5));
+
+
+
+
+
+}
+t_respuesta_info_restaurante* leerInfoDeResto(char* nombreResto){
+	t_respuesta_info_restaurante* infoResto= malloc(sizeof(t_respuesta_info_restaurante));
+	int iLineaArch=0;
+	struct stat info;
+	char* pathInfoResto=malloc(60);
+	char* map=malloc(200);
+	t_list* listaParametros=list_create();
+
+	strcpy(pathInfoResto,pathRestaurantes);
+	string_append_with_format(&pathInfoResto,"%s%s%s",nombreResto,"/","Info.AFIP");
+	stat(pathInfoResto, &info);
+	FILE* archResto=fopen(pathInfoResto,"r+");
+
+	map=mmap(0,info.st_size,PROT_READ | PROT_WRITE, MAP_SHARED, fileno(archResto), 0);
+
+	if(map==MAP_FAILED){
+		close(fileno(pathInfoResto));
+		perror("Error mapeando el archivo");
+		exit(EXIT_FAILURE);
+
+	}
+
+	char** lineasArchivo = string_split(map, "\n");
+
+	while (lineasArchivo[iLineaArch] != NULL) {
+		char** lineaActual = string_n_split(lineasArchivo[iLineaArch], 2, "=");
+		string_trim(lineaActual);
+
+		list_add(listaParametros, lineaActual[1]);
+		iLineaArch++;
+
+	}
+
+	mapearParametrosDeLista(listaParametros,infoResto);
+
+return infoResto;
+}
 
 #endif /* FILESYSTEM_C_ */
