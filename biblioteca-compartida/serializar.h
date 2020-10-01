@@ -20,6 +20,7 @@
 #include <pthread.h>
 #include <commons/string.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
 
 #include <stdint.h>
 #include <dirent.h>
@@ -155,7 +156,7 @@ bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_proces
 void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );
 
 t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process );
-void responder_consultar_platos( int socket_cliente, char ** p_platos );
+void responder_consultar_platos( uint32_t socket_cliente, char ** p_platos );
 
 uint32_t enviar_05_crear_pedido( char* p_ip, char* p_puerto, uint32_t p_id_process );
 void responder_05_crear_pedido( int socket_cliente, uint32_t p_id_pedido_creado );

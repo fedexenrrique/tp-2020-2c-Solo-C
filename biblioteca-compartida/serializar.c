@@ -31,12 +31,22 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 				memcpy( &act_size    , header_restaurantes->payload + despla, sizeof(uint32_t) );
 				despla += sizeof(uint32_t);
 
-				char * nombre_resto = malloc(act_size + 1);
+				char * nombre_resto;
 
-				memcpy( nombre_resto , header_restaurantes->payload + despla, act_size );
-				despla += act_size;
+				if ( act_size > 0 ) {
 
-				nombre_resto[act_size] = '\0';
+					nombre_resto = malloc(act_size + 1);
+
+					memcpy( nombre_resto , header_restaurantes->payload + despla, act_size );
+					despla += act_size;
+
+					nombre_resto[act_size] = '\0';
+
+				} else {
+
+					nombre_resto = "Default";
+
+				}
 
 				printf("\n%s\n", nombre_resto);
 
@@ -92,7 +102,7 @@ void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_resta
 
 		void _aux_longitud_acumulada_iter( void * p_elem ) {
 
-			total += string_length( (char *) p_elem );
+			total += (p_elem != NULL) ? string_length( (char *) p_elem ) : 0;
 
 		}
 
@@ -110,15 +120,19 @@ void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_resta
 
 	void _aux_cargar_buffer( void * p_elem ) {
 
-		int length = string_length((char *) p_elem);
+		uint32_t length = (p_elem != NULL) ? string_length((char *) p_elem) : 0;
 
 		memcpy( buffer_response + despla, &length, sizeof(uint32_t) );
 
 		despla += sizeof(uint32_t);
 
-		memcpy( buffer_response + despla, p_elem, string_length((char *) p_elem) );
+		if ( p_elem != NULL ) {
 
-		despla += string_length((char *) p_elem);
+			memcpy( buffer_response + despla, p_elem, string_length((char *) p_elem) );
+
+			despla += string_length((char *) p_elem);
+
+		}
 
 	}
 
@@ -685,7 +699,7 @@ t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process )
 
 }
 
-void responder_consultar_platos( int socket_cliente, char ** p_platos ) {
+void responder_consultar_platos( uint32_t socket_cliente, char ** p_platos ) {
 
 	void * buffer_response;
 	uint32_t buffer_size;

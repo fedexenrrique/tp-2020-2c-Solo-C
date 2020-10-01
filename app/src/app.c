@@ -4,14 +4,21 @@
 int main(void) {
 
 	lista_asociaciones_cliente_resto = list_create();
+
 	lista_resto_conectados  = list_create();
 
 	g_sockets_abiertos      = list_create();
+
+	g_cola_nuevos = queue_create();
 
 	signal(SIGINT, sigint);
 
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
 	config = leer_config();
+
+	pthread_create(&g_thread_long_term_scheduler  , NULL, (void*) &long_term_scheduler, (void*) NULL  );
+
+	// short_term_scheduler();
 
 	// lanzar planificador a largo plazo
 	// lanzar planificador a mediano plazo
@@ -67,49 +74,15 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_X"     ) ) g_posicion_rest_default_x     = config_get_int_value(config, "POSICION_REST_DEFAULT_X");
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_Y"     ) ) g_posicion_rest_default_y     = config_get_int_value(config, "POSICION_REST_DEFAULT_Y");
 
-	sem_init( &g_nro_cpus , 0, 1 ); // arreglar
+	t_info_restarante * resto_default = malloc( sizeof(t_info_restarante) );
 
-	uint32_t posicion = 0;
+	resto_default->posx = g_posicion_rest_default_x;
+	resto_default->posy = g_posicion_rest_default_y;
+	resto_default->resto_nombre     = NULL;
+	resto_default->socket_conectado = 0;
+	resto_default->list_platos = g_platos_default;
 
-	while ( g_repartidores           [posicion] != NULL
-		 && g_frecuencia_de_descanso [posicion] != NULL
-		 && g_tiempo_de_descanso     [posicion] != NULL ) {
-
-		t_pcb_repartidor * l_repartidor = malloc( sizeof(t_pcb_repartidor) );
-
-		char ** repartidor_posiciones = (char **) string_split ( g_repartidores[posicion] , "|" );
-
-		l_repartidor->id_repartidor = random_id_generator();
-		l_repartidor->pos_x = (uint32_t) atoi( repartidor_posiciones[0] );
-		l_repartidor->pos_y = (uint32_t) atoi( repartidor_posiciones[1] );
-		l_repartidor->freq_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
-		l_repartidor->tiempo_descanso = (uint32_t) atoi( g_tiempo_de_descanso     [posicion] );
-
-		free( repartidor_posiciones[0] );
-		free( repartidor_posiciones[1] );
-		free( repartidor_posiciones );
-
-		sem_init( &l_repartidor->semaforo, 0, 0 );
-
-		mostrar_info_pcb_repartidor( l_repartidor );
-
-		posicion++;
-
-	}
-
-	if ( ! ( g_repartidores           [posicion] != NULL
-	      && g_frecuencia_de_descanso [posicion] != NULL
-		  && g_tiempo_de_descanso     [posicion] != NULL )
-	  &&   ( g_repartidores           [posicion] != NULL
-	      || g_frecuencia_de_descanso [posicion] != NULL
-	      || g_tiempo_de_descanso     [posicion] != NULL ) ) {
-
-		printf("Información de repartidores incompleta. Corrija la configuración del módulo.\n");
-		exit(-1);
-
-	}
-
-	exit(-1);
+	list_add( lista_resto_conectados, resto_default );
 
 	return config;
 
@@ -152,8 +125,9 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		bool seleccionado = procedimiento_02_seleccionar_restaurante( header_recibido );
 		responder_seleccionar_restaurante( socket_aceptado, seleccionado );
 		break;
-	case CONSULTAR_PLATOS:
-		responder_consultar_platos( socket_aceptado, g_platos_default );
+	case CONSULTAR_PLATOS: ;
+		char ** platos = procedimiento_04_consultar_platos( header_recibido );
+		responder_consultar_platos( socket_aceptado, platos );
 		break;
 	case CREAR_PEDIDO: ;
 		// "CREAR_PEDIDO" Hacia Restaurante ( y "GUARDAR_PEDIDO" Hacia Sindicato).
@@ -251,9 +225,69 @@ void bucle_resto_conectado ( uint32_t sock_aceptado ) {
 
 }
 
+void long_term_scheduler( void ) {
+
+	sem_init( &g_nro_pedidos_confirmados , 0, 0 ); // 1 CPU
+
+	uint32_t posicion = 0;
+
+	while ( g_repartidores           [posicion] != NULL
+		 && g_frecuencia_de_descanso [posicion] != NULL
+		 && g_tiempo_de_descanso     [posicion] != NULL ) {
+
+		t_pcb_repartidor * l_repartidor = malloc( sizeof(t_pcb_repartidor) );
+
+		char ** repartidor_posiciones = (char **) string_split ( g_repartidores[posicion] , "|" );
+
+		l_repartidor->id_repartidor = random_id_generator();
+		l_repartidor->pos_x = (uint32_t) atoi( repartidor_posiciones[0] );
+		l_repartidor->pos_y = (uint32_t) atoi( repartidor_posiciones[1] );
+		l_repartidor->freq_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
+		l_repartidor->tiempo_descanso = (uint32_t) atoi( g_tiempo_de_descanso     [posicion] );
+
+		free( repartidor_posiciones[0] );
+		free( repartidor_posiciones[1] );
+		free( repartidor_posiciones );
+
+		sem_init( &l_repartidor->semaforo, 0, 0 );
+
+		mostrar_info_pcb_repartidor( l_repartidor );
+
+		queue_push( g_cola_nuevos, l_repartidor );
+
+		posicion++;
+
+	}
+
+	if ( ! ( g_repartidores           [posicion] != NULL
+	      && g_frecuencia_de_descanso [posicion] != NULL
+		  && g_tiempo_de_descanso     [posicion] != NULL )
+	  &&   ( g_repartidores           [posicion] != NULL
+	      || g_frecuencia_de_descanso [posicion] != NULL
+	      || g_tiempo_de_descanso     [posicion] != NULL ) ) {
+
+		printf("Información de repartidores incompleta. Corrija la configuración del módulo.\n");
+		exit(-1);
+
+	}
+
+	while (1) {
+
+		sem_wait( &g_nro_pedidos_confirmados );
+
+		t_pcb_repartidor * l_repartidor = queue_pop( g_cola_nuevos );
+
+		// asociar_pedido al repartidor
+
+		queue_push( g_cola_listos, l_repartidor );
+
+	}
+
+}
+
 bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
-	char * l_restaurante_seleccionado;
+	char * l_restaurante_seleccionado = NULL;
 
 	bool _detecta_restaurante_en_lista(void * p_elem) { // detecta si el restaurante está disponible en la APP
 
@@ -269,7 +303,7 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 	list_remove_by_condition( lista_asociaciones_cliente_resto, _detecta_asociacion_previa_de_id ); // Elimina asociación previa
 
-	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) { // Restaurante
+	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) { // Restaurante con nombre
 
 		l_restaurante_seleccionado = malloc(header_recibido->size + 1);
 
@@ -285,8 +319,10 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 			t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
 
+			t_info_restarante * resto = list_find ( lista_resto_conectados, _detecta_restaurante_en_lista );
+
 			l_asociar->id_proceso = header_recibido->id_proceso;
-			l_asociar->restaurante_asociado = l_restaurante_seleccionado;
+			l_asociar->restaurante_asociado = resto;
 
 			list_add( lista_asociaciones_cliente_resto, l_asociar );
 
@@ -308,11 +344,39 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 		l_asociar->id_proceso = header_recibido->id_proceso;
 
-		l_asociar->restaurante_asociado = NULL;
+		t_info_restarante * resto_default = list_find( lista_resto_conectados, _detecta_restaurante_en_lista );
+
+		l_asociar->restaurante_asociado = resto_default;
 
 		list_add( lista_asociaciones_cliente_resto, l_asociar );
 
 		return true;
+
+	}
+
+}
+
+char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
+
+	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+
+		return ( ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ) ? true : false ;
+
+	}
+
+	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
+
+	if ( asociacion != NULL ) {
+
+		printf("Se encontró asociación.");
+
+		return asociacion->restaurante_asociado->list_platos;
+
+	} else {
+
+		printf("No se encontró la asociación.");
+
+		return false;
 
 	}
 

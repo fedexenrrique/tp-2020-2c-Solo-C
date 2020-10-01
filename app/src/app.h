@@ -38,13 +38,18 @@ char ** g_platos_default;                // PLATOS_DEFAULT=3
 int     g_posicion_rest_default_x;       // POSICION_REST_DEFAULT_X=0
 int     g_posicion_rest_default_y;       // POSICION_REST_DEFAULT_Y=0
 
+pthread_t  g_thread_long_term_scheduler;
+pthread_t  g_thread_medium_term_scheduler;
+pthread_t  g_thread_short_term_scheduler;
+
 sem_t g_semaphore_envios_resto;
 
 typedef struct {
 	uint32_t    posx;
 	uint32_t    posy;
-	char     *  resto_nombre;
+	char*       resto_nombre;
 	uint32_t    socket_conectado;
+	char**      list_platos;
 } t_info_restarante;
 
 t_list * lista_asociaciones_cliente_resto;
@@ -52,11 +57,12 @@ t_list * lista_asociaciones_cliente_resto;
 t_list * lista_resto_conectados;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
-	uint32_t    id_proceso;
-	char*       restaurante_asociado;
+	uint32_t            id_proceso;
+	t_info_restarante * restaurante_asociado;
 } t_cliente_resto;
 
 sem_t g_nro_cpus;
+sem_t g_nro_pedidos_confirmados;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t    id_repartidor;
@@ -67,7 +73,9 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	sem_t       semaforo;
 } t_pcb_repartidor;
 
-t_list * g_cola_nuevos;
+t_queue * g_cola_nuevos;
+t_queue * g_cola_listos;
+t_queue * g_cola_bloqueados;
 
 // FUNCIONES
 
@@ -81,7 +89,11 @@ void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socke
 
 void bucle_resto_conectado ( uint32_t sock_aceptado );
 
+void long_term_scheduler( void );
+
 bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido );
+
+char ** procedimiento_04_consultar_platos( t_header * header_recibido );
 
 uint32_t procedimiento_05_crear_pedido( t_header * header_recibido );
 
