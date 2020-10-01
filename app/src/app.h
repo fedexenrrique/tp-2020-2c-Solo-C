@@ -59,7 +59,14 @@ t_list * lista_resto_conectados; // t_info_restarante
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t            id_proceso;
 	t_info_restarante * restaurante_asociado;
+	uint32_t            id_pedido;
+	t_list *            list_platos; // t_elem_pedido
 } t_cliente_resto;
+
+typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
+	uint32_t cantidad_plato;
+	char *   nombre_plato;
+} t_elem_pedido;
 
 sem_t g_nro_cpus;
 sem_t g_nro_pedidos_confirmados;
@@ -96,6 +103,10 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido );
 char ** procedimiento_04_consultar_platos( t_header * header_recibido );
 
 uint32_t procedimiento_05_crear_pedido( t_header * header_recibido );
+
+bool procesamiento_07_aniadir_plato( t_header * header_recibido );
+
+void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, char * p_nom_plato );
 
 void procesamiento_mensaje( void * socket_cliente );
 void mostrar_info_pcb_repartidor ( t_pcb_repartidor * p_repa );

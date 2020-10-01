@@ -136,10 +136,11 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		printf( "Se obtuvo el ID '%d'.\n", id_ped_creado );
 		responder_05_crear_pedido( socket_aceptado, id_ped_creado );
 		break;
-	case ANIADIR_PLATO:
+	case ANIADIR_PLATO: ;
 		// "ANIADIR_PLATO" Hacia Restaurante.
 		// "GUARDAR_PLATO" Hacia comanda.
-		responder_07_aniadir_plato( socket_aceptado, true );
+		bool se_aniadio = procesamiento_07_aniadir_plato( header_recibido );
+		responder_07_aniadir_plato( socket_aceptado, se_aniadio );
 		break;
 	case CONFIRMAR_PEDIDO:
 		break;
@@ -285,7 +286,7 @@ void long_term_scheduler( void ) {
 
 }
 
-bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
+bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 	char * l_restaurante_seleccionado = NULL;
 
@@ -323,6 +324,8 @@ bool procedimiento_02_seleccionar_restaurante( t_header * header_recibido ) {
 
 			l_asociar->id_proceso = header_recibido->id_proceso;
 			l_asociar->restaurante_asociado = resto;
+			l_asociar->id_pedido = 0;
+			l_asociar->list_platos = list_create();
 
 			list_add( lista_asociaciones_cliente_resto, l_asociar );
 
@@ -384,6 +387,8 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
 uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
+	void _aux_destroy_elem_plato ( void * p_elem ) { free(p_elem); }
+
 	bool _chequeo_existencia_asociacion ( void * p_elem ) {
 
 		return ((t_cliente_resto *) p_elem)->id_proceso == header_recibido->id_proceso;
@@ -394,13 +399,101 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	if ( asociacion == NULL ) return -1;
 
+	if ( asociacion->id_pedido != 0 ) {
 
+		printf("Se elimina pedido '%d' pre-existente.\n", asociacion->id_pedido );
+
+		asociacion->id_pedido = 0;
+
+		list_destroy_and_destroy_elements( asociacion->list_platos, _aux_destroy_elem_plato );
+
+	}
 
 	// "GUARDAR_PEDIDO" Hacia Comanda.
 
 	uint32_t id_gen = random_id_generator();
 
+	asociacion->id_proceso = id_gen;
+
+	asociacion->list_platos = list_create();
+
 	return id_gen;
+
+}
+
+bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
+
+	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+
+		return ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ;
+
+	}
+
+	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
+
+	if ( asociacion == NULL || asociacion->id_pedido == 0 ) {
+
+		printf("Se requiere asociar un restaurante y crear un pedido previamente a solicitar un plato.");
+
+		return false;
+
+	}
+
+	uint32_t despla = 0;
+
+	uint32_t cantidad_platos = 0;
+
+	memcpy( &cantidad_platos, header_recibido->payload + despla, sizeof(uint32_t) );
+
+	despla += sizeof(uint32_t);
+
+	uint32_t size_nombre_plato = 0;
+
+	memcpy( &size_nombre_plato, header_recibido->payload + despla, sizeof(uint32_t) );
+
+	despla += sizeof(uint32_t);
+
+	char * nombre_plato = malloc(size_nombre_plato + 1);
+
+	memcpy( nombre_plato, header_recibido->payload + despla, size_nombre_plato );
+
+	despla += size_nombre_plato;
+
+	nombre_plato[size_nombre_plato] = '\0';
+
+	printf("\n%s\n", nombre_plato);
+
+	auxiliar_aniadir_plato( asociacion->list_platos, cantidad_platos, nombre_plato );
+
+	return true;
+
+}
+
+void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, char * p_nom_plato ) {
+
+	bool _existe_plato ( void * p_elem ) {
+
+		return string_equals_ignore_case( ((t_elem_pedido*)p_elem)->nombre_plato , p_nom_plato );
+
+	}
+
+	t_elem_pedido * elem_pedido = list_find( p_list_platos, _existe_plato );
+
+	if ( elem_pedido != NULL ) {
+
+		elem_pedido->cantidad_plato += p_cant_plato;
+
+	} else {
+
+		elem_pedido = malloc( sizeof(t_elem_pedido) );
+
+		elem_pedido->nombre_plato = p_nom_plato;
+
+		elem_pedido->cantidad_plato = p_cant_plato;
+
+		list_add( p_list_platos, elem_pedido );
+
+	}
 
 }
 

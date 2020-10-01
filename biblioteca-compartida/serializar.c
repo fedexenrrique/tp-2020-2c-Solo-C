@@ -827,7 +827,9 @@ bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proces
 
 	uint32_t despla = 0;
 
-	memcpy( l_payload + despla, &p_id_proceso, sizeof(uint32_t) );
+	uint32_t cant_plato = 1;
+
+	memcpy( l_payload + despla, &cant_plato, sizeof(uint32_t) );
 
 	despla += sizeof(uint32_t);
 
