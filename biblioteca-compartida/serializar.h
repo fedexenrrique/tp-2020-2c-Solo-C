@@ -155,14 +155,17 @@ t_pedido * recibir_pedido          (void * payload         );
 bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_process, char * p_restaurante );
 void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );
 
-t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process );
-void responder_consultar_platos( uint32_t socket_cliente, char ** p_platos );
+t_list * enviar_04_consultar_platos( char* p_ip, char* p_puerto, uint32_t p_id_process );
+void responder_04_consultar_platos( uint32_t socket_cliente, char ** p_platos );
 
 uint32_t enviar_05_crear_pedido( char* p_ip, char* p_puerto, uint32_t p_id_process );
-void responder_05_crear_pedido( int socket_cliente, uint32_t p_id_pedido_creado );
+void responder_05_crear_pedido( uint32_t socket_cliente, uint32_t p_id_pedido_creado );
 
 bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proceso, uint32_t p_id_pedido, char * p_plato );
 void responder_07_aniadir_plato( uint32_t socket_cliente, bool p_resultado );
+
+bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_process );
+void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado );
 
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );

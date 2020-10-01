@@ -106,6 +106,8 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido );
 
 bool procesamiento_07_aniadir_plato( t_header * header_recibido );
 
+bool procesamiento_09_confirmar_pedido ( t_header * header_recibido );
+
 void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, char * p_nom_plato );
 
 void procesamiento_mensaje( void * socket_cliente );

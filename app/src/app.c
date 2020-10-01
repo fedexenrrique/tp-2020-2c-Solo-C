@@ -127,7 +127,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		break;
 	case CONSULTAR_PLATOS: ;
 		char ** platos = procedimiento_04_consultar_platos( header_recibido );
-		responder_consultar_platos( socket_aceptado, platos );
+		responder_04_consultar_platos( socket_aceptado, platos );
 		break;
 	case CREAR_PEDIDO: ;
 		// "CREAR_PEDIDO" Hacia Restaurante ( y "GUARDAR_PEDIDO" Hacia Sindicato).
@@ -142,7 +142,9 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		bool se_aniadio = procesamiento_07_aniadir_plato( header_recibido );
 		responder_07_aniadir_plato( socket_aceptado, se_aniadio );
 		break;
-	case CONFIRMAR_PEDIDO:
+	case CONFIRMAR_PEDIDO: ;
+		bool confirmacion = procesamiento_09_confirmar_pedido ( header_recibido );
+		responder_09_confirmar_pedido ( socket_aceptado, confirmacion );
 		break;
 	case PLATO_LISTO:
 		break;
@@ -379,7 +381,7 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
 		printf("No se encontró la asociación.");
 
-		return false;
+		return NULL;
 
 	}
 
@@ -411,13 +413,13 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	// "GUARDAR_PEDIDO" Hacia Comanda.
 
-	uint32_t id_gen = random_id_generator();
+	uint32_t id_pedido_generado = random_id_generator();
 
-	asociacion->id_proceso = id_gen;
+	asociacion->id_pedido = id_pedido_generado;
 
 	asociacion->list_platos = list_create();
 
-	return id_gen;
+	return id_pedido_generado;
 
 }
 
@@ -494,6 +496,30 @@ void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, cha
 		list_add( p_list_platos, elem_pedido );
 
 	}
+
+}
+
+bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
+
+	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+
+		return ( ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ) ? true : false ;
+
+	}
+
+	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
+
+	if ( asociacion == NULL || asociacion->id_pedido == 0 || asociacion->restaurante_asociado == NULL) {
+
+		printf("No hay pedido en elaboración para confirmar.");
+
+		return false;
+
+	}
+
+	// procedimiento de creación de PCB del pedido.
+
+	return true;
 
 }
 
