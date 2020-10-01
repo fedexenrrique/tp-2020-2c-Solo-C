@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 				case CONSULTAR_RESTAURANTES: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
 
 					printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP \n");
-    		    	enviar_consultar_restaurante(g_ip_app, g_puerto_app);
+					enviar_01_consultar_restaurantes (g_ip_app, g_puerto_app);
     		    	break;
     		    
 				case SELECCIONAR_RESTAURANTE:
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     		    
 				case CONSULTAR_PLATOS:
     		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
-    		    	enviar_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
+    		    	t_list * platos = enviar_04_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
 
 		    		break;
 
@@ -78,6 +78,14 @@ int main(int argc, char **argv) {
 
 				case CONFIRMAR_PEDIDO:
     		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");
+    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, g_id_proceso );
+
+    		    	if ( confirmacion ) {
+    		    		printf("Se confirmó el pedido.\n");
+    		    	} else {
+    		    		printf("No es posible confirmar el pedido.\n");
+    		    	}
+
 		    		break;
 
 				case PLATO_LISTO:
