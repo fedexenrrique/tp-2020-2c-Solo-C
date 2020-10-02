@@ -97,8 +97,10 @@ void manejo_modulo_conectado(void * socket_cliente){
 			free(aux);
 			break;
 		case PLATO_LISTO:
-			administrar_plato_listo(mensaje_recibido->payload);
-			free(mensaje_recibido->payload);
+			aux=mensaje_recibido->payload;
+			mensaje_recibido->payload=(void*)recibir_plato_listo(mensaje_recibido->payload);
+			administrar_plato_listo(mensaje_recibido,*sock_cliente);
+			free(aux);
 			break;
 		case FINALIZAR_PEDIDO:
 			aux=mensaje_recibido->payload;
@@ -328,7 +330,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 				memcpy(buffer+offset,&comida->cantidad_total_comida,sizeof(uint32_t));
 				offset+=sizeof(uint32_t);
 
-				int size_nombre=string_length(comida->nombre_comida);
+				//int size_nombre=string_length(comida->nombre_comida);
 				log_error(logger,"El tamaño del nombre es: %d",string_length(comida->nombre_comida));
 
 				memcpy(buffer+offset,comida->nombre_comida,SIZE_VECTOR_NOMBRE_PLATO);
@@ -399,11 +401,114 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 }
 
 
-t_plato_listo * administrar_plato_listo(void * payload){
+void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 
-	t_plato_listo * plato=recibir_plato_listo(payload);
+	t_guardar_plato * plato=(t_guardar_plato*)encabezado->payload;
+	bool exito=FALSE;
 
-	return plato;
+
+							bool buscar_restaurante(void * elemento){
+								t_restaurante * restaurante=(t_restaurante*)elemento;
+
+								if(string_equals_ignore_case(restaurante->nombre_restaurante,plato->pedido->nombre_restaurante)){
+										return TRUE;
+										}
+								return FALSE;
+							}
+
+							bool buscar_pedido(void * elemento){
+								t_pedido_seg * pedido=(t_pedido_seg*)elemento;
+								//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
+
+								if(pedido->id_pedido==plato->pedido->id_pedido){
+										return TRUE;
+										}
+								return FALSE;
+							}
+
+							bool buscar_comida(void * elemento){
+								t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
+								t_comida * comida=(t_comida*)adm_comida->contenido;
+
+								if(string_equals_ignore_case(comida->nombre_comida,plato->nombre_plato)){
+										return TRUE;
+										}
+								return FALSE;
+							}
+
+	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_restaurante * restaurante=NULL;
+	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+
+
+	if(restaurante==NULL){
+		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
+		goto envio_de_respuesta;}
+	else
+		printf("Se encontro el restaurant: %s \n",restaurante->nombre_restaurante);
+
+	if(list_is_empty(restaurante->tabla_pedidos))						//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_pedido_seg * pedido=NULL;
+	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+
+	if(pedido==NULL){
+		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
+		goto envio_de_respuesta;}
+	else
+		printf("Se encontro el pedido numero: %d\n",pedido->id_pedido);
+
+	if(pedido->estado!=CONFIRMADO){
+		log_info(logger,"El pedido se encuentra en el estado: %d", pedido->estado);
+		goto envio_de_respuesta;
+	}
+
+
+
+	t_pagina_comida * adm_comida=NULL;
+
+	if(!list_is_empty(pedido->comidas_del_pedido))						//Verifico que no este vacia la lista
+			adm_comida=list_find(pedido->comidas_del_pedido,buscar_comida);
+
+	if(adm_comida==NULL){
+		log_info(logger,"No se encontro el plato en el pedido");
+		goto envio_de_respuesta;
+		}
+	else{log_info(logger,"Se encontro el plato en el pedido");
+		t_comida * comida=(t_comida*)adm_comida->contenido;
+		if(comida->cantidad_lista_comida<comida->cantidad_total_comida){
+			comida->cantidad_lista_comida++;
+			exito=TRUE;
+			log_info(logger,"Ahora la cantidad lista del plato es: %d",comida->cantidad_lista_comida);
+
+			}
+
+		}
+
+	envio_de_respuesta:
+	;
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	if(exito==TRUE)
+		nuevo_encabezado->nro_msg=OK;
+	else
+		nuevo_encabezado->nro_msg=FAIL;
+
+	nuevo_encabezado->size=0;
+	nuevo_encabezado->payload=NULL;
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+
+	free(nuevo_encabezado);
+
+
 }
 
 t_pedido * recibir_consulta_pedido(void * payload){
@@ -461,12 +566,13 @@ void administrar_confirmar_pedido(t_header * encabezado,int socket_cliente){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
 		goto envio_de_respuesta;}
 	else{
-		 if(pedido->estado==CONFIRMADO)
+		log_info(logger, "Se encontro el pedido %d  y esta en el estado %d",pedido->id_pedido,pedido->estado);
+		if(pedido->estado==CONFIRMADO)
 			 goto envio_de_respuesta;
 		 else{
 			 pedido->estado=CONFIRMADO;
 			 exito=TRUE;
-		 }
+		     }
 
 	    }
 

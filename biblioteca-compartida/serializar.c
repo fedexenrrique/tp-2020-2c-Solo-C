@@ -1126,20 +1126,20 @@ t_guardar_plato * recibir_guardar_plato   (void * payload         ){
 
 }
 
-void 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
+int 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
 
 	t_plato_listo * plato=malloc(sizeof(t_plato_listo));
 	plato->pedido=malloc(sizeof(t_pedido));
 	t_header * encabezado=malloc(sizeof(t_header));
 	int offset=0;
 
-	plato->pedido->id_pedido=15;
+	plato->pedido->id_pedido=1;
 	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
 	plato->pedido->nombre_restaurante="FAROLA";
-	plato->size_nombre_plato=14;
+	plato->size_nombre_plato=15;
 	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	plato->nombre_plato="fideos moñitos";
+	plato->nombre_plato="fideos_moñitos";
 
 	int size_buffer=3*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
 	void * buffer=malloc(size_buffer);
@@ -1167,6 +1167,8 @@ void 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del plato");
+
+	return conexion;
 
 }
 

@@ -147,7 +147,12 @@ int main(int argc, char **argv) {
 			case PLATO_LISTO:
 
 				printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO               \n");
-				enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la notificacion del plato listo");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la notificacion del plato listo");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
+
 				break;
 
 			case OBTENER_PEDIDO:

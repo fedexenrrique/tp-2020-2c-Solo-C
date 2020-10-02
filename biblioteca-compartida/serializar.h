@@ -75,7 +75,8 @@ typedef enum {
 typedef enum{
 	PENDIENTE =0,
 	CONFIRMADO=1,
-}estado_pedido;
+	TERMINADO =2,
+} estado_pedido;
 
 typedef struct {
 	uint32_t    posx;
@@ -179,7 +180,7 @@ void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado )
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
-void 	        enviar_plato_listo      (char* p_ip,char* p_puerto);
+int  	        enviar_plato_listo      (char* p_ip,char* p_puerto);
 t_plato_listo *	recibir_plato_listo     (void * payload         );
 
 void       prueba_biblioteca_compartida   (void                   );
