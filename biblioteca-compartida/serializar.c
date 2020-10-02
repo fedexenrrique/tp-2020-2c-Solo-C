@@ -4,7 +4,7 @@ void prueba_biblioteca_compartida(void) {
 	printf("\n!!!Texto impreso desde la biblioteca compartida!!!\n");
 }
 
-t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
+t_list * enviar_01_consultar_restaurantes(char* p_ip, char* p_puerto) {
 
 	t_list * _recibir_lista_restaurantes( int p_conexion ) {
 
@@ -31,12 +31,22 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 				memcpy( &act_size    , header_restaurantes->payload + despla, sizeof(uint32_t) );
 				despla += sizeof(uint32_t);
 
-				char * nombre_resto = malloc(act_size + 1);
+				char * nombre_resto;
 
-				memcpy( nombre_resto , header_restaurantes->payload + despla, act_size );
-				despla += act_size;
+				if ( act_size > 0 ) {
 
-				nombre_resto[act_size] = '\0';
+					nombre_resto = malloc(act_size + 1);
+
+					memcpy( nombre_resto , header_restaurantes->payload + despla, act_size );
+					despla += act_size;
+
+					nombre_resto[act_size] = '\0';
+
+				} else {
+
+					nombre_resto = "Default";
+
+				}
 
 				printf("\n%s\n", nombre_resto);
 
@@ -60,7 +70,7 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 
 	printf( "Se va a enviar la consulta a la ip %s y puerto %s.", p_ip, p_puerto );
 
-	int conexion = crear_socket_y_conectar(p_ip, p_puerto);
+	uint32_t conexion = crear_socket_y_conectar(p_ip, p_puerto);
 
 	if ( enviar_buffer( conexion, &l_header ) ) {
 
@@ -80,7 +90,7 @@ t_list * enviar_consultar_restaurante(char* p_ip, char* p_puerto) {
 
 }
 
-void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_restaurantes ) {
+void responder_01_consultar_restaurantes ( uint32_t socket_cliente, t_list * p_list_restaurantes ) {
 
 	void * buffer_response;
 	int    buffer_size;
@@ -92,7 +102,7 @@ void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_resta
 
 		void _aux_longitud_acumulada_iter( void * p_elem ) {
 
-			total += string_length( (char *) p_elem );
+			total += (p_elem != NULL) ? string_length( (char *) p_elem ) : 0;
 
 		}
 
@@ -110,15 +120,19 @@ void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_resta
 
 	void _aux_cargar_buffer( void * p_elem ) {
 
-		int length = string_length((char *) p_elem);
+		uint32_t length = (p_elem != NULL) ? string_length((char *) p_elem) : 0;
 
 		memcpy( buffer_response + despla, &length, sizeof(uint32_t) );
 
 		despla += sizeof(uint32_t);
 
-		memcpy( buffer_response + despla, p_elem, string_length((char *) p_elem) );
+		if ( p_elem != NULL ) {
 
-		despla += string_length((char *) p_elem);
+			memcpy( buffer_response + despla, p_elem, string_length((char *) p_elem) );
+
+			despla += string_length((char *) p_elem);
+
+		}
 
 	}
 
@@ -149,6 +163,8 @@ void responder_consultar_restaurante ( int socket_cliente, t_list * p_list_resta
 	header_response.payload    = buffer_response;
 
 	enviar_buffer( socket_cliente, &header_response);
+
+	free(buffer_response);
 
 }
 
@@ -579,7 +595,7 @@ uint32_t enviar_05_crear_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_proc
 
 }
 
-void responder_05_crear_pedido( int socket_cliente, uint32_t p_id_pedido_creado ) {
+void responder_05_crear_pedido( uint32_t socket_cliente, uint32_t p_id_pedido_creado ) {
 
 	void * v_payload = malloc( sizeof(uint32_t) );
 
@@ -599,9 +615,65 @@ void responder_05_crear_pedido( int socket_cliente, uint32_t p_id_pedido_creado 
 
 }
 
-t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process ) {
+bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_process ) {
 
-	t_list * _recibir_lista_platos( int p_conexion ) {
+	bool _recibir_09_confirmacion_pedido( uint32_t p_conexion ) {
+
+		t_header * header_response = recibir_buffer( p_conexion );
+
+		bool resultado = ( header_response->nro_msg == OK) ? true : false ;
+
+		free ( header_response );
+
+		return resultado;
+
+	}
+
+	t_header header_request;
+
+	header_request.modulo     = APP;
+	header_request.id_proceso = p_id_process;
+	header_request.nro_msg    = CONFIRMAR_PEDIDO;
+	header_request.size       = 0;
+	header_request.payload    = NULL;
+
+	uint32_t conexion = crear_socket_y_conectar(p_ip, p_puerto);
+
+	if ( enviar_buffer( conexion, &header_request ) ) {
+
+		bool resultado = _recibir_09_confirmacion_pedido(conexion);
+
+		close( conexion );
+
+		return resultado;
+
+	} else {
+
+		close(conexion);
+
+		return false;
+
+	}
+
+}
+
+void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado ) {
+
+	t_header header_response;
+
+	header_response.modulo     = APP;
+	header_response.id_proceso = 0;
+	header_response.nro_msg    = ( p_resultado ) ? OK : FAIL ;
+	header_response.size       = 0;
+	header_response.payload    = NULL;
+
+	enviar_buffer( socket_cliente, &header_response);
+
+}
+
+t_list * enviar_04_consultar_platos( char* p_ip, char* p_puerto, uint32_t p_id_process ) {
+
+	t_list * _recibir_lista_platos( uint32_t p_conexion ) {
 
 		t_header * header_restaurantes = recibir_buffer( p_conexion );
 
@@ -685,10 +757,10 @@ t_list * enviar_consultar_platos( char* p_ip, char* p_puerto, int p_id_process )
 
 }
 
-void responder_consultar_platos( int socket_cliente, char ** p_platos ) {
+void responder_04_consultar_platos( uint32_t socket_cliente, char ** p_platos ) {
 
-	void * buffer_response;
-	uint32_t buffer_size;
+	void * buffer_response = NULL;
+	uint32_t buffer_size = 0;
 	uint32_t despla = 0;
 
 	uint32_t cantidad_platos = 0;
@@ -696,43 +768,47 @@ void responder_consultar_platos( int socket_cliente, char ** p_platos ) {
 
 	uint32_t aux = 0;
 
-	while ( p_platos[aux] != NULL ) {
+	if ( p_platos != NULL ) {
 
-		cantidad_platos ++;
+		while ( p_platos[aux] != NULL ) {
 
-		size_nombres    += string_length( p_platos[aux] );
+			cantidad_platos ++;
 
-		printf("\nEl plato actual es: %s.\n", p_platos[aux] );
+			size_nombres    += string_length( p_platos[aux] );
 
-		aux ++;
+			printf("\nEl plato actual es: %s.\n", p_platos[aux] );
 
-	}
+			aux ++;
 
-	buffer_size = sizeof(uint32_t)
-					+ cantidad_platos * sizeof(uint32_t)
-					+ size_nombres;
+		}
 
-	buffer_response = malloc(buffer_size);
+		buffer_size = sizeof(uint32_t)
+						+ cantidad_platos * sizeof(uint32_t)
+						+ size_nombres;
 
-	memcpy( buffer_response + despla, &cantidad_platos, sizeof(uint32_t) );
+		buffer_response = malloc(buffer_size);
 
-	despla += sizeof(uint32_t);
+		memcpy( buffer_response + despla, &cantidad_platos, sizeof(uint32_t) );
 
-	aux = 0;
+		despla += sizeof(uint32_t);
 
-	while ( p_platos[aux] != NULL ) {
+		aux = 0;
 
-		uint32_t l_size = (uint32_t) string_length( p_platos[aux] );
+		while ( p_platos[aux] != NULL ) {
 
-		memcpy( buffer_response + despla , &l_size , sizeof( uint32_t ) );
+			uint32_t l_size = (uint32_t) string_length( p_platos[aux] );
 
-		despla += sizeof( uint32_t );
+			memcpy( buffer_response + despla , &l_size , sizeof( uint32_t ) );
 
-		memcpy( buffer_response + despla , p_platos[aux] , string_length( p_platos[aux] ) );
+			despla += sizeof( uint32_t );
 
-		despla += string_length( p_platos[aux] );
+			memcpy( buffer_response + despla , p_platos[aux] , string_length( p_platos[aux] ) );
 
-		aux ++;
+			despla += string_length( p_platos[aux] );
+
+			aux ++;
+
+		}
 
 	}
 
@@ -746,7 +822,7 @@ void responder_consultar_platos( int socket_cliente, char ** p_platos ) {
 
 	enviar_buffer( socket_cliente, &header_response);
 
-	free( buffer_response );
+	if ( buffer_response != NULL ) free( buffer_response );
 
 }
 
@@ -811,7 +887,9 @@ bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proces
 
 	uint32_t despla = 0;
 
-	memcpy( l_payload + despla, &p_id_proceso, sizeof(uint32_t) );
+	uint32_t cant_plato = 1;
+
+	memcpy( l_payload + despla, &cant_plato, sizeof(uint32_t) );
 
 	despla += sizeof(uint32_t);
 
@@ -890,7 +968,7 @@ int enviar_obtener_pedido   (char* p_ip,char* p_puerto){
 	return conexion;
 }
 
-void enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
+int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=CONFIRMAR_PEDIDO;
 	t_header * encabezado=serializar_pedido(nro_msg);
@@ -899,6 +977,7 @@ void enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
 
+	return conexion;
 }
 
 void enviar_finalizar_pedido   (char* p_ip,char* p_puerto){

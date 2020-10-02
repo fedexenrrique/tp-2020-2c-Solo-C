@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 				case CONSULTAR_RESTAURANTES: // 01- CONSULTAR_RESTAURANTES  HACIA: APP
 
 					printf(" 01- CONSULTAR_RESTAURANTES  HACIA: APP \n");
-    		    	enviar_consultar_restaurante(g_ip_app, g_puerto_app);
+					enviar_01_consultar_restaurantes (g_ip_app, g_puerto_app);
     		    	break;
     		    
 				case SELECCIONAR_RESTAURANTE:
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     		    
 				case CONSULTAR_PLATOS:
     		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
-    		    	enviar_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
+    		    	t_list * platos = enviar_04_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
 
 		    		break;
 
@@ -78,6 +78,14 @@ int main(int argc, char **argv) {
 
 				case CONFIRMAR_PEDIDO:
     		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");
+    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, g_id_proceso );
+
+    		    	if ( confirmacion ) {
+    		    		printf("Se confirmó el pedido.\n");
+    		    	} else {
+    		    		printf("No es posible confirmar el pedido.\n");
+    		    	}
+
 		    		break;
 
 				case PLATO_LISTO:
@@ -127,7 +135,13 @@ int main(int argc, char **argv) {
 			case CONFIRMAR_PEDIDO:
 
 				printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO  \n");
-				enviar_confirmar_pedido(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_confirmar_pedido(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la actualizacion del estado del pedido");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la actualizacion del estado del pedido");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
+
 				break;
 
 			case PLATO_LISTO:
