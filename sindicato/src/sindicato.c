@@ -23,7 +23,8 @@ int paramValidos(char** parametros) {
 }
 
 void levantarConsola() {
-	printf("*************CONSOLA SINDICATO*************\n");
+	printf(" ");
+	printf("*****************************CONSOLA SINDICATO*******************\n");
 
 	while (1) {
 		char lineaComando[100];
@@ -40,8 +41,7 @@ void levantarConsola() {
 		char** substrings = string_n_split(lineaComando, 8, " ");
 		char* nombreComando = substrings[0];
 
-		log_info("Cantidad Parametros: %d\n",
-				sizeof(substrings) / sizeof(substrings[0]));
+
 
 		if (string_equals_ignore_case(nombreComando, "crearRestaurante")) {
 			log_info(logger, "Creación Restaurante");
@@ -49,31 +49,24 @@ void levantarConsola() {
 			tCreacionRestaurante* restaurante=malloc(sizeof(tCreacionRestaurante));
 
 
-			//char* nombreRestaurante = malloc(30);
 			restaurante->nombreRestaurante = substrings[1];
-			//strcpy(nombreRestaurante,substrings[1]);
-			//char* cantCocineros = malloc(4);
 			restaurante->cantCocineros = atoi(substrings[2]);
-			//char* posicion = malloc(40);
 			restaurante->posicion = substrings[3];
-			//char* afinidadCocineros = malloc(80);
 			restaurante->afinidadCocineros = substrings[4];
-			//char* platos = malloc(80);
 			restaurante->platos = substrings[5];
-			char* preciosPlatos = malloc(80);
 			restaurante->preciosPlatos = substrings[6];
-			//char* cantidadHornos = malloc(4);
 			restaurante->cantidadHornos = atoi(substrings[7]);
 
-			int parametrosValidos = paramValidos(substrings);
+			log_info(logger,"Creando Reestaurante...");
+			log_info(logger,"Nombre: %s\n", restaurante->nombreRestaurante);
+			log_info(logger,"Cantidad Cocineros: %d\n", restaurante->cantCocineros);
 
-			//if(parametrosValidos==1){
-			printf("Creando Reestaurante...\n");
-			printf("Nombre: %s\n", restaurante->nombreRestaurante);
-			printf("Cantidad Cocineros: %d\n", restaurante->cantCocineros);
-			//}else log_error(logger,"Cantidad incorrecta de parametros");
+			int archivoGrabado=grabarArchivoRestaurante(restaurante);
 
-			grabarArchivoRestaurante(restaurante);
+			if(archivoGrabado==0){
+				log_error(logger,"Archivo no grabado");
+
+			}
 
 			free(restaurante);
 
@@ -82,16 +75,23 @@ void levantarConsola() {
 
 		else if (string_equals_ignore_case(nombreComando, "CrearReceta")) {
 			log_info(logger, "Creacion Receta");
-			char* nombre = malloc(60);
-			nombre = substrings[1];
-			char* pasos = malloc(60);
-			pasos = substrings[2];
-			char* tiemposPasos = malloc(40);
-			tiemposPasos = substrings[3];
 
-			printf("Creando receta...\n");
-			printf("Nombre receta: %s\n", nombre);
-			printf("Pasos receta: %s\n", pasos);
+			tCreacionReceta* receta= malloc(sizeof(tCreacionReceta));
+
+			receta->nombreReceta=substrings[1];
+			receta->pasos=substrings[2];
+			receta->tiemposPasos=substrings[3];
+
+			log_info(logger,"Creando receta...\n");
+			log_info(logger,receta->nombreReceta);
+			printf(logger,receta->pasos);
+
+			int archivoGrabado=grabarArchivoReceta(receta);
+
+				if(archivoGrabado==0){
+						log_error(logger,"Archivo no grabado");
+
+				}
 
 		} else
 			log_error(logger, "Ingrese un comando Valido\n");
@@ -103,6 +103,7 @@ void levantarConsola() {
 
 }
 int main(int argc, char *argv[]) {
+
 	cargarConfiguracion();
 	pathFiles = string_new();
 	pathBloques = string_new();
@@ -124,53 +125,8 @@ int main(int argc, char *argv[]) {
 	string_append(&pathRecetas,pathFiles);
 	string_append(&pathRecetas,"Recetas/");
 
+	t_respuesta_info_restaurante* solicitudInfoResto=malloc(sizeof(t_respuesta_info_restaurante));
 
-
-	//Si no le paso los argumentos BLOCKSIZE, BLOCKS + MAGIC_NUMBER no monto el FS de nuevo
-	int fs = montarFS(*argv[1], *argv[2], argv[3]);
-
-	pthread_t hiloConsola;
-	pthread_create(&hiloConsola, NULL, levantarConsola, NULL);
-
-	pthread_join(hiloConsola, NULL);
-
-	tPrueba* pedidoPrueba = malloc(sizeof(tPrueba));
-
-	pedidoPrueba->idPedido = 1;
-	pedidoPrueba->descripcionPedido = malloc(30);
-	strcpy(pedidoPrueba->descripcionPedido, "Pedido de Prueba");
-	pedidoPrueba->precioPedido = 300;
-	pedidoPrueba->idRestaurante = 3049595;
-	pedidoPrueba->nombreEstaurante = malloc(30);
-	strcpy(pedidoPrueba->nombreEstaurante, "Restaurante de Prueba");
-
-	char* buffer = malloc(100);
-
-	//Invoco a la funcion 'serializar': ({buffer que quiero enviar}, "%s%d..." agregar tanto '%{tipoDato}'los tipos de datos de acuerdo  los parametros que quiero enviar , variable1,variable2...variable N)
-	int posSerializacion = serializar(buffer, "%d%s%z%d%s",
-			pedidoPrueba->idPedido, pedidoPrueba->descripcionPedido,
-			pedidoPrueba->precioPedido, pedidoPrueba->idRestaurante,
-			pedidoPrueba->nombreEstaurante);
-
-	int idPedidoDeserializado = 0;
-	char* descripcionDeserializada = malloc(30);
-	uint32_t precioDeserializado = 0;
-	int idRestauranteDeserializado = 0;
-	char* nombreRestauranteDeserializado = malloc(30);
-
-	//Idem serializar, agrego las variables donde quiero guardar los datos deserialzados del buffer
-	//Para datos numericos agregar el operador '&'
-	int posDeserializacion = deserializar(buffer, "%d%s%z%d%s",
-			&idPedidoDeserializado, descripcionDeserializada,
-			&precioDeserializado, &idRestauranteDeserializado,
-			nombreRestauranteDeserializado);
-
-	printf("Id deserializado: %d\n", idPedidoDeserializado);
-	printf("Descripcion Pedido dfeserializado: %s\n", descripcionDeserializada);
-	printf("Precio pedido deserializado: %zu\n", precioDeserializado);
-	printf("Id restaurante deserializado: %d\n", idRestauranteDeserializado);
-	printf("Nombre restaurante deserializado: %s\n",
-			nombreRestauranteDeserializado);
 
 
 	//Escucho conexiones
@@ -186,13 +142,13 @@ int main(int argc, char *argv[]) {
 
 	}
 
-	free(buffer);
 	free(pathFiles);
 	free(pathBloques);
 	free(pathMetadata);
 
 	return 1;
 }
+
 
 void handleConexion(int socketCliente) {
 	log_info(logger, "Handle conexion aceptada...");
@@ -222,6 +178,42 @@ void handleConexion(int socketCliente) {
 	string_trim(&headerRecibido->payload);
 	printf("Nombre Restaurante Recibido: %s\n", headerRecibido->payload);
 
+	switch(headerRecibido->nro_msg){
+
+		case OBTENER_RESTAURANTES: {
+		t_header * respuesta_hardcodeada = malloc(sizeof(t_header));
+		t_respuesta_info_restaurante * resp_resto_hard = malloc(sizeof(t_respuesta_info_restaurante));
+
+		t_respuesta_info_restaurante* respuestaArchivoInfoResto= malloc(sizeof(t_respuesta_info_restaurante));
+
+		solicitudInfoResto=leerInfoDeResto(headerRecibido->payload);
+
+		resp_resto_hard->cantidad_cocineros = 2;
+		resp_resto_hard->posicion_x = 3;
+		resp_resto_hard->posicion_y = 4;
+		resp_resto_hard->afinidad_cocineros = "[milanesas, otros]";
+		resp_resto_hard->size_afinidad_cocineros = 18;
+		resp_resto_hard->platos = "[cualquiera]";
+		resp_resto_hard->size_platos = 12;
+		resp_resto_hard->precio_platos = "[2,4]";
+		resp_resto_hard->size_precio_platos = 5;
+		resp_resto_hard->cantidad_hornos = 1;
+
+		t_respuesta_info_restaurante* respuestInfoRestoArchivo = malloc(
+				sizeof(t_header));
+		respuesta_hardcodeada = serializar_respuesta_info_restaurante(
+				resp_resto_hard);
+
+		if (enviar_buffer(socketCliente, respuesta_hardcodeada) == false) {
+			log_error(logger,
+					"No se pudo enviar la respuesta al pedido de info del restaurante");
+		}
+		break;
+	}
+
+
+	}
+
 	//Armo respuesta al restaurante
 	/*
 	 t_header* headerRespuesta = malloc(sizeof(t_header));
@@ -235,28 +227,7 @@ void handleConexion(int socketCliente) {
 	 int streamRespuestaSize = sizeof(uint32_t) * 4 + headerRespuesta->size;
 	 */
 	//ARMO RESPUESTA AL RESTAURANTE HARDCODEADA
-	t_header * respuesta_hardcodeada = malloc(sizeof(t_header));
-	t_respuesta_info_restaurante * resp_resto_hard = malloc(
-			sizeof(t_respuesta_info_restaurante));
 
-	resp_resto_hard->cantidad_cocineros = 2;
-	resp_resto_hard->posicion_x = 3;
-	resp_resto_hard->posicion_y = 4;
-	resp_resto_hard->afinidad_cocineros = "[milanesas, otros]";
-	resp_resto_hard->size_afinidad_cocineros = 18;
-	resp_resto_hard->platos = "[cualquiera]";
-	resp_resto_hard->size_platos = 12;
-	resp_resto_hard->precio_platos = "[2,4]";
-	resp_resto_hard->size_precio_platos = 5;
-	resp_resto_hard->cantidad_hornos = 1;
-
-	respuesta_hardcodeada = serializar_respuesta_info_restaurante(
-			resp_resto_hard);
-
-	if (enviar_buffer(socketCliente, respuesta_hardcodeada) == false) {
-		log_error(logger,
-				"No se pudo enviar la respuesta al pedido de info del restaurante");
-	}
 
 }
 

@@ -56,6 +56,14 @@ typedef struct{
 
 }tCreacionRestaurante;
 
+typedef struct{
+	char* nombreReceta;
+	char* pasos;
+	char* tiemposPasos;
+
+
+}tCreacionReceta;
+
 tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;
@@ -68,6 +76,7 @@ char* pathRecetas;
 
 void handleConexion(int socketCliente);
 void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream);
+int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo, char* pathRestaurante);
 
 
 #endif /* SINDICATO_H_ */

@@ -10,7 +10,6 @@
 #include "sindicato.h"
 
 
-int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo, char* pathRestaurante);
 
 
 #endif /* FILESYSTEM_H_ */

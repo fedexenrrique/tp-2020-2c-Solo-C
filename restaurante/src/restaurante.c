@@ -56,6 +56,8 @@ void conectar_restaurante_a_applicacion(void) {
 	head.size       = buffer_size;
 	head.payload    = payload;
 
+	free(payload);
+
 	enviar_buffer( sock_conectado, &head);
 
 	while (1) {
@@ -64,7 +66,7 @@ void conectar_restaurante_a_applicacion(void) {
 
 	}
 
-	free(payload);
+
 
 
 

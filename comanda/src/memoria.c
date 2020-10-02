@@ -46,6 +46,7 @@ bool agregar_pedido_a_tabla_segmentos(t_restaurante * restaurante, uint32_t id_p
 	pedido=malloc(sizeof(t_pedido_seg));
 
 	pedido->id_pedido=id_pedido;
+	pedido->estado=PENDIENTE;
 	pedido->comidas_del_pedido=list_create();
 
 	list_add(restaurante->tabla_pedidos,pedido);
