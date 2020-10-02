@@ -168,36 +168,43 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //-------------------------Falta mandar a memoria
 
 	t_guardar_plato * plato=(t_guardar_plato*)encabezado->payload;
+	t_comida * comida;
 	bool exito=FALSE;
 
-			bool buscar_restaurante(void * elemento){
-				t_restaurante * restaurante=(t_restaurante*)elemento;
 
-				if(string_equals_ignore_case(restaurante->nombre_restaurante,plato->pedido->nombre_restaurante)){
-						return TRUE;
+					bool buscar_restaurante(void * elemento){
+						t_restaurante * restaurante=(t_restaurante*)elemento;
+
+						if(string_equals_ignore_case(restaurante->nombre_restaurante,plato->pedido->nombre_restaurante)){
+								return TRUE;
+								}
+						return FALSE;
+					}
+
+					bool buscar_pedido(void * elemento){
+						t_pedido_seg * pedido=(t_pedido_seg*)elemento;
+						//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
+
+						if(pedido->id_pedido==plato->pedido->id_pedido){
+								return TRUE;
+								}
+						return FALSE;
+					}
+
+					bool buscar_comida(void * elemento){
+						t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
+						t_comida * comida=(t_comida*)adm_comida->contenido;
+
+						if(string_equals_ignore_case(comida->nombre_comida,plato->nombre_plato)){
+								return TRUE;
+								}
+						return FALSE;
+					}
+					void inicializar_vector(){
+						for(int i=0;i<SIZE_VECTOR_NOMBRE_PLATO;i++){
+							comida->nombre_comida[i]='\0';
 						}
-				return FALSE;
-			}
-
-			bool buscar_pedido(void * elemento){
-				t_pedido_seg * pedido=(t_pedido_seg*)elemento;
-				//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
-
-				if(pedido->id_pedido==plato->pedido->id_pedido){
-						return TRUE;
-						}
-				return FALSE;
-			}
-
-			bool buscar_comida(void * elemento){
-				t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
-				t_comida * comida=(t_comida*)adm_comida->contenido;
-
-				if(string_equals_ignore_case(comida->nombre_comida,plato->nombre_plato)){
-						return TRUE;
-						}
-				return FALSE;
-			}
+					}
 
 
 	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
@@ -242,16 +249,23 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		adm_comida->esta_en_memoria=FALSE;
 		adm_comida->direccion_memoria=NULL;
 
-		t_comida * comida=malloc(sizeof(t_comida));
+		comida=malloc(sizeof(t_comida));
 		comida->cantidad_lista_comida=0;
 		comida->cantidad_total_comida=plato->cantidad_plato;
-		strncpy(comida->nombre_comida,plato->nombre_plato,SIZE_VECTOR_NOMBRE_PLATO);
+		inicializar_vector();
+		strcpy(comida->nombre_comida,plato->nombre_plato);
 
 		printf("El nombre de la comida es: %s",comida->nombre_comida);
 
 		adm_comida->contenido=(void*)comida;
 
 		list_add(pedido->comidas_del_pedido,adm_comida);            //Guardo la nueva comida en el pedido
+
+		t_pagina_comida * prueba_comida=(t_pagina_comida *)list_get(pedido->comidas_del_pedido,0);
+		mem_hexdump(prueba_comida->contenido, sizeof(t_comida));
+		t_comida * contenido_comida=(t_comida *)prueba_comida->contenido;
+		log_error(logger,"Probando el nombre de la comida despues de haberse guardado, %s",contenido_comida->nombre_comida);
+
 
 		exito=TRUE;
 	}
@@ -313,8 +327,13 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 				memcpy(buffer+offset,&comida->cantidad_total_comida,sizeof(uint32_t));
 				offset+=sizeof(uint32_t);
 
-				memcpy(buffer+offset,comida->nombre_comida,sizeof(SIZE_VECTOR_NOMBRE_PLATO));
-				offset+=sizeof(SIZE_VECTOR_NOMBRE_PLATO);
+				int size_nombre=string_length(comida->nombre_comida);
+				log_error(logger,"El tamaño del nombre es: %d",string_length(comida->nombre_comida));
+
+				memcpy(buffer+offset,comida->nombre_comida,SIZE_VECTOR_NOMBRE_PLATO);
+				offset+=SIZE_VECTOR_NOMBRE_PLATO;
+
+				mem_hexdump(buffer, 2*sizeof(uint32_t)+SIZE_VECTOR_NOMBRE_PLATO);
 
 				printf("Estoy iterando la lista del pedido\n");
 				printf("Cantidad lista de comida: %d\n",comida->cantidad_lista_comida);

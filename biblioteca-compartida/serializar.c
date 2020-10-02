@@ -776,10 +776,13 @@ int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
 	plato->pedido->nombre_restaurante="FAROLA";
-	plato->size_nombre_plato=14;
+	plato->size_nombre_plato=15;
 	plato->nombre_plato=malloc(plato->size_nombre_plato);
 	plato->nombre_plato="fideos_moñitos";
 	plato->cantidad_plato=5;
+
+	printf("Voy a enviar el plato con nombre: %s \n",plato->nombre_plato);
+	printf("El tamaño del nombre sin caracter nulo es: %d \n", string_length(plato->nombre_plato));
 
 	int size_buffer=4*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
 	void * buffer=malloc(size_buffer);
