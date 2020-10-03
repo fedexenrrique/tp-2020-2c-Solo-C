@@ -104,7 +104,8 @@ void manejo_modulo_conectado(void * socket_cliente){
 			break;
 		case FINALIZAR_PEDIDO:
 			aux=mensaje_recibido->payload;
-			recibir_consulta_pedido(mensaje_recibido->payload);
+			mensaje_recibido->payload=(void*)recibir_consulta_pedido(mensaje_recibido->payload);
+			administrar_finalizar_pedido(mensaje_recibido,*sock_cliente);
 			free(aux);
 			break;
 		default:
@@ -575,6 +576,85 @@ void administrar_confirmar_pedido(t_header * encabezado,int socket_cliente){
 		     }
 
 	    }
+
+
+	envio_de_respuesta:
+
+	;
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	if(exito==TRUE)
+		nuevo_encabezado->nro_msg=OK;
+	else
+		nuevo_encabezado->nro_msg=FAIL;
+
+	nuevo_encabezado->size=0;
+	nuevo_encabezado->payload=NULL;
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+
+	free(nuevo_encabezado);
+
+
+}
+
+void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
+
+	t_pedido * pedido_solicitado=(t_pedido*)encabezado->payload;
+	bool exito=FALSE;
+
+						bool buscar_restaurante(void * elemento){
+							t_restaurante * restaurante=(t_restaurante*)elemento;
+
+							if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido_solicitado->nombre_restaurante)){
+									return TRUE;
+									}
+							return FALSE;
+						}
+
+						bool buscar_pedido(void * elemento){
+							t_pedido_seg * pedido=(t_pedido_seg*)elemento;
+							//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
+
+							if(pedido->id_pedido==pedido_solicitado->id_pedido){
+									return TRUE;
+									}
+							return FALSE;
+						}
+
+
+	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_restaurante * restaurante=NULL;
+	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+
+
+	if(restaurante==NULL){
+		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
+		goto envio_de_respuesta;}
+	else
+		printf("Se encontro el restaurant: %s \n",restaurante->nombre_restaurante);
+
+	if(list_is_empty(restaurante->tabla_pedidos))						//Verifico que no este vacia la lista
+		goto envio_de_respuesta;
+
+	t_pedido_seg * pedido=NULL;
+	log_info(logger,"El tamaño de la lista de pedidos antes de la busqueda es: %d",list_size(restaurante->tabla_pedidos));
+	pedido=list_remove_by_condition(restaurante->tabla_pedidos,buscar_pedido);
+
+	if(pedido==NULL){
+		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
+		goto envio_de_respuesta;}
+	else{
+		log_info(logger, "Se encontro el pedido %d  y se elimina de la lista de pedidos",pedido->id_pedido);
+		 exito=TRUE;
+		 log_info(logger,"El tamaño de la lista de pedidos despues de eliminar el pedido es: %d",list_size(restaurante->tabla_pedidos));
+		 }
 
 
 	envio_de_respuesta:

@@ -29,6 +29,7 @@ void administrar_guardar_plato   (t_header*,int);
 void administrar_obtener_pedido  (t_header*,int);
 void administrar_confirmar_pedido(t_header*,int);
 void administrar_plato_listo     (t_header*,int);
+void administrar_finalizar_pedido(t_header*,int);
 
 
 

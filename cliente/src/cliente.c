@@ -170,7 +170,11 @@ int main(int argc, char **argv) {
 			case FINALIZAR_PEDIDO:
 
 				printf(" 13- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                      \n");
-				enviar_finalizar_pedido(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_finalizar_pedido(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la finalizacion del pedido");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la finalizacion del pedido");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
 				break;
 
 			default:
