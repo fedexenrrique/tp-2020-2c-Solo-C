@@ -3,13 +3,23 @@
 
 int main(void) {
 
+	g_generador_id_repartidor = 90222000;
+
 	lista_asociaciones_cliente_resto = list_create();
 
 	lista_resto_conectados  = list_create();
 
+	queue_confirmados_cliente_resto = queue_create();
+
 	g_sockets_abiertos      = list_create();
 
+	g_cola_listos = queue_create();
+
 	g_cola_nuevos = queue_create();
+
+	sem_init( &g_nro_cpus                  , 0, 0 );
+
+	sem_init( &g_nro_pedidos_confirmados   , 0, 0 );
 
 	signal(SIGINT, sigint);
 
@@ -18,7 +28,9 @@ int main(void) {
 
 	pthread_create(&g_thread_long_term_scheduler  , NULL, (void*) &long_term_scheduler, (void*) NULL  );
 
-	// short_term_scheduler();
+	pthread_create(&g_thread_short_term_scheduler , NULL, (void*) &short_term_scheduler, (void*) NULL  );
+
+	// medium_term_scheduler();
 
 	// lanzar planificador a largo plazo
 	// lanzar planificador a mediano plazo
@@ -62,7 +74,7 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "RETARDO_CICLO_CPU"           ) ) g_retardo_ciclo_cpu           = config_get_int_value(config, "RETARDO_CICLO_CPU");
 	if ( config_has_property( config, "GRADO_DE_MULTIPROCESAMIENTO" ) ) g_grado_de_multiprocesamiento = config_get_int_value(config, "GRADO_DE_MULTIPROCESAMIENTO");
 
-	if ( config_has_property( config, "ALGORITMO_DE_PLANIFICACION"  ) ) g_algoritmo_de_planificacion  = config_get_int_value(config, "ALGORITMO_DE_PLANIFICACION");
+	if ( config_has_property( config, "ALGORITMO_DE_PLANIFICACION"  ) ) g_algoritmo_de_planificacion  = config_get_string_value(config, "ALGORITMO_DE_PLANIFICACION");
 	if ( config_has_property( config, "ALPHA"                       ) ) g_alpha                       = config_get_int_value(config, "ALPHA");
 	if ( config_has_property( config, "ESTIMACION_INICIAL"          ) ) g_estimacion_inicial          = config_get_int_value(config, "ESTIMACION_INICIAL");
 	if ( config_has_property( config, "REPARTIDORES"                ) ) g_repartidores                = config_get_array_value(config, "REPARTIDORES");
@@ -73,6 +85,8 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "PLATOS_DEFAULT"              ) ) g_platos_default              = config_get_array_value(config, "PLATOS_DEFAULT");
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_X"     ) ) g_posicion_rest_default_x     = config_get_int_value(config, "POSICION_REST_DEFAULT_X");
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_Y"     ) ) g_posicion_rest_default_y     = config_get_int_value(config, "POSICION_REST_DEFAULT_Y");
+
+	sem_init( &g_nro_cpus, 0, g_grado_de_multiprocesamiento );
 
 	t_info_restarante * resto_default = malloc( sizeof(t_info_restarante) );
 
@@ -159,10 +173,10 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		t_header aux_head;
 
 		aux_head.id_proceso = 99999;
-		aux_head.modulo = APP;
-		aux_head.nro_msg = CONECTAR;
-		aux_head.size = 0;
-		aux_head.payload = NULL;
+		aux_head.modulo     = APP;
+		aux_head.nro_msg    = CONECTAR;
+		aux_head.size       = 0;
+		aux_head.payload    = NULL;
 
 		enviar_buffer( socket_aceptado, &aux_head );
 
@@ -230,7 +244,90 @@ void bucle_resto_conectado ( uint32_t sock_aceptado ) {
 
 void long_term_scheduler( void ) {
 
-	sem_init( &g_nro_pedidos_confirmados , 0, 0 ); // 1 CPU
+	_aux_01_long_term_scheduler();
+
+	while ( 1 ) {  // planificar
+
+		while ( queue_size( g_cola_nuevos ) == 0 ) sleep(1); // necesita un REPARTIDOR en estado NUEVO.
+
+		sem_wait( &g_nro_pedidos_confirmados );
+
+		printf("LONG-TERM Scheduler funcionando.\n");
+
+		t_cliente_resto * pedido_cliente_resto = (t_cliente_resto*) queue_pop ( queue_confirmados_cliente_resto );
+
+		t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_pop( g_cola_nuevos );
+
+		l_repartidor->pedido = pedido_cliente_resto;
+
+		l_repartidor->estado = LISTO;
+
+		printf("El repartidor '%d' esta asignado al pedido '%d'.\n'", l_repartidor->id_repartidor, pedido_cliente_resto->id_pedido );
+
+		queue_push( g_cola_listos, l_repartidor ); // REPARTIDOR "LISTO" (con pedido asignado)
+
+	}
+
+}
+
+void short_term_scheduler( void ) {
+
+	while ( 1 ) {  // planificar
+
+		if ( ! queue_is_empty(g_cola_listos) ) {
+
+			t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_pop( g_cola_listos );
+
+		 // if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR"  ) ) planificar_round_robin(l_repartidor); else
+			if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "FIFO") ) planificar_fifo       (l_repartidor); else {
+
+				log_info(logger, "Algoritmo de planificación equivocado. Revise su archivo de configuración.");
+				exit(-1);
+
+			}
+/*
+			void * last_executed = queue_pop(g_queue_ready);
+
+			if (last_executed->estado == BLOQ ) {
+
+				list_add(g_queue_blocked, (void*) last_executed);
+
+			}
+*/
+		} else sleep(g_retardo_ciclo_cpu);
+
+	}
+
+}
+
+void planificar_fifo(t_pcb_repartidor * p_pcb) {
+
+	sem_wait( &g_nro_cpus );
+	sem_post( &p_pcb->semaforo );
+
+}
+
+/*
+void planificar_round_robin(t_pcb_repartidor * p_pcb ) {
+
+	for (int i = 0; i < g_quantum; i++) {
+
+		sem_post(&next_ready_ent->sem_entrenador);
+		sem_wait(&g_cpu_entrenadores);
+
+		if ( next_ready_ent->estado != EJEC ) {
+			g_count_cxt_switch++;
+			break;
+		}
+
+	}
+
+}
+*/
+
+
+
+void _aux_01_long_term_scheduler ( void ) {
 
 	uint32_t posicion = 0;
 
@@ -242,7 +339,7 @@ void long_term_scheduler( void ) {
 
 		char ** repartidor_posiciones = (char **) string_split ( g_repartidores[posicion] , "|" );
 
-		l_repartidor->id_repartidor = random_id_generator();
+		l_repartidor->id_repartidor = g_generador_id_repartidor++;
 		l_repartidor->pos_x = (uint32_t) atoi( repartidor_posiciones[0] );
 		l_repartidor->pos_y = (uint32_t) atoi( repartidor_posiciones[1] );
 		l_repartidor->freq_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
@@ -257,6 +354,9 @@ void long_term_scheduler( void ) {
 		mostrar_info_pcb_repartidor( l_repartidor );
 
 		queue_push( g_cola_nuevos, l_repartidor );
+
+		// TODO: corregir funcion de ejecución de repartidor
+		pthread_create(&l_repartidor->thread_metadata  , NULL, (void*) &ejecucion_repartidor, (void*) l_repartidor  );
 
 		posicion++;
 
@@ -274,15 +374,116 @@ void long_term_scheduler( void ) {
 
 	}
 
-	while (1) {
+}
 
-		sem_wait( &g_nro_pedidos_confirmados );
+void ejecucion_repartidor ( t_pcb_repartidor * p_pcb_repartidor ) {
 
-		t_pcb_repartidor * l_repartidor = queue_pop( g_cola_nuevos );
+	void _repartidor_en_bicicleta(void) {
 
-		// asociar_pedido al repartidor
+		if ( p_pcb_repartidor->estado != EJEC ) {
 
-		queue_push( g_cola_listos, l_repartidor );
+			p_pcb_repartidor->estado = EJEC;
+
+			// g_count_cxt_switch++;
+
+			mostrar_info_pcb_repartidor( p_pcb_repartidor );
+
+		}
+
+		sleep(g_retardo_ciclo_cpu);
+
+		t_info_restarante * resto = p_pcb_repartidor->pedido->restaurante_asociado;
+
+		if ( p_pcb_repartidor->pos_x == resto->posx && p_pcb_repartidor->pos_y == resto->posy ) { // ESTOY en RESTAURANTE
+/*
+			if ( p_ent->hacia_ent != 0 ) { // intercambio
+
+				t_entrenador * otro_ent = _identificar_entrenador_para_intercambiar();
+
+				_realizar_intercambio_de_pokemons(otro_ent);
+
+				_chequeo_objetivos_de_entrenador_post_interbloqueo(p_ent   );
+
+				_chequeo_objetivos_de_entrenador_post_interbloqueo(otro_ent);
+
+				p_ent->estado    = ( p_ent->cant_lograda    == p_ent->cant_maxima    ) ? FINAL : BLOQ;
+
+				otro_ent->estado = ( otro_ent->cant_lograda == otro_ent->cant_maxima ) ? FINAL : BLOQ;
+
+			} else {
+
+				int atrapar = atrapar_pokemon(p_ent);
+
+				if ( atrapar == 1 || atrapar == 0 ) { // atrapar
+
+					log_info(logger, "Atrapar pokemon '%s' en la ubicación (%d,%d).", p_ent->hacia_pok, p_ent->hacia_x, p_ent->hacia_y);
+
+					p_ent->hacia_pok = NULL;
+
+				} else {
+
+					g_count_cpu     --;
+
+					p_ent->cant_cpu --;
+
+				}
+
+			} // fin intercambio
+*/
+			p_pcb_repartidor->estado = FINAL ; // atrapar - próximo estado
+
+		} else if ( p_pcb_repartidor->pos_x != resto->posx || p_pcb_repartidor->pos_y != resto->posy ) { // ir al pokemon
+
+			if ( p_pcb_repartidor->pos_x != resto->posx ) {
+
+				if ( p_pcb_repartidor->pos_x < resto->posx )
+					p_pcb_repartidor->pos_x++;
+				else
+					p_pcb_repartidor->pos_x--;
+
+			} else if ( p_pcb_repartidor->pos_y != resto->posy ) {
+
+				if ( p_pcb_repartidor->pos_y < resto->posy )
+					p_pcb_repartidor->pos_y++;
+				else
+					p_pcb_repartidor->pos_y--;
+
+			}
+
+			log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d). "
+					, p_pcb_repartidor->id_repartidor , p_pcb_repartidor->pos_x , p_pcb_repartidor->pos_y );
+
+		}
+
+	}
+
+	printf( "Se inició correctamente el Hilo del Repartidor '%d'.\n", p_pcb_repartidor->id_repartidor );
+
+	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR") ) while (1) {
+
+		sem_wait(&p_pcb_repartidor->semaforo);
+
+		_repartidor_en_bicicleta();
+
+		if ( p_pcb_repartidor->estado != EJEC ) mostrar_info_pcb_repartidor( p_pcb_repartidor );
+
+		sem_post(&g_nro_cpus);
+
+		if ( p_pcb_repartidor->estado == FINAL ) break;
+
+	}
+
+	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "FIFO") ) while (1) {
+
+		sem_wait(&p_pcb_repartidor->semaforo);
+
+		do { _repartidor_en_bicicleta(); } while ( p_pcb_repartidor->estado == EJEC );
+
+		mostrar_info_pcb_repartidor( p_pcb_repartidor );
+
+		sem_post( &g_nro_cpus );
+
+		if ( p_pcb_repartidor->estado == FINAL ) break;
 
 	}
 
@@ -517,7 +718,15 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	}
 
-	// procedimiento de creación de PCB del pedido.
+	asociacion->estado = PENDIENTE_PLANIF;
+
+	list_remove_by_condition( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
+
+	queue_push( queue_confirmados_cliente_resto, asociacion );
+
+	sem_post( &g_nro_pedidos_confirmados );
+
+	printf("Despertar LONG-TERM Scheduler .\n");
 
 	return true;
 
