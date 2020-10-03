@@ -52,7 +52,10 @@ int main(int argc, char **argv) {
     		    
 				case CONSULTAR_PLATOS:
     		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
+
     		    	t_list * platos = enviar_04_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
+
+    		    	list_destroy_and_destroy_elements( platos, _string_destroyer );
 
 		    		break;
 
