@@ -157,22 +157,22 @@ void asignarPaths(){
 	string_append(&pathRecetas, "Recetas/");
 
 }
+
+
 int main(int argc, char *argv[]) {
 
 	cargarConfiguracion();
 	tInfoBloques* infoBloques=malloc(sizeof(tInfoBloques));
+	importarInfoBloques(infoBloques);
+
 	asignarPaths();
 
 	t_respuesta_info_restaurante* solicitudInfoResto=malloc(sizeof(t_respuesta_info_restaurante));
 
-	if(argv[1]!=NULL || argv[2]!=NULL || argv[3]!=NULL){
-		infoBloques->tamBloques=*argv[1];
-		infoBloques->cantBloques=*argv[2];
-		montarFS(infoBloques,argv[3]);
 
-	};
+	montarFS(infoBloques,infoBloques->magicNumber);
+
 	infoBloques=leerInfoBloques();
-
 
 	levantarConsola();
 

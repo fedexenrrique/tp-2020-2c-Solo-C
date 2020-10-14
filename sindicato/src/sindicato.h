@@ -89,6 +89,7 @@ typedef struct{
 typedef struct{
 	uint32_t tamBloques;
 	uint32_t cantBloques;
+	char* magicNumber;
 }tInfoBloques;
 
 tConfiguracion * configuracion;

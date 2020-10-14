@@ -217,6 +217,32 @@ int crearArchivoBitmap(tInfoBloques* infoBloques){
 				}
 
 }
+void importarInfoBloques(tInfoBloques* infoBloques){
+	char* pathArchivoInfoBloques= malloc(100);
+	strcpy(pathArchivoInfoBloques,"/home/utnso/tp-2020-2c-Solo-C/sindicato/");
+	string_append(&pathArchivoInfoBloques,"infoBloques.bin");
+	char* map=malloc(200);
+	struct stat info;
+	stat(pathArchivoInfoBloques, &info);
+
+	FILE* archivoInfoBloques=fopen(pathArchivoInfoBloques,"r+");
+
+	map=mmap(0,info.st_size,PROT_READ | PROT_WRITE, MAP_SHARED, fileno(archivoInfoBloques), 0);
+
+	char** propiedades= string_split(map,",");
+
+	infoBloques->tamBloques=atoi(propiedades[0]);
+	infoBloques->cantBloques=atoi(propiedades[1]);
+	infoBloques->magicNumber=propiedades[2];
+
+	if (munmap(map,info.st_size) == -1) {
+				log_error(logger,"Error al liberar memoria mapeada");
+				exit(EXIT_FAILURE);
+
+	}
+
+
+}
 
 int montarFS(tInfoBloques* infoBloques,char* magicNumber){
 
@@ -358,7 +384,6 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 	char* pathArchivoInfo=malloc(80);
 	strcpy(pathArchivoInfo,pathRestoNuevo);
 	string_append(&pathArchivoInfo,"Info.AFIP");
-	int i=0;
 
 	FILE* archivoRestauranteNuevo = fopen(pathArchivoInfo, "w");
 
@@ -447,17 +472,30 @@ int grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
 }
 int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva){
 	char* propiedades = malloc(strlen("PASOS=TIEMPO_PASOS=")*2);
-	char* pathArchivoInfo=malloc(80);
+	char* infoPropiedades = malloc(strlen("SIZE=INITIAL_BLOCK=")*2);
 
 
 	FILE* archivoRecetaNueva = fopen(pathRecetaNueva, "w");
-	int length=sprintf(propiedades,"%s%s%s%s%s%s%s%s%s"
-														,"PASOS=","[",recetaNueva->pasos,"]","\n",
+	int lengthPropiedades=sprintf(propiedades,"%s%s%s%s%s%s%s%s"
+														,"PASOS=","[",recetaNueva->pasos,"]",
 														"TIEMPO_PASOS=","[",recetaNueva->tiemposPasos,"]");
 
-	if(fwrite(propiedades,length,1,archivoRecetaNueva)==0){
-		log_error(logger,"Error al escribir en el archivo info de restaurante");
+
+	int bloquelibre=buscarBloqueLibre();
+
+	int lengthInfoPropiedades= sprintf(infoPropiedades,"%s%d%s%s%d","SIZE=",lengthPropiedades,"\n",
+															"INITIAL_BLOCK=",bloquelibre);
+
+
+
+	if(fwrite(infoPropiedades,lengthInfoPropiedades,1,archivoRecetaNueva)==0){
+			log_error(logger,"Error al escribir en el archivo info de receta");
 	}
+
+		//ESCRIBO LOS DATOS EN LOS BLOQUES
+
+
+	escribirBloques(propiedades, lengthPropiedades, bloquelibre);
 
 	fclose(archivoRecetaNueva);
 
@@ -476,15 +514,15 @@ int grabarArchivoReceta(tCreacionReceta* recetaNueva){
 
 		if (e == 0) {
 				if (info.st_mode & S_IFREG) {
-					log_error(logger,"El punto de montaje es un archivo.");
+					log_error(logger,"Es un archivo.");
 					return 0;
 				}
 				if (info.st_mode & S_IFDIR)
-					log_warning(logger,"El restaurante ya existe...saliendo");
+					log_warning(logger,"La receta ya existe...saliendo");
 			}
 		else {
 				if (errno == ENOENT) {
-					log_info(logger,"El restaurante no existe. Se creará el directorio.");
+					log_info(logger,"La receta no existe. Se creará el directorio.");
 
 					e = grabarInfoReceta(recetaNueva,pathRecetaNueva);
 					if (e != 0) {
