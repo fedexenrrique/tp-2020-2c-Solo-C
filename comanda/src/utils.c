@@ -22,6 +22,8 @@ int iniciar_comanda(){
 
 	logger = iniciar_logger();
 
+	inicar_memoria();
+
 
 	log_info(logger,"LEER CONFIG: IP, SOCKET");
 

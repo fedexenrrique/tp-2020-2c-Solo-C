@@ -8,6 +8,55 @@
 #include "memoria.h"
 
 
+void iniciar_memoria(){
+
+	log_info(logger,"LEYENDO TAMAÑO DE MEMORIA");
+	size_memoria_principal=config_get_int_value(config,"TAMANIO_MEMORIA");
+	size_memoria_swap=     config_get_int_value(config,"TAMANIO_SWAP")   ;
+	//size_minimo_block=config_get_int_value(config,"TAMANO_MINIMO_PARTICION");
+	//algoritmo_memoria=config_get_string_value(config,"ALGORITMO_MEMORIA");
+	algoritmo_remplazo=config_get_string_value(config,"ALGORITMO_REEMPLAZO");
+	//algoritmo_particion_libre=config_get_string_value(config,"ALGORITMO_PARTICION_LIBRE");
+	//frecuencia_compactacion=config_get_int_value(config,"FRECUENCIA_COMPACTACION");
+
+	p_inicio_memoria_principal= reservar_memoria_inicial(size_memoria_principal); //----------------CREO LA MEMORIA PRINCIPAL Y LISTA DE PUNTEROS
+	p_fin_memoria_principal=p_inicio_memoria_principal+size_memoria_principal;
+
+	p_inicio_memoria_swap= reservar_memoria_inicial(size_memoria_swap); //----------------CREO LA MEMORIA SWAP Y LISTA DE PUNTEROS
+	p_fin_memoria_swap=p_inicio_memoria_swap+size_memoria_swap;
+
+
+	log_info(logger,"El tamaño de la memoria principal es: %d", size_memoria_principal);
+	log_info(logger,"El tamaño de la memoria principal es: %d", size_memoria_swap);
+	log_info(logger,"El algoritmo de remplazo utilizado por la memoria es: %s",algoritmo_remplazo);
+
+
+	list_pointer_memory_principal=list_create();
+	list_pointer_memory_swap=     list_create();
+
+/*	t_admin_memory_message * pointer_block=malloc(sizeof(t_admin_memory_message));
+	pointer_block->estado=LIBRE;
+	pointer_block->inicio_bloque=p_inicio_memoria_total;
+	pointer_block->fin_bloque=p_inicio_memoria_total+size_memoria_total;
+	pointer_block->size_mensaje=0;
+	pointer_block->mensaje=NULL;
+	pointer_block->last_used=0;
+	log_info(logger,"La memoria comienza en la direccion: %p", pointer_block->inicio_bloque);
+	log_info(logger,"La memoria finaliza en la direccion: %p", pointer_block->fin_bloque);
+	list_add(list_pointer_memory,pointer_block);
+*/
+}
+
+void * reservar_memoria_inicial(int size_memoria_total){
+
+	void * p_memoria_total=malloc(size_memoria_total);
+
+	memset(p_memoria_total, 0, size_memoria_total);
+
+	return p_memoria_total;
+
+}
+
 t_restaurante * crear_tabla_segmentos_restaurante(char * nombre_restaurante  ){
 
 	t_restaurante * restaurante=malloc(sizeof(t_restaurante));
