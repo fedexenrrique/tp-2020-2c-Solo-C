@@ -34,6 +34,8 @@ void iniciar_memoria(){
 	list_pointer_memory_principal=list_create();
 	list_pointer_memory_swap=     list_create();
 
+	crear_paginas_memoria(list_pointer_memory_principal,size_memoria_principal);
+
 /*	t_admin_memory_message * pointer_block=malloc(sizeof(t_admin_memory_message));
 	pointer_block->estado=LIBRE;
 	pointer_block->inicio_bloque=p_inicio_memoria_total;
@@ -56,6 +58,12 @@ void * reservar_memoria_inicial(int size_memoria_total){
 	return p_memoria_total;
 
 }
+
+void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memoria_principal){
+
+	int cantidad_paginas=size_memoria_principal/SIZE_PAGINA;
+}
+
 
 t_restaurante * crear_tabla_segmentos_restaurante(char * nombre_restaurante  ){
 

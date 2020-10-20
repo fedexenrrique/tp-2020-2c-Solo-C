@@ -10,6 +10,7 @@
 
 #include "serializar.h"
 
+#define SIZE_PAGINA 32
 
 typedef struct {
 	char * nombre_restaurante;
@@ -51,6 +52,7 @@ t_list * list_pointer_memory_swap   		   ;
 t_list * lista_restarurantes;
 
 void            iniciar_memoria                  (                        );
+void            crear_paginas_memoria            (t_list *,int            );
 void *          reservar_memoria_inicial         (int                     );
 t_restaurante * crear_tabla_segmentos_restaurante(char *                  );
 bool            agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
