@@ -1225,7 +1225,7 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 		memcpy(&(comida->cantidad_total_comida),encabezado->payload,sizeof(uint32_t));
 		encabezado->payload+=sizeof(uint32_t);
 
-		memcpy(&(comida->nombre_comida),encabezado->payload,sizeof(SIZE_VECTOR_NOMBRE_PLATO));
+		memcpy(comida->nombre_comida,encabezado->payload,SIZE_VECTOR_NOMBRE_PLATO);
 		encabezado->payload+=sizeof(SIZE_VECTOR_NOMBRE_PLATO);
 
 		list_add(lista_platos_del_pedido,comida);
