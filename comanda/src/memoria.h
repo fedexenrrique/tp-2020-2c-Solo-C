@@ -29,6 +29,7 @@ typedef struct{
 typedef struct {
 	bool     esta_en_memoria_principal  ;
 	void *   direccion_memoria_principal;
+	int      nro_frame	         		;
 	void *   direccion_memoria_swap     ;
 	void *   contenido                  ;
 	uint64_t last_used                  ;
@@ -49,7 +50,9 @@ int      size_memoria_swap      			   ;
 char   * algoritmo_remplazo                    ;
 t_list * list_pointer_memory_principal		   ;
 t_list * list_pointer_memory_swap   		   ;
-t_list * lista_restarurantes;
+t_list * lista_restarurantes				   ;
+t_list * tabla_frames_libres				   ;
+
 
 void            iniciar_memoria                  (                        );
 void            crear_pagina_memoria            (t_list *,int            );

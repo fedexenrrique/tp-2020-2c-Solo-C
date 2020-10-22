@@ -62,6 +62,8 @@ void * reservar_memoria_inicial(int size_memoria_total){
 void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memoria_principal){
 
 	int cantidad_paginas=size_memoria_principal/SIZE_PAGINA;
+
+
 }
 
 
