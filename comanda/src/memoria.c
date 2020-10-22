@@ -32,9 +32,9 @@ void iniciar_memoria(){
 
 
 	list_pointer_memory_principal=list_create();
-	list_pointer_memory_swap=     list_create();
+	list_pointer_memory_swap     =list_create();
 
-	crear_paginas_memoria(list_pointer_memory_principal,size_memoria_principal);
+	crear_pagina_memoria(list_pointer_memory_principal,size_memoria_principal);
 
 /*	t_admin_memory_message * pointer_block=malloc(sizeof(t_admin_memory_message));
 	pointer_block->estado=LIBRE;
