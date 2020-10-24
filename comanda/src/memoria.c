@@ -63,6 +63,19 @@ void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memori
 
 	int cantidad_paginas=size_memoria_principal/SIZE_PAGINA;
 
+	for (int i=0;i<cantidad_paginas;i++){
+
+		t_frame * frame=malloc(sizeof(t_frame));
+		frame->nro_frame=i;
+		if(i==0)
+			frame->direccion_frame=p_inicio_memoria_principal;
+		else
+			frame->direccion_frame=p_inicio_memoria_principal+(i*SIZE_PAGINA);
+
+		list_add(tabla_frames_libres,(void*)frame);
+	}
+
+	log_info(logger,"Se dividio la memoria principal en %d  frames",cantidad_paginas);
 
 }
 

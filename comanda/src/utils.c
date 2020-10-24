@@ -253,7 +253,8 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		printf("No se encontro el plato de comida en el pedido, asique se va a crear\n");
 		adm_comida=malloc(sizeof(t_pagina_comida));
 		adm_comida->esta_en_memoria_principal=FALSE;
-		adm_comida->direccion_memoria_principal=NULL;
+		adm_comida->frame->direccion_frame=NULL;
+		adm_comida->frame->nro_frame=-1;
 
 		comida=malloc(sizeof(t_comida));
 		comida->cantidad_lista_comida=0;

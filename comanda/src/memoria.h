@@ -24,17 +24,23 @@ typedef struct{
 	t_list * comidas_del_pedido;
 }t_pedido_seg;
 
+typedef struct{
+	int    nro_frame      ;
+	void * direccion_frame;
+}t_frame;
 
 
 typedef struct {
 	bool     esta_en_memoria_principal  ;
-	void *   direccion_memoria_principal;
-	int      nro_frame	         		;
+	t_frame* frame                      ;
+	//void *   direccion_memoria_principal;
+	//int      nro_frame	         		;
 	void *   direccion_memoria_swap     ;
 	void *   contenido                  ;
 	uint64_t last_used                  ;
 
 }t_pagina_comida;
+
 
 
 //1 t_tabla_segmentos X restaurante  (contiene los t_segmneto)
