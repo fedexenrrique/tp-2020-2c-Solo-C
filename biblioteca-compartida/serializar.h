@@ -35,6 +35,7 @@
 
 #define TRUE  1
 #define FALSE 0
+#define SIZE_VECTOR_NOMBRE_PLATO 24
 
 typedef enum {
 
@@ -65,10 +66,17 @@ typedef enum {
 	OK                                  = 15,
     FAIL                                = 16,
 	CONECTAR                            = 17,
+	RESPUESTA_OBTENER_PEDIDO            = 18,
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
 
 } cod_msg;
+
+typedef enum{
+	PENDIENTE =0,
+	CONFIRMADO=1,
+	TERMINADO =2,
+} estado_pedido;
 
 typedef struct {
 	uint32_t    posx;
@@ -88,7 +96,7 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 typedef struct {
 	uint32_t cantidad_total_comida;
 	uint32_t cantidad_lista_comida;
-	char     nombre_comida[24]    ;
+	char     nombre_comida[SIZE_VECTOR_NOMBRE_PLATO]    ;
 }t_comida;
 
 typedef struct {  // Me sirve para guardar pedido, consultar pedido, obtener pedido y finalizar pedido
@@ -145,12 +153,14 @@ int deserializar(void* buffer, const char* format, ...);
 t_list * enviar_01_consultar_restaurantes   (char* p_ip,char* p_puerto);
 void responder_01_consultar_restaurantes ( uint32_t socket_cliente, t_list * p_list_restaurantes );
 
-int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);
-void       enviar_obtener_pedido   (char* p_ip,char* p_puerto);
-void       enviar_confirmar_pedido (char* p_ip,char* p_puerto);
-void       enviar_finalizar_pedido (char* p_ip,char* p_puerto);
-t_header * serializar_pedido       (uint32_t nro_msg       );
-t_pedido * recibir_pedido          (void * payload         );
+int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);//serializa pedido, le agrega el nro de mensaje y lo envia
+int        enviar_obtener_pedido   (char* p_ip,char* p_puerto);//                 ""
+int        enviar_confirmar_pedido (char* p_ip,char* p_puerto);//                 ""
+int        enviar_finalizar_pedido (char* p_ip,char* p_puerto);//                 ""
+t_header * serializar_pedido       (uint32_t nro_msg         );//Serializa id pedido, size nombre restaurant, nombre restaurant
+t_pedido * recibir_pedido          (void * payload           );//Deserializa id pedido, size nombre restaurant, nombre restaurant
+void       deserializar_respuesta_obtener_pedido(t_header *  );//Deserializa y muestra toda la informacion de un pedido
+
 
 bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_process, char * p_restaurante );
 void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );
@@ -170,7 +180,7 @@ void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado )
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
-void 	        enviar_plato_listo      (char* p_ip,char* p_puerto);
+int  	        enviar_plato_listo      (char* p_ip,char* p_puerto);
 t_plato_listo *	recibir_plato_listo     (void * payload         );
 
 void       prueba_biblioteca_compartida   (void                   );

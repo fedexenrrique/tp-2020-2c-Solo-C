@@ -46,12 +46,14 @@ bool agregar_pedido_a_tabla_segmentos(t_restaurante * restaurante, uint32_t id_p
 	pedido=malloc(sizeof(t_pedido_seg));
 
 	pedido->id_pedido=id_pedido;
+	pedido->estado=PENDIENTE;
 	pedido->comidas_del_pedido=list_create();
 
 	list_add(restaurante->tabla_pedidos,pedido);
 
 	int lista_size=list_size(restaurante->tabla_pedidos);
 	printf("El tamaño de la Lista es: %d\n", lista_size);
+
 
 	return TRUE;
 

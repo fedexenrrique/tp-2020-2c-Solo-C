@@ -27,7 +27,7 @@ void levantarConsola() {
 	printf("*****************************CONSOLA SINDICATO*******************\n");
 
 	while (1) {
-		char lineaComando[100];
+		char lineaComando[200];
 		int i;
 		for (i = 0; i <= strlen(lineaComando); i++) {
 			lineaComando[i] = '\0';
@@ -102,14 +102,45 @@ void levantarConsola() {
 	}
 
 }
-int main(int argc, char *argv[]) {
 
-	cargarConfiguracion();
+//COMPLETAR
+tInfoBloques* leerInfoBloques(){
+	infoBloques=malloc(sizeof(tInfoBloques));
+	char* pathArchivo=malloc(60);
+	struct stat info;
+	int map=0;
+
+	strcpy(pathArchivo,pathMetadata);
+	string_append(&pathArchivo,"Metadata.bin");
+
+	FILE* archInfoBloques= fopen(pathArchivo,"r+");
+
+	if(archInfoBloques!=NULL){
+		log_info(logger, "Leyendo archivo Info de Bloques");
+		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archInfoBloques), 0);
+
+		if (map == MAP_FAILED) {
+			close(fileno(pathArchivo));
+			perror("Error mapeando el archivo");
+			exit(EXIT_FAILURE);
+
+		}
+
+		char** lineasArchivo = string_split(map, "\n");
+
+		infoBloques->tamBloques=atoi(string_substring(lineasArchivo[0],11,2));
+		infoBloques->cantBloques=atoi(string_substring(lineasArchivo[1],7,2));
+	}
+	return infoBloques;
+}
+
+
+void asignarPaths(){
 	pathFiles = string_new();
 	pathBloques = string_new();
 	pathMetadata = string_new();
-	pathRestaurantes=string_new();
-	pathRecetas=string_new();
+	pathRestaurantes = string_new();
+	pathRecetas = string_new();
 	string_append(&pathFiles, configuracion->puntoMontaje);
 	string_append(&pathFiles, "/Files/");
 
@@ -119,14 +150,31 @@ int main(int argc, char *argv[]) {
 	string_append(&pathMetadata, configuracion->puntoMontaje);
 	string_append(&pathMetadata, "/Metadata/");
 
-	string_append(&pathRestaurantes,pathFiles);
-	string_append(&pathRestaurantes,"Restaurantes/");
+	string_append(&pathRestaurantes, pathFiles);
+	string_append(&pathRestaurantes, "Restaurantes/");
 
-	string_append(&pathRecetas,pathFiles);
-	string_append(&pathRecetas,"Recetas/");
+	string_append(&pathRecetas, pathFiles);
+	string_append(&pathRecetas, "Recetas/");
+
+}
+
+
+int main(int argc, char *argv[]) {
+
+	cargarConfiguracion();
+	tInfoBloques* infoBloques=malloc(sizeof(tInfoBloques));
+	importarInfoBloques(infoBloques);
+
+	asignarPaths();
 
 	t_respuesta_info_restaurante* solicitudInfoResto=malloc(sizeof(t_respuesta_info_restaurante));
 
+
+	montarFS(infoBloques,infoBloques->magicNumber);
+
+	infoBloques=leerInfoBloques();
+
+	levantarConsola();
 
 
 	//Escucho conexiones
@@ -186,7 +234,7 @@ void handleConexion(int socketCliente) {
 
 		t_respuesta_info_restaurante* respuestaArchivoInfoResto= malloc(sizeof(t_respuesta_info_restaurante));
 
-		solicitudInfoResto=leerInfoDeResto(headerRecibido->payload);
+		leerInfoDeResto(headerRecibido->payload);
 
 		resp_resto_hard->cantidad_cocineros = 2;
 		resp_resto_hard->posicion_x = 3;

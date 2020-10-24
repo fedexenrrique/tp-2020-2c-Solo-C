@@ -956,7 +956,7 @@ int enviar_guardar_pedido   (char* p_ip,char* p_puerto){
 
 }
 
-void enviar_obtener_pedido   (char* p_ip,char* p_puerto){
+int enviar_obtener_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=OBTENER_PEDIDO;
 	t_header * encabezado=serializar_pedido(nro_msg);
@@ -964,9 +964,11 @@ void enviar_obtener_pedido   (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+	return conexion;
 }
 
-void enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
+int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=CONFIRMAR_PEDIDO;
 	t_header * encabezado=serializar_pedido(nro_msg);
@@ -975,9 +977,10 @@ void enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
 
+	return conexion;
 }
 
-void enviar_finalizar_pedido   (char* p_ip,char* p_puerto){
+int enviar_finalizar_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=FINALIZAR_PEDIDO;
 	t_header * encabezado=serializar_pedido(nro_msg);
@@ -985,6 +988,8 @@ void enviar_finalizar_pedido   (char* p_ip,char* p_puerto){
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+
+	return conexion;
 
 }
 
@@ -1052,10 +1057,13 @@ int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
 	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
 	plato->pedido->nombre_restaurante="FAROLA";
-	plato->size_nombre_plato=14;
+	plato->size_nombre_plato=15;
 	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	plato->nombre_plato="fideos moñitos";
+	plato->nombre_plato="fideos_moñitos";
 	plato->cantidad_plato=5;
+
+	printf("Voy a enviar el plato con nombre: %s \n",plato->nombre_plato);
+	printf("El tamaño del nombre sin caracter nulo es: %d \n", string_length(plato->nombre_plato));
 
 	int size_buffer=4*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
 	void * buffer=malloc(size_buffer);
@@ -1104,7 +1112,7 @@ t_guardar_plato * recibir_guardar_plato   (void * payload         ){
 	memcpy(&(plato->size_nombre_plato),payload,sizeof(uint32_t));
 	payload+=sizeof(uint32_t);
 
-	plato->nombre_plato=malloc(plato->size_nombre_plato+1);
+	plato->nombre_plato=malloc((plato->size_nombre_plato)+1);
 	memcpy(plato->nombre_plato,payload,plato->size_nombre_plato);
 	plato->nombre_plato[plato->size_nombre_plato]='\0';
 	payload+=plato->size_nombre_plato;
@@ -1120,20 +1128,20 @@ t_guardar_plato * recibir_guardar_plato   (void * payload         ){
 
 }
 
-void 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
+int 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
 
 	t_plato_listo * plato=malloc(sizeof(t_plato_listo));
 	plato->pedido=malloc(sizeof(t_pedido));
 	t_header * encabezado=malloc(sizeof(t_header));
 	int offset=0;
 
-	plato->pedido->id_pedido=15;
+	plato->pedido->id_pedido=1;
 	plato->pedido->size_nombre_restaurante=6;
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
 	plato->pedido->nombre_restaurante="FAROLA";
-	plato->size_nombre_plato=14;
+	plato->size_nombre_plato=15;
 	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	plato->nombre_plato="fideos moñitos";
+	plato->nombre_plato="fideos_moñitos";
 
 	int size_buffer=3*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
 	void * buffer=malloc(size_buffer);
@@ -1162,6 +1170,8 @@ void 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
 
 	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del plato");
 
+	return conexion;
+
 }
 
 t_plato_listo *	recibir_plato_listo     (void * payload){
@@ -1189,6 +1199,43 @@ t_plato_listo *	recibir_plato_listo     (void * payload){
 
 }
 
+void deserializar_respuesta_obtener_pedido(t_header * encabezado){
+
+	t_list * lista_platos_del_pedido=list_create();
+	int cantidad_total_platos=encabezado->size/sizeof(t_comida);
+
+			void mostrar_platos_pedido(void * elemento){
+				t_comida * comida=(t_comida*)elemento;
+
+				log_info(logger,"El plato es: %s",comida->nombre_comida);
+				log_info(logger,"La cantidad total pedida del plato es: %d",comida->cantidad_total_comida);
+				log_info(logger,"La cantidad total pedida que ya se encuentra lista es: %d",comida->cantidad_lista_comida);
+			}
+
+	log_error(logger,"Por empezar a deserializar");
+	log_error(logger,"cantidad total de plato: %d",cantidad_total_platos);
+	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
+	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
+	for(int i=0;i<cantidad_total_platos;i++){
+		t_comida * comida=malloc(sizeof(t_comida));
+
+		memcpy(&(comida->cantidad_lista_comida),encabezado->payload,sizeof(uint32_t));
+		encabezado->payload+=sizeof(uint32_t);
+
+		memcpy(&(comida->cantidad_total_comida),encabezado->payload,sizeof(uint32_t));
+		encabezado->payload+=sizeof(uint32_t);
+
+		memcpy(comida->nombre_comida,encabezado->payload,SIZE_VECTOR_NOMBRE_PLATO);
+		encabezado->payload+=sizeof(SIZE_VECTOR_NOMBRE_PLATO);
+
+		list_add(lista_platos_del_pedido,comida);
+		log_error(logger,"El numero de iteracion es: %d",i);
+	}
+
+	list_iterate(lista_platos_del_pedido,mostrar_platos_pedido);
+
+	list_destroy(lista_platos_del_pedido);
+}
 
 int serializar(void* buffer, const char* format, ...){
 	va_list objs;

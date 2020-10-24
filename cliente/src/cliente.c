@@ -138,25 +138,43 @@ int main(int argc, char **argv) {
 			case CONFIRMAR_PEDIDO:
 
 				printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO  \n");
-				enviar_confirmar_pedido(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_confirmar_pedido(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la actualizacion del estado del pedido");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la actualizacion del estado del pedido");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
+
 				break;
 
 			case PLATO_LISTO:
 
 				printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO               \n");
-				enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la notificacion del plato listo");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la notificacion del plato listo");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
+
 				break;
 
 			case OBTENER_PEDIDO:
 
 				printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                    \n");
-				enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio el mensaje nro: %d",encabezado->nro_msg);
+				deserializar_respuesta_obtener_pedido(encabezado);
 				break;
 
 			case FINALIZAR_PEDIDO:
 
 				printf(" 13- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                      \n");
-				enviar_finalizar_pedido(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_finalizar_pedido(g_ip_comanda, g_puerto_comanda);
+				encabezado=recibir_buffer(conexion);
+				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la finalizacion del pedido");
+				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la finalizacion del pedido");
+				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
 				break;
 
 			default:
