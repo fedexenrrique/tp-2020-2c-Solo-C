@@ -179,6 +179,10 @@ void responder_07_aniadir_plato( uint32_t socket_cliente, bool p_resultado );
 bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_process );
 void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado );
 
+
+bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
+		                         ,char * p_nom_resto, uint32_t p_id_pedido
+		                         ,char * p_nom_plato, uint32_t p_cant_plato );
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
