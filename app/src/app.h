@@ -21,7 +21,7 @@ t_config * config;
 // AMBIENTE
 
 char *       g_ip_comanda;                    // IP_COMANDA=127.0.0.1
-int          g_puerto_comanda;                // PUERTO_COMANDA=5001
+char *       g_puerto_comanda;                // PUERTO_COMANDA=5001
 char *       g_puerto_escucha;                // PUERTO_ESCUCHA=5004
 uint32_t     g_retardo_ciclo_cpu;             // RETARDO_CICLO_CPU
 uint32_t     g_grado_de_multiprocesamiento;   // GRADO_DE_MULTIPROCESAMIENTO=1
