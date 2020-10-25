@@ -61,10 +61,12 @@ t_list * tabla_frames_libres				   ;
 
 
 void            iniciar_memoria                  (                        );
-void            crear_pagina_memoria            (t_list *,int            );
+void            crear_pagina_memoria             (t_list *,int            );
 void *          reservar_memoria_inicial         (int                     );
 t_restaurante * crear_tabla_segmentos_restaurante(char *                  );
 bool            agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
+
+t_frame * buscar_frame_libre();
 
 
 #endif /* MEMORIA_H_ */
