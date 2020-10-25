@@ -69,7 +69,7 @@ t_config * leer_config(void) {
 	t_config * config = config_create("app.config");
 
 	if ( config_has_property( config, "IP_COMANDA"                  ) ) g_ip_comanda                  = config_get_string_value(config, "IP_COMANDA");
-	if ( config_has_property( config, "PUERTO_COMANDA"              ) ) g_puerto_comanda              = config_get_int_value(config, "PUERTO_COMANDA");
+	if ( config_has_property( config, "PUERTO_COMANDA"              ) ) g_puerto_comanda              = config_get_string_value(config, "PUERTO_COMANDA");
 	if ( config_has_property( config, "PUERTO_ESCUCHA"              ) ) g_puerto_escucha              = config_get_string_value(config, "PUERTO_ESCUCHA");
 	if ( config_has_property( config, "RETARDO_CICLO_CPU"           ) ) g_retardo_ciclo_cpu           = config_get_int_value(config, "RETARDO_CICLO_CPU");
 	if ( config_has_property( config, "GRADO_DE_MULTIPROCESAMIENTO" ) ) g_grado_de_multiprocesamiento = config_get_int_value(config, "GRADO_DE_MULTIPROCESAMIENTO");
@@ -612,11 +612,20 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	}
 
-	// "GUARDAR_PEDIDO" Hacia Comanda.
-
 	uint32_t id_pedido_generado = random_id_generator();
 
 	asociacion->id_pedido = id_pedido_generado;
+
+	// "GUARDAR_PEDIDO" Hacia Comanda.
+
+	bool guardado = enviar_06_guardar_pedido(g_ip_comanda, g_puerto_comanda, "default", id_pedido_generado );
+
+	if (guardado) {
+
+		printf("Se pudo guardar el pedido.\n");
+
+	} else printf("No se pudo guardar el pedido.\n");
+
 
 	asociacion->list_platos = list_create();
 
