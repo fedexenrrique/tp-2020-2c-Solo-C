@@ -34,6 +34,8 @@ void iniciar_memoria(){
 	list_pointer_memory_principal=list_create();
 	list_pointer_memory_swap     =list_create();
 
+	tabla_frames_libres=list_create();
+
 	crear_pagina_memoria(list_pointer_memory_principal,size_memoria_principal);
 
 /*	t_admin_memory_message * pointer_block=malloc(sizeof(t_admin_memory_message));
@@ -72,9 +74,12 @@ void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memori
 		else
 			frame->direccion_frame=p_inicio_memoria_principal+(i*SIZE_PAGINA);
 
-		list_add(tabla_frames_libres,(void*)frame);
+		log_info(logger,"La direccion de memoria del frame es %p y la logica es %d",frame->direccion_frame,frame->direccion_frame-p_inicio_memoria_principal);
+
+		list_add(tabla_frames_libres,frame);
 	}
 
+	log_info(logger,"Hay %d  marcos libres",list_size(tabla_frames_libres));
 	log_info(logger,"Se dividio la memoria principal en %d  frames",cantidad_paginas);
 
 }
