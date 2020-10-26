@@ -958,17 +958,15 @@ bool enviar_06_guardar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, 
 
 			case OK: ;
 
-				uint32_t id_recibido = 0;
-				memcpy( &id_recibido , header_restaurantes->payload , sizeof(uint32_t) );
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return id_recibido;
+				return TRUE;
 				break;
 
 			case FAIL:
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return -1;
+				return FALSE;
 				break;
 
 			default:
@@ -1140,10 +1138,10 @@ t_pedido * recibir_pedido  (void * payload         ){
 }
 
 bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
-		                         ,char * p_nom_resto, uint32_t p_id_pedido
-		                         ,char * p_nom_plato, uint32_t p_cant_plato ){
+		                    , char * p_nom_resto, uint32_t p_id_pedido
+		                    , char * p_nom_plato, uint32_t p_cant_plato ){
 
-	bool _recibir_confirmacion_06_guardar_pedido( uint32_t p_conexion ) {
+	bool _recibir_confirmacion_08_guardar_plato( uint32_t p_conexion ) {
 
 		t_header * header_restaurantes = recibir_buffer( p_conexion );
 
@@ -1156,22 +1154,20 @@ bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
 
 			case OK: ;
 
-				uint32_t id_recibido = 0;
-				memcpy( &id_recibido , header_restaurantes->payload , sizeof(uint32_t) );
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return id_recibido;
+				return TRUE;
 				break;
 
 			case FAIL:
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return -1;
+				return FALSE;
 				break;
 
 			default:
 				free(header_restaurantes);
-				return -1;
+				return FALSE;
 				break;
 
 		}
@@ -1234,7 +1230,7 @@ bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
 
 	if ( enviar_buffer( conexion, &l_header ) ) {
 
-		bool resultado = _recibir_confirmacion_06_guardar_pedido(conexion);
+		bool resultado = _recibir_confirmacion_08_guardar_plato(conexion);
 
 		close(conexion);
 

@@ -675,12 +675,12 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 
 	printf("\n%s\n", nombre_plato);
 
-	enviar_08_guardar_plato(  g_ip_comanda
-			                , g_puerto_comanda
-							, asociacion->restaurante_asociado->resto_nombre
-							, asociacion->id_pedido
-							, nombre_plato
-							, cantidad_platos);
+	bool guardado = enviar_08_guardar_plato(  g_ip_comanda
+			                			    , g_puerto_comanda
+										    , asociacion->restaurante_asociado->resto_nombre
+										    , asociacion->id_pedido
+										    , nombre_plato
+										    , cantidad_platos);
 
 	auxiliar_aniadir_plato( asociacion->list_platos, cantidad_platos, nombre_plato );
 
