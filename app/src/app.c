@@ -675,16 +675,15 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 
 	printf("\n%s\n", nombre_plato);
 
-	enviar_08_guardar_plato(  g_ip_comanda
-			                , g_puerto_comanda
-							, asociacion->restaurante_asociado->resto_nombre
-							, asociacion->id_pedido
-							, nombre_plato
-							, cantidad_platos);
+	bool guardado = enviar_08_guardar_plato(  g_ip_comanda , g_puerto_comanda
+										    , asociacion->restaurante_asociado->resto_nombre
+										    , asociacion->id_pedido
+										    , nombre_plato
+										    , cantidad_platos);
 
 	auxiliar_aniadir_plato( asociacion->list_platos, cantidad_platos, nombre_plato );
 
-	return true;
+	return guardado;
 
 }
 
@@ -718,6 +717,39 @@ void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, cha
 
 bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
+	uint32_t despla = 0;
+
+	uint32_t id_pedido = 0;
+
+	memcpy( &id_pedido, header_recibido->payload + despla, sizeof(uint32_t) );
+
+	despla += sizeof(uint32_t);
+
+	uint32_t size_nombre_resto = 0;
+
+	memcpy( &size_nombre_resto, header_recibido->payload + despla, sizeof(uint32_t) );
+
+	despla += sizeof(uint32_t);
+
+	char * nombre_resto = malloc(size_nombre_resto + 1);
+
+	memcpy( nombre_resto, header_recibido->payload + despla, size_nombre_resto );
+
+	despla += size_nombre_resto;
+
+	nombre_resto[size_nombre_resto] = '\0';
+
+	printf("\n%s\n", nombre_resto);
+
+	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido );
+
+	if (confirmacion) {
+
+		printf( "Se confirmó el pedido.\n" );
+
+	} else printf( "No se pudo confirmar el pedido.\n" );
+
+/*
 	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
 		return ( ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ) ? true : false ;
@@ -743,8 +775,8 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 	sem_post( &g_nro_pedidos_confirmados );
 
 	printf("Despertar LONG-TERM Scheduler .\n");
-
-	return true;
+*/
+	return confirmacion;
 
 }
 
