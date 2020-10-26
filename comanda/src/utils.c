@@ -269,6 +269,8 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 
 		if(adm_comida->frame==NULL){
 
+			log_info(logger,"No hay espacio en memoria principal");
+			goto envio_de_respuesta;
 			//Selecciono una victima
 			//Y despues devolveria el frame con el marco liberado
 		}
@@ -285,6 +287,10 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 
 		mem_hexdump(adm_comida->frame->direccion_frame,SIZE_PAGINA);
 
+		free(comida);
+
+		log_info(logger,"Se guardo la pagina en memoria principal");
+
 		adm_comida->contenido=adm_comida->frame->direccion_frame;
 		adm_comida->direccion_memoria_swap=NULL;
 		adm_comida->esta_en_memoria_principal=TRUE;
@@ -297,6 +303,8 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		mem_hexdump(prueba_comida->contenido, sizeof(t_comida));
 		t_comida * contenido_comida=(t_comida *)prueba_comida->contenido;
 		log_error(logger,"Probando el nombre de la comida despues de haberse guardado, %s",contenido_comida->nombre_comida);
+
+		log_info(logger,"Ahora la cantidad de frames libres en memoria es: %d",list_size(tabla_frames_libres));
 
 
 		exito=TRUE;
@@ -464,6 +472,16 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 										}
 								return FALSE;
 							}
+							bool verificar_pedido_terminado(void * elemento){
+
+								t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
+
+								t_comida * comida=(t_comida*)adm_comida->contenido;
+
+								if(comida->cantidad_lista_comida!=comida->cantidad_total_comida)
+									return TRUE;
+								return FALSE;
+							}
 
 	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
 		goto envio_de_respuesta;
@@ -513,6 +531,13 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 			exito=TRUE;
 			log_info(logger,"Ahora la cantidad lista del plato es: %d",comida->cantidad_lista_comida);
 
+			}
+		t_pagina_comida * comida_pedido=NULL;											//Verifico si todos los platos del pedido estan completos. De ser asi, cambio el pedido a TERMINADO
+		comida_pedido=list_find(pedido->comidas_del_pedido,verificar_pedido_terminado);
+
+		if(comida_pedido==NULL){
+			pedido->estado=TERMINADO;
+			log_info(logger,"Se finalizo el pedido. Se encuentra con todos sus platos terminados");
 			}
 
 		}
@@ -653,6 +678,13 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 									}
 							return FALSE;
 						}
+						void agregar_marcos_libres(void * elemento){
+
+							t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
+
+							list_add(tabla_frames_libres,adm_comida->frame);
+
+						}
 
 
 	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
@@ -682,6 +714,8 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 		log_info(logger, "Se encontro el pedido %d  y se elimina de la lista de pedidos",pedido->id_pedido);
 		 exito=TRUE;
 		 log_info(logger,"El tamaño de la lista de pedidos despues de eliminar el pedido es: %d",list_size(restaurante->tabla_pedidos));
+
+		 list_iterate(pedido->comidas_del_pedido,agregar_marcos_libres);     //Agrego en la tabla de frames libres, los espacios liberados
 		 }
 
 
