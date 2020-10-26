@@ -81,7 +81,16 @@ int main(int argc, char **argv) {
 
 				case CONFIRMAR_PEDIDO:
     		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");
-    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, g_id_proceso );
+
+    		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+
+    		    	}
+
+    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, argv[3], atoi(argv[4]) );
 
     		    	if ( confirmacion ) {
     		    		printf("Se confirmó el pedido.\n");
@@ -138,12 +147,22 @@ int main(int argc, char **argv) {
 			case CONFIRMAR_PEDIDO:
 
 				printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO  \n");
-				conexion=enviar_confirmar_pedido(g_ip_comanda, g_puerto_comanda);
-				encabezado=recibir_buffer(conexion);
-				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
-				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la actualizacion del estado del pedido");
-				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la actualizacion del estado del pedido");
-				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
+
+				if ( argv[3] == NULL || argv[4] == NULL ) {
+
+		    		printf("Debe ingresar mas parámetros.\n");
+
+		    		break;
+
+		    	}
+
+		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, argv[3], atoi(argv[4]) );
+
+		    	if (confirmacion) {
+
+		    		printf( "Se confirmó el pedido.\n" );
+
+		    	} else printf( "No se pudo confirmar el pedido.\n" );
 
 				break;
 
