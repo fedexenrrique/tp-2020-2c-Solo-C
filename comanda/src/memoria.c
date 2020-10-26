@@ -135,3 +135,16 @@ bool agregar_pedido_a_tabla_segmentos(t_restaurante * restaurante, uint32_t id_p
 	return TRUE;
 
 }
+
+t_frame * buscar_frame_libre(){
+
+
+	t_frame * frame_libre=NULL;
+
+	if(!list_is_empty(tabla_frames_libres)){
+
+		frame_libre=list_remove(tabla_frames_libres,0);
+	}
+
+	return frame_libre;
+}
