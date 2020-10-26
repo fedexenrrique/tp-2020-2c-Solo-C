@@ -153,7 +153,9 @@ int deserializar(void* buffer, const char* format, ...);
 t_list * enviar_01_consultar_restaurantes   (char* p_ip,char* p_puerto);
 void responder_01_consultar_restaurantes ( uint32_t socket_cliente, t_list * p_list_restaurantes );
 
+bool enviar_06_guardar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
 int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);//serializa pedido, le agrega el nro de mensaje y lo envia
+
 int        enviar_obtener_pedido   (char* p_ip,char* p_puerto);//                 ""
 int        enviar_confirmar_pedido (char* p_ip,char* p_puerto);//                 ""
 int        enviar_finalizar_pedido (char* p_ip,char* p_puerto);//                 ""
@@ -177,6 +179,10 @@ void responder_07_aniadir_plato( uint32_t socket_cliente, bool p_resultado );
 bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_process );
 void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado );
 
+
+bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
+		                         ,char * p_nom_resto, uint32_t p_id_pedido
+		                         ,char * p_nom_plato, uint32_t p_cant_plato );
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
