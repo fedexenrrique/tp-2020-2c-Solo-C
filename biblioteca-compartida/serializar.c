@@ -615,13 +615,13 @@ void responder_05_crear_pedido( uint32_t socket_cliente, uint32_t p_id_pedido_cr
 
 }
 
-bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_process ) {
+bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido ) {
 
 	bool _recibir_09_confirmacion_pedido( uint32_t p_conexion ) {
 
 		t_header * header_response = recibir_buffer( p_conexion );
 
-		bool resultado = ( header_response->nro_msg == OK) ? true : false ;
+		bool resultado = ( header_response->nro_msg == OK) ? TRUE : FALSE ;
 
 		free ( header_response );
 
@@ -629,15 +629,35 @@ bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_proc
 
 	}
 
+	uint32_t size_nombre_resto = string_length( p_nom_resto );
+
+	uint32_t size_payload = sizeof(uint32_t) * 2 + size_nombre_resto;
+
+	void * l_payload = malloc( size_payload );
+
+	uint32_t despla = 0;
+
+	memcpy( l_payload + despla, &p_id_pedido, sizeof(uint32_t) );
+
+	despla += sizeof(uint32_t);
+
+	memcpy( l_payload + despla, &size_nombre_resto, sizeof(uint32_t) );
+
+	despla += sizeof(uint32_t);
+
+	memcpy( l_payload + despla, p_nom_resto, size_nombre_resto );
+
+	despla += size_nombre_resto;
+
+	uint32_t conexion = crear_socket_y_conectar(p_ip, p_puerto);
+
 	t_header header_request;
 
 	header_request.modulo     = APP;
-	header_request.id_proceso = p_id_process;
+	header_request.id_proceso = 0;
 	header_request.nro_msg    = CONFIRMAR_PEDIDO;
-	header_request.size       = 0;
-	header_request.payload    = NULL;
-
-	uint32_t conexion = crear_socket_y_conectar(p_ip, p_puerto);
+	header_request.size       = size_payload;
+	header_request.payload    = l_payload;
 
 	if ( enviar_buffer( conexion, &header_request ) ) {
 
@@ -958,17 +978,15 @@ bool enviar_06_guardar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, 
 
 			case OK: ;
 
-				uint32_t id_recibido = 0;
-				memcpy( &id_recibido , header_restaurantes->payload , sizeof(uint32_t) );
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return id_recibido;
+				return TRUE;
 				break;
 
 			case FAIL:
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return -1;
+				return FALSE;
 				break;
 
 			default:
@@ -1061,6 +1079,8 @@ int enviar_obtener_pedido   (char* p_ip,char* p_puerto){
 	return conexion;
 }
 
+
+
 int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
 
 	uint32_t nro_msg=CONFIRMAR_PEDIDO;
@@ -1140,10 +1160,10 @@ t_pedido * recibir_pedido  (void * payload         ){
 }
 
 bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
-		                         ,char * p_nom_resto, uint32_t p_id_pedido
-		                         ,char * p_nom_plato, uint32_t p_cant_plato ){
+		                    , char * p_nom_resto, uint32_t p_id_pedido
+		                    , char * p_nom_plato, uint32_t p_cant_plato ){
 
-	bool _recibir_confirmacion_06_guardar_pedido( uint32_t p_conexion ) {
+	bool _recibir_confirmacion_08_guardar_plato( uint32_t p_conexion ) {
 
 		t_header * header_restaurantes = recibir_buffer( p_conexion );
 
@@ -1156,22 +1176,20 @@ bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
 
 			case OK: ;
 
-				uint32_t id_recibido = 0;
-				memcpy( &id_recibido , header_restaurantes->payload , sizeof(uint32_t) );
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return id_recibido;
+				return TRUE;
 				break;
 
 			case FAIL:
 				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 				free(header_restaurantes);
-				return -1;
+				return FALSE;
 				break;
 
 			default:
 				free(header_restaurantes);
-				return -1;
+				return FALSE;
 				break;
 
 		}
@@ -1234,7 +1252,7 @@ bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
 
 	if ( enviar_buffer( conexion, &l_header ) ) {
 
-		bool resultado = _recibir_confirmacion_06_guardar_pedido(conexion);
+		bool resultado = _recibir_confirmacion_08_guardar_plato(conexion);
 
 		close(conexion);
 

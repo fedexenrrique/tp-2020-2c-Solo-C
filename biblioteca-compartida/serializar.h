@@ -157,6 +157,11 @@ bool enviar_06_guardar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, 
 int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);//serializa pedido, le agrega el nro de mensaje y lo envia
 
 int        enviar_obtener_pedido   (char* p_ip,char* p_puerto);//                 ""
+
+bool  enviar_09_confirmar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
+
+bool enviar_09_confirmar_pedido_modulos ( char* p_ip, char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido );
+
 int        enviar_confirmar_pedido (char* p_ip,char* p_puerto);//                 ""
 int        enviar_finalizar_pedido (char* p_ip,char* p_puerto);//                 ""
 t_header * serializar_pedido       (uint32_t nro_msg         );//Serializa id pedido, size nombre restaurant, nombre restaurant
@@ -176,7 +181,6 @@ void responder_05_crear_pedido( uint32_t socket_cliente, uint32_t p_id_pedido_cr
 bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proceso, uint32_t p_id_pedido, char * p_plato );
 void responder_07_aniadir_plato( uint32_t socket_cliente, bool p_resultado );
 
-bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, uint32_t p_id_process );
 void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado );
 
 
