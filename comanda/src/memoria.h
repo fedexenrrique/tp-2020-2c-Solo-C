@@ -17,13 +17,6 @@ typedef struct {
 	t_list * tabla_pedidos;
 }t_restaurante;
 
-
-typedef struct{
-	uint32_t      id_pedido    ;
-	estado_pedido estado       ;
-	t_list * comidas_del_pedido;
-}t_pedido_seg;
-
 typedef struct{
 	int    nro_frame      ;
 	void * direccion_frame;

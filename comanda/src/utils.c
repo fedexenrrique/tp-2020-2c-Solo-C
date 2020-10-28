@@ -163,6 +163,7 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
+	printf("\n");
 
 }
 
@@ -329,6 +330,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
+	printf("\n");
 
 }
 
@@ -360,6 +362,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 			void _serializar_tabla_comida(void * elemento){
 				t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
 				t_comida * comida=(t_comida*)adm_comida->contenido;
+				offset+=sizeof(estado_pedido);
 
 				memcpy(buffer+offset,&comida->cantidad_lista_comida,sizeof(uint32_t));
 				offset+=sizeof(uint32_t);
@@ -411,9 +414,12 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 
 		int size_lista_pedido=list_size(pedido->comidas_del_pedido);
 		log_error(logger,"El tamaño de la lista del pedido es: %d",size_lista_pedido);
-		size_payload=(sizeof(t_comida))*size_lista_pedido;
+		size_payload=(sizeof(t_comida))*size_lista_pedido+sizeof(estado_pedido);
 		log_info(logger,"El size del payload es: %d",size_payload);
 		buffer=malloc(size_payload);
+
+		memcpy(buffer,&pedido->estado,sizeof(estado_pedido));
+
 		list_iterate(pedido->comidas_del_pedido,_serializar_tabla_comida);
 	    }
 
@@ -435,6 +441,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
+	printf("\n");
 }
 
 
@@ -561,6 +568,7 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
+	printf("\n");
 
 
 }
@@ -651,6 +659,7 @@ void administrar_confirmar_pedido(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
+	printf("\n");
 
 
 }
@@ -739,6 +748,7 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
+	printf("\n");
 
 
 }
