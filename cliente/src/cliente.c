@@ -125,7 +125,16 @@ int main(int argc, char **argv) {
 			case GUARDAR_PEDIDO:
 
 				printf("  06- GUARDAR_PEDIDO          HACIA: COMANDA, SINDICATO                   \n");
-				conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda);
+
+   		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+
+    		    	}
+
+				conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
 				encabezado=recibir_buffer(conexion);
 				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
@@ -136,7 +145,16 @@ int main(int argc, char **argv) {
 			case GUARDAR_PLATO:
 
 				printf(" 08- GUARDAR_PLATO           HACIA: COMANDA, SINDICATO                     \n");
-				conexion=enviar_guardar_plato(g_ip_comanda, g_puerto_comanda);
+
+   		    	if ( argv[3] == NULL || argv[4] == NULL || argv[5] == NULL || argv[6] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+
+    		    	}
+
+				conexion=enviar_guardar_plato(g_ip_comanda, g_puerto_comanda, argv[3], (uint32_t)atoi(argv[4]), argv[5], (uint32_t)atoi(argv[6]));
 				encabezado=recibir_buffer(conexion);
 				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
@@ -156,7 +174,7 @@ int main(int argc, char **argv) {
 
 		    	}
 
-		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, argv[3], atoi(argv[4]) );
+		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, argv[3], (uint32_t)atoi(argv[4]) );
 
 		    	if (confirmacion) {
 
@@ -169,7 +187,7 @@ int main(int argc, char **argv) {
 			case PLATO_LISTO:
 
 				printf(" 10- PLATO_LISTO             HACIA: APP, COMANDA, SINDICATO               \n");
-				conexion=enviar_plato_listo(g_ip_comanda, g_puerto_comanda);
+				conexion=enviar_plato_listo(g_ip_comanda, g_puerto_comanda, argv[3], (uint32_t)atoi(argv[4]), argv[5]);
 				encabezado=recibir_buffer(conexion);
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la notificacion del plato listo");
 				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la notificacion del plato listo");
@@ -180,7 +198,17 @@ int main(int argc, char **argv) {
 			case OBTENER_PEDIDO:
 
 				printf(" 12- OBTENER_PEDIDO          HACIA: COMANDA, SINDICATO                    \n");
-				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda);
+
+   		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+
+    		    	}
+
+				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
+				//RESPUESTA
 				encabezado=recibir_buffer(conexion);
 				log_info(logger,"Se recibio el mensaje nro: %d",encabezado->nro_msg);
 				deserializar_respuesta_obtener_pedido(encabezado);
@@ -189,7 +217,16 @@ int main(int argc, char **argv) {
 			case FINALIZAR_PEDIDO:
 
 				printf(" 13- FINALIZAR_PEDIDO        HACIA: COMANDA, CLIENTE                      \n");
-				conexion=enviar_finalizar_pedido(g_ip_comanda, g_puerto_comanda);
+
+   		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+
+    		    	}
+				conexion=enviar_finalizar_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
+				//RESPUESTA
 				encabezado=recibir_buffer(conexion);
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente la finalizacion del pedido");
 				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente la finalizacion del pedido");

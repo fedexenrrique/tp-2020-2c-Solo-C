@@ -160,17 +160,17 @@ t_list * enviar_01_consultar_restaurantes   (char* p_ip,char* p_puerto);
 void responder_01_consultar_restaurantes ( uint32_t socket_cliente, t_list * p_list_restaurantes );
 
 bool enviar_06_guardar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
-int        enviar_guardar_pedido   (char* p_ip,char* p_puerto);//serializa pedido, le agrega el nro de mensaje y lo envia
+int        enviar_guardar_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante,uint32_t id_pedido);//serializa pedido, le agrega el nro de mensaje y lo envia
 
-int        enviar_obtener_pedido   (char* p_ip,char* p_puerto);//                 ""
+int        enviar_obtener_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante,uint32_t id_pedido);//                 ""
 
 bool  enviar_09_confirmar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
 
 bool enviar_09_confirmar_pedido_modulos ( char* p_ip, char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido );
 
-int        enviar_confirmar_pedido (char* p_ip,char* p_puerto);//                 ""
-int        enviar_finalizar_pedido (char* p_ip,char* p_puerto);//                 ""
-t_header * serializar_pedido       (uint32_t nro_msg         );//Serializa id pedido, size nombre restaurant, nombre restaurant
+//int        enviar_confirmar_pedido (char* p_ip,char* p_puerto);//                 ""
+int        enviar_finalizar_pedido (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido);//                 ""
+t_header * serializar_pedido       (uint32_t nro_msg, char * nombre_restaurante,uint32_t id_pedido         );//Serializa id pedido, size nombre restaurant, nombre restaurant
 t_pedido * recibir_pedido          (void * payload           );//Deserializa id pedido, size nombre restaurant, nombre restaurant
 void       deserializar_respuesta_obtener_pedido(t_header *  );//Deserializa y muestra toda la informacion de un pedido
 
@@ -193,10 +193,10 @@ void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado )
 bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
 		                         ,char * p_nom_resto, uint32_t p_id_pedido
 		                         ,char * p_nom_plato, uint32_t p_cant_plato );
-int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
+int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato, uint32_t cantidad_plato);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
-int  	        enviar_plato_listo      (char* p_ip,char* p_puerto);
+int  	        enviar_plato_listo      (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato);
 t_plato_listo *	recibir_plato_listo     (void * payload         );
 
 void       prueba_biblioteca_compartida   (void                   );

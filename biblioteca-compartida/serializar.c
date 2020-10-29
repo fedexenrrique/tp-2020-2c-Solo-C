@@ -1054,10 +1054,10 @@ bool enviar_06_guardar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, 
 
 }
 
-int enviar_guardar_pedido   (char* p_ip,char* p_puerto){
+int enviar_guardar_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante,uint32_t id_pedido){
 
 	uint32_t nro_msg=GUARDAR_PEDIDO;
-	t_header * encabezado=serializar_pedido(nro_msg);
+	t_header * encabezado=serializar_pedido(nro_msg,nombre_restaurante,id_pedido);
 
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
@@ -1067,10 +1067,10 @@ int enviar_guardar_pedido   (char* p_ip,char* p_puerto){
 
 }
 
-int enviar_obtener_pedido   (char* p_ip,char* p_puerto){
+int enviar_obtener_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante,uint32_t id_pedido){
 
 	uint32_t nro_msg=OBTENER_PEDIDO;
-	t_header * encabezado=serializar_pedido(nro_msg);
+	t_header * encabezado=serializar_pedido(nro_msg,nombre_restaurante,id_pedido);
 
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
@@ -1081,10 +1081,10 @@ int enviar_obtener_pedido   (char* p_ip,char* p_puerto){
 
 
 
-int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
+int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido){
 
 	uint32_t nro_msg=CONFIRMAR_PEDIDO;
-	t_header * encabezado=serializar_pedido(nro_msg);
+	t_header * encabezado=serializar_pedido(nro_msg, nombre_restaurante,id_pedido);
 
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
@@ -1093,10 +1093,10 @@ int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto){
 	return conexion;
 }
 
-int enviar_finalizar_pedido   (char* p_ip,char* p_puerto){
+int enviar_finalizar_pedido   (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido){
 
 	uint32_t nro_msg=FINALIZAR_PEDIDO;
-	t_header * encabezado=serializar_pedido(nro_msg);
+	t_header * encabezado=serializar_pedido(nro_msg, nombre_restaurante,id_pedido);
 
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
@@ -1106,16 +1106,16 @@ int enviar_finalizar_pedido   (char* p_ip,char* p_puerto){
 
 }
 
-t_header * serializar_pedido       (uint32_t nro_msg        ){
+t_header * serializar_pedido       (uint32_t nro_msg, char * nombre_restaurante,uint32_t id_pedido        ){
 
 	t_pedido * pedido=malloc(sizeof(t_pedido));
 	t_header * encabezado=malloc(sizeof(t_header));
 	int offset=0;
 
-	pedido->id_pedido=1;
-	pedido->size_nombre_restaurante=6;
+	pedido->id_pedido=id_pedido;
+	pedido->size_nombre_restaurante=(uint32_t)string_length(nombre_restaurante);
 	pedido->nombre_restaurante=malloc(pedido->size_nombre_restaurante);
-	pedido->nombre_restaurante="FAROLA";
+	pedido->nombre_restaurante=nombre_restaurante;
 
 	int size_buffer=2*sizeof(uint32_t)+pedido->size_nombre_restaurante;
 	void * buffer=malloc(size_buffer);
@@ -1268,21 +1268,21 @@ bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
 
 }
 
-int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto){
+int 	   enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato, uint32_t cantidad_plato){
 
 	t_guardar_plato * plato=malloc(sizeof(t_guardar_plato));
 	plato->pedido=malloc(sizeof(t_pedido));
 	t_header * encabezado=malloc(sizeof(t_header));
 	int offset=0;
 
-	plato->pedido->id_pedido=1;
-	plato->pedido->size_nombre_restaurante=6;
+	plato->pedido->id_pedido=id_pedido;
+	plato->pedido->size_nombre_restaurante=string_length(nombre_restaurante);
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
-	plato->pedido->nombre_restaurante="FAROLA";
-	plato->size_nombre_plato=15;
+	plato->pedido->nombre_restaurante=nombre_restaurante;
+	plato->size_nombre_plato=string_length(nombre_plato);
 	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	plato->nombre_plato="fideos_moñitos";
-	plato->cantidad_plato=5;
+	plato->nombre_plato=nombre_plato;
+	plato->cantidad_plato=cantidad_plato;
 
 	printf("Voy a enviar el plato con nombre: %s \n",plato->nombre_plato);
 	printf("El tamaño del nombre sin caracter nulo es: %d \n", string_length(plato->nombre_plato));
@@ -1350,20 +1350,20 @@ t_guardar_plato * recibir_guardar_plato   (void * payload         ){
 
 }
 
-int 	   enviar_plato_listo    (char* p_ip,char* p_puerto){
+int 	   enviar_plato_listo    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato){
 
 	t_plato_listo * plato=malloc(sizeof(t_plato_listo));
 	plato->pedido=malloc(sizeof(t_pedido));
 	t_header * encabezado=malloc(sizeof(t_header));
 	int offset=0;
 
-	plato->pedido->id_pedido=1;
-	plato->pedido->size_nombre_restaurante=6;
+	plato->pedido->id_pedido=id_pedido;
+	plato->pedido->size_nombre_restaurante=string_length(nombre_restaurante);
 	plato->pedido->nombre_restaurante=malloc(plato->pedido->size_nombre_restaurante);
-	plato->pedido->nombre_restaurante="FAROLA";
-	plato->size_nombre_plato=15;
+	plato->pedido->nombre_restaurante=nombre_restaurante;
+	plato->size_nombre_plato=string_length(nombre_plato);
 	plato->nombre_plato=malloc(plato->size_nombre_plato);
-	plato->nombre_plato="fideos_moñitos";
+	plato->nombre_plato=nombre_plato;
 
 	int size_buffer=3*sizeof(uint32_t)+plato->pedido->size_nombre_restaurante+plato->size_nombre_plato;
 	void * buffer=malloc(size_buffer);

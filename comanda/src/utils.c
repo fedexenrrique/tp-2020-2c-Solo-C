@@ -264,7 +264,9 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		inicializar_vector();
 		strcpy(comida->nombre_comida,plato->nombre_plato);
 
-		printf("El nombre de la comida es: %s",comida->nombre_comida);
+		log_info(logger,"El nombre de la comida es: %s",comida->nombre_comida);
+		log_info(logger,"La cantidad de comida para cocinar es: %s",comida->cantidad_total_comida);
+
 
 		adm_comida->frame=buscar_frame_libre();
 
