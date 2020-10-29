@@ -1,0 +1,610 @@
+[INFO] 19:04:02:409 Sindicato/(5142:5142): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 19:04:02:411 Sindicato/(5142:5142): Preparando punto de montaje.
+[WARNING] 19:04:02:411 Sindicato/(5142:5142): El punto de montaje no existe. Se creará el directorio.
+[INFO] 19:04:02:411 Sindicato/(5142:5142): El directorio se creó satisfactoriamente.
+[INFO] 19:04:02:412 Sindicato/(5142:5142): Directorio creado
+[INFO] 19:04:02:412 Sindicato/(5142:5142): Creando directorio de files...
+[INFO] 19:04:02:412 Sindicato/(5142:5142): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 19:04:02:412 Sindicato/(5142:5142): Directorio de bloques creado
+[INFO] 19:04:02:412 Sindicato/(5142:5142): Directorio de restaurantes creado
+[INFO] 19:04:02:412 Sindicato/(5142:5142): Directorio de recetas creado
+[INFO] 19:04:02:412 Sindicato/(5142:5142): Creando archivos de bloques...
+[INFO] 19:04:02:490 Sindicato/(5142:5142): Archivos de bloques creados.
+[INFO] 19:04:02:493 Sindicato/(5142:5142): Creando bitmap...
+[INFO] 19:04:02:493 Sindicato/(5142:5142): El Bitmap no existe. Se creará el archivo.
+[INFO] 19:04:02:494 Sindicato/(5142:5142): Creando Archivo Bitmap...
+[INFO] 19:04:02:494 Sindicato/(5142:5142): La cantidad de bytes del bitmap es 1032
+[INFO] 19:04:02:499 Sindicato/(5142:5142): Leyendo archivo Info de Bloques
+[INFO] 19:06:26:635 Sindicato/(5142:5142): Creación Restaurante
+[INFO] 19:06:26:635 Sindicato/(5142:5142): Creando Reestaurante...
+[INFO] 19:06:26:635 Sindicato/(5142:5142): Nombre: Resto
+
+[INFO] 19:06:26:635 Sindicato/(5142:5142): Cantidad Cocineros: 5
+
+[INFO] 19:06:26:635 Sindicato/(5142:5142): Creando directorio de restaursnte nuevo...
+[INFO] 19:06:26:635 Sindicato/(5142:5142): El restaurante no existe. Se creará el directorio.
+[INFO] 19:06:26:635 Sindicato/(5142:5142): El directorio de Restaurante se creó correctamente.
+[ERROR] 19:06:26:694 Sindicato/(5142:5142): la posicion del bitmap seleccionado es  0
+[ERROR] 19:06:26:695 Sindicato/(5142:5142): la posicion del bitmap seleccionado es  1
+[ERROR] 19:06:26:696 Sindicato/(5142:5142): la posicion del bitmap seleccionado es  2
+[INFO] 19:07:21:966 Sindicato/(5142:5142): Creacion Receta
+[INFO] 19:07:21:967 Sindicato/(5142:5142): Creando receta...
+
+[INFO] 19:07:21:967 Sindicato/(5142:5142): Milanesa
+[INFO] 19:07:21:967 Sindicato/(5142:5142): Creando directorio de receta nuevo...
+[INFO] 19:07:21:967 Sindicato/(5142:5142): La receta no existe. Se creará el directorio.
+[ERROR] 19:07:22:47 Sindicato/(5142:5142): la posicion del bitmap seleccionado es  3
+[INFO] 19:07:22:48 Sindicato/(5142:5142): La receta se creó correctamente.
+[INFO] 03:26:19:100 Sindicato/(11234:11234): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:26:57:352 Sindicato/(11234:11234): Leyendo archivo resto...
+[INFO] 03:28:05:766 Sindicato/(11334:11334): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:28:17:717 Sindicato/(11334:11334): Leyendo archivo resto...
+[INFO] 03:30:53:350 Sindicato/(11535:11535): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:30:56:785 Sindicato/(11535:11535): Leyendo archivo resto...
+[INFO] 03:32:30:759 Sindicato/(11660:11660): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:32:38:173 Sindicato/(11660:11660): Leyendo archivo resto...
+[INFO] 03:32:47:853 Sindicato/(11660:11660): Leyendo bloques
+[INFO] 03:34:08:939 Sindicato/(11773:11773): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:34:08:939 Sindicato/(11773:11773): Preparando punto de montaje.
+[INFO] 03:34:08:939 Sindicato/(11773:11773): Punto de montaje encontrado.
+[INFO] 03:34:08:939 Sindicato/(11773:11773): Leyendo archivo Info de Bloques
+[INFO] 03:34:08:939 Sindicato/(11773:11773): Mapeando Archivo Bitmap...
+[INFO] 03:34:08:939 Sindicato/(11773:11773): La cantidad de bytes del bitmap es 16
+[INFO] 03:34:08:939 Sindicato/(11773:11773): Leyendo archivo Info de Bloques
+[INFO] 03:34:21:303 Sindicato/(11773:11773): Leyendo archivo resto...
+[INFO] 03:34:24:953 Sindicato/(11773:11773): Leyendo bloques
+[INFO] 03:42:00:298 Sindicato/(12028:12028): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:42:00:299 Sindicato/(12028:12028): Preparando punto de montaje.
+[INFO] 03:42:00:299 Sindicato/(12028:12028): Punto de montaje encontrado.
+[INFO] 03:42:00:299 Sindicato/(12028:12028): Leyendo archivo Info de Bloques
+[INFO] 03:42:00:299 Sindicato/(12028:12028): Mapeando Archivo Bitmap...
+[INFO] 03:42:00:299 Sindicato/(12028:12028): La cantidad de bytes del bitmap es 16
+[INFO] 03:42:00:299 Sindicato/(12028:12028): Leyendo archivo Info de Bloques
+[INFO] 03:42:01:472 Sindicato/(12028:12028): Leyendo archivo resto...
+[INFO] 03:42:06:558 Sindicato/(12028:12028): Leyendo bloques
+[INFO] 03:43:50:233 Sindicato/(12171:12171): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:43:50:233 Sindicato/(12171:12171): Preparando punto de montaje.
+[INFO] 03:43:50:233 Sindicato/(12171:12171): Punto de montaje encontrado.
+[INFO] 03:43:50:233 Sindicato/(12171:12171): Leyendo archivo Info de Bloques
+[INFO] 03:43:50:234 Sindicato/(12171:12171): Mapeando Archivo Bitmap...
+[INFO] 03:43:50:234 Sindicato/(12171:12171): La cantidad de bytes del bitmap es 16
+[INFO] 03:43:50:234 Sindicato/(12171:12171): Leyendo archivo Info de Bloques
+[INFO] 03:43:50:871 Sindicato/(12171:12171): Leyendo archivo resto...
+[INFO] 03:43:53:111 Sindicato/(12171:12171): Leyendo bloques
+[INFO] 03:46:43:503 Sindicato/(12317:12317): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:46:43:504 Sindicato/(12317:12317): Preparando punto de montaje.
+[INFO] 03:46:43:504 Sindicato/(12317:12317): Punto de montaje encontrado.
+[INFO] 03:46:43:504 Sindicato/(12317:12317): Leyendo archivo Info de Bloques
+[INFO] 03:46:43:504 Sindicato/(12317:12317): Mapeando Archivo Bitmap...
+[INFO] 03:46:43:504 Sindicato/(12317:12317): La cantidad de bytes del bitmap es 16
+[INFO] 03:46:43:504 Sindicato/(12317:12317): Leyendo archivo Info de Bloques
+[INFO] 03:47:10:554 Sindicato/(12317:12317): Leyendo archivo resto...
+[INFO] 03:47:12:450 Sindicato/(12317:12317): Leyendo bloques
+[INFO] 03:48:57:214 Sindicato/(12444:12444): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:48:57:214 Sindicato/(12444:12444): Preparando punto de montaje.
+[INFO] 03:48:57:214 Sindicato/(12444:12444): Punto de montaje encontrado.
+[INFO] 03:48:57:214 Sindicato/(12444:12444): Leyendo archivo Info de Bloques
+[INFO] 03:48:57:214 Sindicato/(12444:12444): Mapeando Archivo Bitmap...
+[INFO] 03:48:57:214 Sindicato/(12444:12444): La cantidad de bytes del bitmap es 16
+[INFO] 03:48:57:214 Sindicato/(12444:12444): Leyendo archivo Info de Bloques
+[INFO] 03:48:57:862 Sindicato/(12444:12444): Leyendo archivo resto...
+[INFO] 03:48:59:788 Sindicato/(12444:12444): Leyendo bloques
+[INFO] 03:59:09:469 Sindicato/(12771:12771): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:59:09:469 Sindicato/(12771:12771): Preparando punto de montaje.
+[INFO] 03:59:09:470 Sindicato/(12771:12771): Punto de montaje encontrado.
+[INFO] 03:59:09:470 Sindicato/(12771:12771): Leyendo archivo Info de Bloques
+[INFO] 03:59:09:470 Sindicato/(12771:12771): Mapeando Archivo Bitmap...
+[INFO] 03:59:09:470 Sindicato/(12771:12771): La cantidad de bytes del bitmap es 16
+[INFO] 03:59:09:470 Sindicato/(12771:12771): Leyendo archivo Info de Bloques
+[INFO] 03:59:10:62 Sindicato/(12771:12771): Leyendo archivo resto...
+[INFO] 03:59:12:360 Sindicato/(12771:12771): Leyendo bloques
+[INFO] 04:01:31:877 Sindicato/(12898:12898): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:01:31:877 Sindicato/(12898:12898): Preparando punto de montaje.
+[INFO] 04:01:31:877 Sindicato/(12898:12898): Punto de montaje encontrado.
+[INFO] 04:01:31:878 Sindicato/(12898:12898): Leyendo archivo Info de Bloques
+[INFO] 04:01:31:878 Sindicato/(12898:12898): Mapeando Archivo Bitmap...
+[INFO] 04:01:31:878 Sindicato/(12898:12898): La cantidad de bytes del bitmap es 16
+[INFO] 04:01:31:878 Sindicato/(12898:12898): Leyendo archivo Info de Bloques
+[INFO] 04:01:33:193 Sindicato/(12898:12898): Leyendo archivo resto...
+[INFO] 04:01:38:722 Sindicato/(12898:12898): Leyendo bloques
+[INFO] 04:09:42:820 Sindicato/(13154:13154): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:09:42:820 Sindicato/(13154:13154): Preparando punto de montaje.
+[INFO] 04:09:42:820 Sindicato/(13154:13154): Punto de montaje encontrado.
+[INFO] 04:09:42:820 Sindicato/(13154:13154): Leyendo archivo Info de Bloques
+[INFO] 04:09:42:820 Sindicato/(13154:13154): Mapeando Archivo Bitmap...
+[INFO] 04:09:42:820 Sindicato/(13154:13154): La cantidad de bytes del bitmap es 16
+[INFO] 04:09:42:820 Sindicato/(13154:13154): Leyendo archivo Info de Bloques
+[INFO] 04:09:43:392 Sindicato/(13154:13154): Leyendo archivo resto...
+[INFO] 04:09:44:749 Sindicato/(13154:13154): Leyendo bloques
+[INFO] 04:12:42:880 Sindicato/(13291:13291): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:12:42:881 Sindicato/(13291:13291): Preparando punto de montaje.
+[INFO] 04:12:42:881 Sindicato/(13291:13291): Punto de montaje encontrado.
+[INFO] 04:12:42:881 Sindicato/(13291:13291): Leyendo archivo Info de Bloques
+[INFO] 04:12:42:881 Sindicato/(13291:13291): Mapeando Archivo Bitmap...
+[INFO] 04:12:42:881 Sindicato/(13291:13291): La cantidad de bytes del bitmap es 16
+[INFO] 04:12:42:881 Sindicato/(13291:13291): Leyendo archivo Info de Bloques
+[INFO] 04:12:43:367 Sindicato/(13291:13291): Leyendo archivo resto...
+[INFO] 04:12:43:911 Sindicato/(13291:13291): Leyendo bloques
+[INFO] 21:25:42:323 Sindicato/(22576:22576): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:25:42:323 Sindicato/(22576:22576): Preparando punto de montaje.
+[INFO] 21:25:42:323 Sindicato/(22576:22576): Punto de montaje encontrado.
+[INFO] 21:25:42:323 Sindicato/(22576:22576): Leyendo archivo Info de Bloques
+[INFO] 21:25:42:323 Sindicato/(22576:22576): Mapeando Archivo Bitmap...
+[INFO] 21:25:42:323 Sindicato/(22576:22576): La cantidad de bytes del bitmap es 16
+[INFO] 21:25:42:323 Sindicato/(22576:22576): Leyendo archivo Info de Bloques
+[INFO] 21:26:14:538 Sindicato/(22669:22669): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:26:14:538 Sindicato/(22669:22669): Preparando punto de montaje.
+[INFO] 21:26:14:538 Sindicato/(22669:22669): Punto de montaje encontrado.
+[INFO] 21:26:14:538 Sindicato/(22669:22669): Leyendo archivo Info de Bloques
+[INFO] 21:26:14:538 Sindicato/(22669:22669): Mapeando Archivo Bitmap...
+[INFO] 21:26:14:538 Sindicato/(22669:22669): La cantidad de bytes del bitmap es 16
+[INFO] 21:26:14:538 Sindicato/(22669:22669): Leyendo archivo Info de Bloques
+[INFO] 21:26:15:978 Sindicato/(22669:22669): Leyendo archivo resto...
+[INFO] 21:26:17:663 Sindicato/(22669:22669): Leyendo bloques
+[INFO] 21:28:09:73 Sindicato/(22801:22801): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:28:09:74 Sindicato/(22801:22801): Preparando punto de montaje.
+[INFO] 21:28:09:74 Sindicato/(22801:22801): Punto de montaje encontrado.
+[INFO] 21:28:09:74 Sindicato/(22801:22801): Leyendo archivo Info de Bloques
+[INFO] 21:28:09:74 Sindicato/(22801:22801): Mapeando Archivo Bitmap...
+[INFO] 21:28:09:74 Sindicato/(22801:22801): La cantidad de bytes del bitmap es 16
+[INFO] 21:28:09:74 Sindicato/(22801:22801): Leyendo archivo Info de Bloques
+[INFO] 21:28:11:96 Sindicato/(22801:22801): Leyendo archivo resto...
+[INFO] 21:28:12:174 Sindicato/(22801:22801): Leyendo bloques
+[INFO] 21:30:53:750 Sindicato/(23117:23117): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:30:53:750 Sindicato/(23117:23117): Preparando punto de montaje.
+[INFO] 21:30:53:750 Sindicato/(23117:23117): Punto de montaje encontrado.
+[INFO] 21:30:53:750 Sindicato/(23117:23117): Leyendo archivo Info de Bloques
+[INFO] 21:30:53:750 Sindicato/(23117:23117): Mapeando Archivo Bitmap...
+[INFO] 21:30:53:750 Sindicato/(23117:23117): La cantidad de bytes del bitmap es 16
+[INFO] 21:30:53:750 Sindicato/(23117:23117): Leyendo archivo Info de Bloques
+[INFO] 21:30:55:724 Sindicato/(23117:23117): Leyendo archivo resto...
+[INFO] 21:30:59:998 Sindicato/(23117:23117): Leyendo bloques
+[INFO] 21:32:01:526 Sindicato/(23214:23214): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:32:01:527 Sindicato/(23214:23214): Preparando punto de montaje.
+[INFO] 21:32:01:527 Sindicato/(23214:23214): Punto de montaje encontrado.
+[INFO] 21:32:01:527 Sindicato/(23214:23214): Leyendo archivo Info de Bloques
+[INFO] 21:32:01:527 Sindicato/(23214:23214): Mapeando Archivo Bitmap...
+[INFO] 21:32:01:527 Sindicato/(23214:23214): La cantidad de bytes del bitmap es 16
+[INFO] 21:32:01:527 Sindicato/(23214:23214): Leyendo archivo Info de Bloques
+[INFO] 21:32:03:474 Sindicato/(23214:23214): Leyendo archivo resto...
+[INFO] 21:32:03:474 Sindicato/(23214:23214): Leyendo bloques
+[INFO] 21:32:48:960 Sindicato/(23317:23317): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:32:48:961 Sindicato/(23317:23317): Preparando punto de montaje.
+[INFO] 21:32:48:961 Sindicato/(23317:23317): Punto de montaje encontrado.
+[INFO] 21:32:48:961 Sindicato/(23317:23317): Leyendo archivo Info de Bloques
+[INFO] 21:32:48:961 Sindicato/(23317:23317): Mapeando Archivo Bitmap...
+[INFO] 21:32:48:961 Sindicato/(23317:23317): La cantidad de bytes del bitmap es 16
+[INFO] 21:32:48:961 Sindicato/(23317:23317): Leyendo archivo Info de Bloques
+[INFO] 21:32:50:516 Sindicato/(23317:23317): Leyendo archivo resto...
+[INFO] 21:32:50:516 Sindicato/(23317:23317): Leyendo bloques
+[INFO] 21:33:41:241 Sindicato/(23389:23389): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:33:41:241 Sindicato/(23389:23389): Preparando punto de montaje.
+[INFO] 21:33:41:241 Sindicato/(23389:23389): Punto de montaje encontrado.
+[INFO] 21:33:41:241 Sindicato/(23389:23389): Leyendo archivo Info de Bloques
+[INFO] 21:33:41:241 Sindicato/(23389:23389): Mapeando Archivo Bitmap...
+[INFO] 21:33:41:241 Sindicato/(23389:23389): La cantidad de bytes del bitmap es 16
+[INFO] 21:33:41:241 Sindicato/(23389:23389): Leyendo archivo Info de Bloques
+[INFO] 21:33:42:510 Sindicato/(23389:23389): Leyendo archivo resto...
+[INFO] 21:33:44:744 Sindicato/(23389:23389): Leyendo bloques
+[INFO] 21:34:34:226 Sindicato/(23491:23491): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:34:34:227 Sindicato/(23491:23491): Preparando punto de montaje.
+[INFO] 21:34:34:227 Sindicato/(23491:23491): Punto de montaje encontrado.
+[INFO] 21:34:34:227 Sindicato/(23491:23491): Leyendo archivo Info de Bloques
+[INFO] 21:34:34:227 Sindicato/(23491:23491): Mapeando Archivo Bitmap...
+[INFO] 21:34:34:227 Sindicato/(23491:23491): La cantidad de bytes del bitmap es 16
+[INFO] 21:34:34:227 Sindicato/(23491:23491): Leyendo archivo Info de Bloques
+[INFO] 21:34:35:230 Sindicato/(23491:23491): Leyendo archivo resto...
+[INFO] 21:34:38:200 Sindicato/(23491:23491): Leyendo bloques
+[INFO] 21:36:43:456 Sindicato/(23658:23658): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:36:43:457 Sindicato/(23658:23658): Preparando punto de montaje.
+[INFO] 21:36:43:457 Sindicato/(23658:23658): Punto de montaje encontrado.
+[INFO] 21:36:43:457 Sindicato/(23658:23658): Leyendo archivo Info de Bloques
+[INFO] 21:36:43:457 Sindicato/(23658:23658): Mapeando Archivo Bitmap...
+[INFO] 21:36:43:457 Sindicato/(23658:23658): La cantidad de bytes del bitmap es 16
+[INFO] 21:36:43:457 Sindicato/(23658:23658): Leyendo archivo Info de Bloques
+[INFO] 21:36:44:715 Sindicato/(23658:23658): Leyendo archivo resto...
+[INFO] 21:36:46:447 Sindicato/(23658:23658): Leyendo bloques
+[INFO] 21:39:54:165 Sindicato/(23775:23775): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:39:54:166 Sindicato/(23775:23775): Preparando punto de montaje.
+[INFO] 21:39:54:166 Sindicato/(23775:23775): Punto de montaje encontrado.
+[INFO] 21:39:54:166 Sindicato/(23775:23775): Leyendo archivo Info de Bloques
+[INFO] 21:39:54:166 Sindicato/(23775:23775): Mapeando Archivo Bitmap...
+[INFO] 21:39:54:166 Sindicato/(23775:23775): La cantidad de bytes del bitmap es 16
+[INFO] 21:39:54:166 Sindicato/(23775:23775): Leyendo archivo Info de Bloques
+[INFO] 21:39:55:384 Sindicato/(23775:23775): Leyendo archivo resto...
+[INFO] 21:39:57:125 Sindicato/(23775:23775): Leyendo bloques
+[INFO] 21:49:09:722 Sindicato/(23861:23861): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 21:49:09:722 Sindicato/(23861:23861): Preparando punto de montaje.
+[INFO] 21:49:09:722 Sindicato/(23861:23861): Punto de montaje encontrado.
+[INFO] 21:49:09:722 Sindicato/(23861:23861): Leyendo archivo Info de Bloques
+[INFO] 21:49:09:722 Sindicato/(23861:23861): Mapeando Archivo Bitmap...
+[INFO] 21:49:09:722 Sindicato/(23861:23861): La cantidad de bytes del bitmap es 16
+[INFO] 21:49:09:723 Sindicato/(23861:23861): Leyendo archivo Info de Bloques
+[INFO] 21:49:10:905 Sindicato/(23861:23861): Leyendo archivo resto...
+[INFO] 21:49:12:974 Sindicato/(23861:23861): Leyendo bloques
+[INFO] 22:46:07:126 Sindicato/(24421:24421): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:46:07:127 Sindicato/(24421:24421): Preparando punto de montaje.
+[INFO] 22:46:07:127 Sindicato/(24421:24421): Punto de montaje encontrado.
+[INFO] 22:46:07:127 Sindicato/(24421:24421): Leyendo archivo Info de Bloques
+[INFO] 22:46:07:127 Sindicato/(24421:24421): Mapeando Archivo Bitmap...
+[INFO] 22:46:07:127 Sindicato/(24421:24421): La cantidad de bytes del bitmap es 16
+[INFO] 22:46:07:127 Sindicato/(24421:24421): Leyendo archivo Info de Bloques
+[INFO] 22:46:08:292 Sindicato/(24421:24421): Leyendo archivo resto...
+[INFO] 22:46:09:310 Sindicato/(24421:24421): Leyendo bloques
+[INFO] 22:47:42:877 Sindicato/(24580:24580): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:47:42:877 Sindicato/(24580:24580): Preparando punto de montaje.
+[INFO] 22:47:42:877 Sindicato/(24580:24580): Punto de montaje encontrado.
+[INFO] 22:47:42:877 Sindicato/(24580:24580): Leyendo archivo Info de Bloques
+[INFO] 22:47:42:877 Sindicato/(24580:24580): Mapeando Archivo Bitmap...
+[INFO] 22:47:42:877 Sindicato/(24580:24580): La cantidad de bytes del bitmap es 16
+[INFO] 22:47:42:877 Sindicato/(24580:24580): Leyendo archivo Info de Bloques
+[INFO] 22:47:43:469 Sindicato/(24580:24580): Leyendo archivo resto...
+[INFO] 22:47:44:330 Sindicato/(24580:24580): Leyendo bloques
+[INFO] 22:48:09:505 Sindicato/(24673:24673): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:48:09:505 Sindicato/(24673:24673): Preparando punto de montaje.
+[INFO] 22:48:09:505 Sindicato/(24673:24673): Punto de montaje encontrado.
+[INFO] 22:48:09:505 Sindicato/(24673:24673): Leyendo archivo Info de Bloques
+[INFO] 22:48:09:505 Sindicato/(24673:24673): Mapeando Archivo Bitmap...
+[INFO] 22:48:09:505 Sindicato/(24673:24673): La cantidad de bytes del bitmap es 16
+[INFO] 22:48:09:505 Sindicato/(24673:24673): Leyendo archivo Info de Bloques
+[INFO] 22:48:10:484 Sindicato/(24673:24673): Leyendo archivo resto...
+[INFO] 22:48:11:178 Sindicato/(24673:24673): Leyendo bloques
+[INFO] 22:49:29:991 Sindicato/(24760:24760): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:49:29:991 Sindicato/(24760:24760): Preparando punto de montaje.
+[INFO] 22:49:29:991 Sindicato/(24760:24760): Punto de montaje encontrado.
+[INFO] 22:49:29:991 Sindicato/(24760:24760): Leyendo archivo Info de Bloques
+[INFO] 22:49:29:991 Sindicato/(24760:24760): Mapeando Archivo Bitmap...
+[INFO] 22:49:29:991 Sindicato/(24760:24760): La cantidad de bytes del bitmap es 16
+[INFO] 22:49:29:991 Sindicato/(24760:24760): Leyendo archivo Info de Bloques
+[INFO] 22:49:30:517 Sindicato/(24760:24760): Leyendo archivo resto...
+[INFO] 22:49:31:538 Sindicato/(24760:24760): Leyendo bloques
+[INFO] 22:54:01:214 Sindicato/(24897:24897): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:54:01:214 Sindicato/(24897:24897): Preparando punto de montaje.
+[INFO] 22:54:01:214 Sindicato/(24897:24897): Punto de montaje encontrado.
+[INFO] 22:54:01:214 Sindicato/(24897:24897): Leyendo archivo Info de Bloques
+[INFO] 22:54:01:214 Sindicato/(24897:24897): Mapeando Archivo Bitmap...
+[INFO] 22:54:01:214 Sindicato/(24897:24897): La cantidad de bytes del bitmap es 16
+[INFO] 22:54:01:214 Sindicato/(24897:24897): Leyendo archivo Info de Bloques
+[INFO] 22:54:01:867 Sindicato/(24897:24897): Leyendo archivo resto...
+[INFO] 22:54:02:673 Sindicato/(24897:24897): Leyendo bloques
+[INFO] 22:54:57:901 Sindicato/(24995:24995): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:54:57:902 Sindicato/(24995:24995): Preparando punto de montaje.
+[INFO] 22:54:57:902 Sindicato/(24995:24995): Punto de montaje encontrado.
+[INFO] 22:54:57:902 Sindicato/(24995:24995): Leyendo archivo Info de Bloques
+[INFO] 22:54:57:902 Sindicato/(24995:24995): Mapeando Archivo Bitmap...
+[INFO] 22:54:57:902 Sindicato/(24995:24995): La cantidad de bytes del bitmap es 16
+[INFO] 22:54:57:902 Sindicato/(24995:24995): Leyendo archivo Info de Bloques
+[INFO] 22:54:58:997 Sindicato/(24995:24995): Leyendo archivo resto...
+[INFO] 22:54:59:807 Sindicato/(24995:24995): Leyendo bloques
+[INFO] 22:55:37:761 Sindicato/(25081:25081): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 22:55:37:762 Sindicato/(25081:25081): Preparando punto de montaje.
+[INFO] 22:55:37:762 Sindicato/(25081:25081): Punto de montaje encontrado.
+[INFO] 22:55:37:762 Sindicato/(25081:25081): Leyendo archivo Info de Bloques
+[INFO] 22:55:37:762 Sindicato/(25081:25081): Mapeando Archivo Bitmap...
+[INFO] 22:55:37:762 Sindicato/(25081:25081): La cantidad de bytes del bitmap es 16
+[INFO] 22:55:37:762 Sindicato/(25081:25081): Leyendo archivo Info de Bloques
+[INFO] 22:55:38:277 Sindicato/(25081:25081): Leyendo archivo resto...
+[INFO] 22:55:38:909 Sindicato/(25081:25081): Leyendo bloques
+[INFO] 00:14:47:708 Sindicato/(10587:10587): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:14:47:708 Sindicato/(10587:10587): Preparando punto de montaje.
+[INFO] 00:14:47:708 Sindicato/(10587:10587): Punto de montaje encontrado.
+[INFO] 00:14:47:708 Sindicato/(10587:10587): Leyendo archivo Info de Bloques
+[INFO] 00:14:47:708 Sindicato/(10587:10587): Mapeando Archivo Bitmap...
+[INFO] 00:14:47:708 Sindicato/(10587:10587): La cantidad de bytes del bitmap es 16
+[INFO] 00:14:47:709 Sindicato/(10587:10587): Leyendo archivo Info de Bloques
+[INFO] 00:14:53:491 Sindicato/(10587:10587): Leyendo archivo resto...
+[INFO] 00:16:37:665 Sindicato/(10711:10711): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:16:37:665 Sindicato/(10711:10711): Preparando punto de montaje.
+[INFO] 00:16:37:665 Sindicato/(10711:10711): Punto de montaje encontrado.
+[INFO] 00:16:37:665 Sindicato/(10711:10711): Leyendo archivo Info de Bloques
+[INFO] 00:16:37:666 Sindicato/(10711:10711): Mapeando Archivo Bitmap...
+[INFO] 00:16:37:666 Sindicato/(10711:10711): La cantidad de bytes del bitmap es 16
+[INFO] 00:16:37:666 Sindicato/(10711:10711): Leyendo archivo Info de Bloques
+[INFO] 00:16:44:370 Sindicato/(10711:10711): Leyendo archivo resto...
+[INFO] 00:16:56:574 Sindicato/(10711:10711): Leyendo bloques
+[INFO] 00:20:34:188 Sindicato/(10859:10859): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:20:34:188 Sindicato/(10859:10859): Preparando punto de montaje.
+[INFO] 00:20:34:188 Sindicato/(10859:10859): Punto de montaje encontrado.
+[INFO] 00:20:34:188 Sindicato/(10859:10859): Leyendo archivo Info de Bloques
+[INFO] 00:20:34:188 Sindicato/(10859:10859): Mapeando Archivo Bitmap...
+[INFO] 00:20:34:188 Sindicato/(10859:10859): La cantidad de bytes del bitmap es 16
+[INFO] 00:22:44:670 Sindicato/(10859:10859): Leyendo archivo Info de Bloques
+[INFO] 00:23:05:579 Sindicato/(10859:10859): Leyendo archivo resto...
+[INFO] 00:26:05:679 Sindicato/(10859:10859): Leyendo bloques
+[INFO] 00:29:26:441 Sindicato/(11158:11158): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:29:26:441 Sindicato/(11158:11158): Preparando punto de montaje.
+[INFO] 00:29:26:441 Sindicato/(11158:11158): Punto de montaje encontrado.
+[INFO] 00:29:26:441 Sindicato/(11158:11158): Leyendo archivo Info de Bloques
+[INFO] 00:29:26:441 Sindicato/(11158:11158): Mapeando Archivo Bitmap...
+[INFO] 00:29:26:441 Sindicato/(11158:11158): La cantidad de bytes del bitmap es 16
+[INFO] 00:29:30:749 Sindicato/(11158:11158): Leyendo archivo Info de Bloques
+[INFO] 00:29:37:705 Sindicato/(11158:11158): Leyendo archivo resto...
+[INFO] 00:29:46:341 Sindicato/(11158:11158): Leyendo bloques
+[INFO] 00:30:47:487 Sindicato/(11279:11279): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:30:47:488 Sindicato/(11279:11279): Preparando punto de montaje.
+[INFO] 00:30:47:488 Sindicato/(11279:11279): Punto de montaje encontrado.
+[INFO] 00:30:47:488 Sindicato/(11279:11279): Leyendo archivo Info de Bloques
+[INFO] 00:30:47:488 Sindicato/(11279:11279): Mapeando Archivo Bitmap...
+[INFO] 00:30:47:488 Sindicato/(11279:11279): La cantidad de bytes del bitmap es 16
+[INFO] 00:30:47:488 Sindicato/(11279:11279): Leyendo archivo Info de Bloques
+[INFO] 00:30:48:908 Sindicato/(11279:11279): Leyendo archivo resto...
+[INFO] 00:31:08:643 Sindicato/(11279:11279): Leyendo bloques
+[INFO] 00:32:56:81 Sindicato/(11465:11465): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:32:56:81 Sindicato/(11465:11465): Preparando punto de montaje.
+[INFO] 00:32:56:81 Sindicato/(11465:11465): Punto de montaje encontrado.
+[INFO] 00:32:56:81 Sindicato/(11465:11465): Leyendo archivo Info de Bloques
+[INFO] 00:32:56:81 Sindicato/(11465:11465): Mapeando Archivo Bitmap...
+[INFO] 00:32:56:81 Sindicato/(11465:11465): La cantidad de bytes del bitmap es 16
+[INFO] 00:32:56:81 Sindicato/(11465:11465): Leyendo archivo Info de Bloques
+[INFO] 00:32:57:47 Sindicato/(11465:11465): Leyendo archivo resto...
+[INFO] 00:33:01:966 Sindicato/(11465:11465): Leyendo bloques
+[INFO] 00:34:00:308 Sindicato/(11587:11587): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:34:00:309 Sindicato/(11587:11587): Preparando punto de montaje.
+[INFO] 00:34:00:309 Sindicato/(11587:11587): Punto de montaje encontrado.
+[INFO] 00:34:00:309 Sindicato/(11587:11587): Leyendo archivo Info de Bloques
+[INFO] 00:34:00:309 Sindicato/(11587:11587): Mapeando Archivo Bitmap...
+[INFO] 00:34:00:309 Sindicato/(11587:11587): La cantidad de bytes del bitmap es 16
+[INFO] 00:34:00:309 Sindicato/(11587:11587): Leyendo archivo Info de Bloques
+[INFO] 00:34:01:163 Sindicato/(11587:11587): Leyendo archivo resto...
+[INFO] 00:34:03:430 Sindicato/(11587:11587): Leyendo bloques
+[INFO] 03:52:39:266 Sindicato/(20568:20568): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:52:39:267 Sindicato/(20568:20568): Preparando punto de montaje.
+[INFO] 03:52:39:267 Sindicato/(20568:20568): Punto de montaje encontrado.
+[INFO] 03:52:39:267 Sindicato/(20568:20568): Leyendo archivo Info de Bloques
+[INFO] 03:52:39:267 Sindicato/(20568:20568): Mapeando Archivo Bitmap...
+[INFO] 03:52:39:267 Sindicato/(20568:20568): La cantidad de bytes del bitmap es 16
+[INFO] 03:52:39:267 Sindicato/(20568:20568): Leyendo archivo Info de Bloques
+[INFO] 03:52:40:469 Sindicato/(20568:20568): Leyendo archivo resto...
+[INFO] 03:52:44:977 Sindicato/(20568:20568): Leyendo bloques
+[INFO] 03:53:42:222 Sindicato/(20682:20682): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:53:42:222 Sindicato/(20682:20682): Preparando punto de montaje.
+[INFO] 03:53:42:222 Sindicato/(20682:20682): Punto de montaje encontrado.
+[INFO] 03:53:42:222 Sindicato/(20682:20682): Leyendo archivo Info de Bloques
+[INFO] 03:53:42:222 Sindicato/(20682:20682): Mapeando Archivo Bitmap...
+[INFO] 03:53:42:223 Sindicato/(20682:20682): La cantidad de bytes del bitmap es 16
+[INFO] 03:53:42:223 Sindicato/(20682:20682): Leyendo archivo Info de Bloques
+[INFO] 03:53:42:816 Sindicato/(20682:20682): Leyendo archivo resto...
+[INFO] 03:53:46:167 Sindicato/(20682:20682): Leyendo bloques
+[INFO] 04:23:34:73 Sindicato/(21318:21318): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:23:34:73 Sindicato/(21318:21318): Preparando punto de montaje.
+[INFO] 04:23:34:73 Sindicato/(21318:21318): Punto de montaje encontrado.
+[INFO] 04:23:34:73 Sindicato/(21318:21318): Leyendo archivo Info de Bloques
+[INFO] 04:23:34:73 Sindicato/(21318:21318): Mapeando Archivo Bitmap...
+[INFO] 04:23:34:73 Sindicato/(21318:21318): La cantidad de bytes del bitmap es 16
+[INFO] 04:23:34:73 Sindicato/(21318:21318): Leyendo archivo Info de Bloques
+[INFO] 04:23:34:875 Sindicato/(21318:21318): Leyendo archivo resto...
+[INFO] 04:23:36:843 Sindicato/(21318:21318): Leyendo bloques
+[INFO] 04:24:54:767 Sindicato/(21428:21428): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:24:54:768 Sindicato/(21428:21428): Preparando punto de montaje.
+[INFO] 04:24:54:768 Sindicato/(21428:21428): Punto de montaje encontrado.
+[INFO] 04:24:54:768 Sindicato/(21428:21428): Leyendo archivo Info de Bloques
+[INFO] 04:24:54:768 Sindicato/(21428:21428): Mapeando Archivo Bitmap...
+[INFO] 04:24:54:768 Sindicato/(21428:21428): La cantidad de bytes del bitmap es 16
+[INFO] 04:24:54:768 Sindicato/(21428:21428): Leyendo archivo Info de Bloques
+[INFO] 04:24:55:642 Sindicato/(21428:21428): Leyendo archivo resto...
+[INFO] 04:24:57:460 Sindicato/(21428:21428): Leyendo bloques
+[INFO] 04:34:56:587 Sindicato/(21840:21840): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:34:56:587 Sindicato/(21840:21840): Preparando punto de montaje.
+[INFO] 04:34:56:587 Sindicato/(21840:21840): Punto de montaje encontrado.
+[INFO] 04:34:56:587 Sindicato/(21840:21840): Leyendo archivo Info de Bloques
+[INFO] 04:34:56:587 Sindicato/(21840:21840): Mapeando Archivo Bitmap...
+[INFO] 04:34:56:588 Sindicato/(21840:21840): La cantidad de bytes del bitmap es 16
+[INFO] 04:34:56:588 Sindicato/(21840:21840): Leyendo archivo Info de Bloques
+[INFO] 04:34:57:536 Sindicato/(21840:21840): Leyendo archivo resto...
+[INFO] 04:34:59:366 Sindicato/(21840:21840): Leyendo bloques
+[INFO] 04:36:31:385 Sindicato/(21958:21958): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:36:31:386 Sindicato/(21958:21958): Preparando punto de montaje.
+[INFO] 04:36:31:386 Sindicato/(21958:21958): Punto de montaje encontrado.
+[INFO] 04:36:31:386 Sindicato/(21958:21958): Leyendo archivo Info de Bloques
+[INFO] 04:36:31:386 Sindicato/(21958:21958): Mapeando Archivo Bitmap...
+[INFO] 04:36:31:386 Sindicato/(21958:21958): La cantidad de bytes del bitmap es 16
+[INFO] 04:36:31:386 Sindicato/(21958:21958): Leyendo archivo Info de Bloques
+[INFO] 04:36:31:934 Sindicato/(21958:21958): Leyendo archivo resto...
+[INFO] 04:36:33:392 Sindicato/(21958:21958): Leyendo bloques
+[INFO] 04:38:13:950 Sindicato/(22093:22093): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:38:13:950 Sindicato/(22093:22093): Preparando punto de montaje.
+[INFO] 04:38:13:950 Sindicato/(22093:22093): Punto de montaje encontrado.
+[INFO] 04:38:13:950 Sindicato/(22093:22093): Leyendo archivo Info de Bloques
+[INFO] 04:38:13:950 Sindicato/(22093:22093): Mapeando Archivo Bitmap...
+[INFO] 04:38:13:950 Sindicato/(22093:22093): La cantidad de bytes del bitmap es 16
+[INFO] 04:38:13:950 Sindicato/(22093:22093): Leyendo archivo Info de Bloques
+[INFO] 04:38:14:811 Sindicato/(22093:22093): Leyendo archivo resto...
+[INFO] 04:38:16:865 Sindicato/(22093:22093): Leyendo bloques
+[INFO] 04:41:04:367 Sindicato/(22321:22321): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:41:04:367 Sindicato/(22321:22321): Preparando punto de montaje.
+[INFO] 04:41:04:367 Sindicato/(22321:22321): Punto de montaje encontrado.
+[INFO] 04:41:04:367 Sindicato/(22321:22321): Leyendo archivo Info de Bloques
+[INFO] 04:41:04:367 Sindicato/(22321:22321): Mapeando Archivo Bitmap...
+[INFO] 04:41:04:367 Sindicato/(22321:22321): La cantidad de bytes del bitmap es 16
+[INFO] 04:41:04:367 Sindicato/(22321:22321): Leyendo archivo Info de Bloques
+[INFO] 04:41:05:23 Sindicato/(22321:22321): Leyendo archivo resto...
+[INFO] 04:41:08:29 Sindicato/(22321:22321): Leyendo bloques
+[INFO] 04:47:27:64 Sindicato/(22500:22500): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:47:27:64 Sindicato/(22500:22500): Preparando punto de montaje.
+[INFO] 04:47:27:64 Sindicato/(22500:22500): Punto de montaje encontrado.
+[INFO] 04:47:27:64 Sindicato/(22500:22500): Leyendo archivo Info de Bloques
+[INFO] 04:47:27:64 Sindicato/(22500:22500): Mapeando Archivo Bitmap...
+[INFO] 04:47:27:64 Sindicato/(22500:22500): La cantidad de bytes del bitmap es 16
+[INFO] 04:47:27:64 Sindicato/(22500:22500): Leyendo archivo Info de Bloques
+[INFO] 04:47:27:675 Sindicato/(22500:22500): Leyendo archivo resto...
+[INFO] 04:47:29:813 Sindicato/(22500:22500): Leyendo bloques
+[INFO] 04:49:36:866 Sindicato/(22667:22667): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:49:36:867 Sindicato/(22667:22667): Preparando punto de montaje.
+[INFO] 04:49:36:867 Sindicato/(22667:22667): Punto de montaje encontrado.
+[INFO] 04:49:36:867 Sindicato/(22667:22667): Leyendo archivo Info de Bloques
+[INFO] 04:49:36:867 Sindicato/(22667:22667): Mapeando Archivo Bitmap...
+[INFO] 04:49:36:867 Sindicato/(22667:22667): La cantidad de bytes del bitmap es 16
+[INFO] 04:49:36:867 Sindicato/(22667:22667): Leyendo archivo Info de Bloques
+[INFO] 04:49:37:619 Sindicato/(22667:22667): Leyendo archivo resto...
+[INFO] 04:49:39:787 Sindicato/(22667:22667): Leyendo bloques
+[INFO] 04:51:52:184 Sindicato/(22842:22842): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:51:52:185 Sindicato/(22842:22842): Preparando punto de montaje.
+[INFO] 04:51:52:185 Sindicato/(22842:22842): Punto de montaje encontrado.
+[INFO] 04:51:52:185 Sindicato/(22842:22842): Leyendo archivo Info de Bloques
+[INFO] 04:51:52:185 Sindicato/(22842:22842): Mapeando Archivo Bitmap...
+[INFO] 04:51:52:185 Sindicato/(22842:22842): La cantidad de bytes del bitmap es 16
+[INFO] 04:51:52:185 Sindicato/(22842:22842): Leyendo archivo Info de Bloques
+[INFO] 04:51:53:250 Sindicato/(22842:22842): Leyendo archivo resto...
+[INFO] 04:51:55:517 Sindicato/(22842:22842): Leyendo bloques
+[INFO] 04:53:27:123 Sindicato/(22988:22988): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:53:27:124 Sindicato/(22988:22988): Preparando punto de montaje.
+[INFO] 04:53:27:124 Sindicato/(22988:22988): Punto de montaje encontrado.
+[INFO] 04:53:27:124 Sindicato/(22988:22988): Leyendo archivo Info de Bloques
+[INFO] 04:53:27:124 Sindicato/(22988:22988): Mapeando Archivo Bitmap...
+[INFO] 04:53:27:124 Sindicato/(22988:22988): La cantidad de bytes del bitmap es 16
+[INFO] 04:53:27:124 Sindicato/(22988:22988): Leyendo archivo Info de Bloques
+[INFO] 04:53:27:780 Sindicato/(22988:22988): Leyendo archivo resto...
+[INFO] 04:53:30:199 Sindicato/(22988:22988): Leyendo bloques

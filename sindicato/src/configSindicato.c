@@ -7,8 +7,9 @@ int configValida(t_config* fd_configuracion) {
 int cargarConfiguracion() {
 	logger = log_create("LogSindicato", "Sindicato", true, LOG_LEVEL_INFO);
 	configuracion = malloc(sizeof(tConfiguracion));
-
-
+	diccionarioBloquesAsignadosARestos= dictionary_create();
+	diccionarioBloquesAsignadosARecetas=dictionary_create();
+	diccionarioPosPropiedadesEnArchivo=dictionary_create();
 	fd_configuracion = config_create("../sindicato.conf");
 	if (fd_configuracion == NULL) {
 		fd_configuracion = config_create("sindicato.conf");

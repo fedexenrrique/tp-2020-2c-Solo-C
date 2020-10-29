@@ -158,6 +158,136 @@ void asignarPaths(){
 
 }
 
+void mapearInfo(char* stringLeido, tMensajeInfoRestaurante*info){
+	char** propiedades=string_split(stringLeido,"=");
+
+	info->cantCocineros=atoi(strremove(propiedades[1],"POSICION"));
+	info->posicion=strremove(propiedades[2],"AFINIDAD_COCINEROS");
+	info->afinidadCocineros=strremove(propiedades[3],"PLATOS");
+	info->platos=strremove(propiedades[4],"PRECIO_PLATOS");
+	info->preciosPlatos=strremove(propiedades[5],"CANTIDAD_HORNOS");
+	info->cantidadHornos=atoi(propiedades[6]);
+
+}
+
+char* removerBloqueSiguienteDeString(char* cadena,char* numBloque){
+	int lenCadena=strlen(cadena);
+	int lenNumBloque=strlen(numBloque);
+	char* subCadena=malloc(10);
+	cadena=string_substring(cadena,0,lenCadena-lenNumBloque);
+
+	return cadena;
+}
+
+tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list* bloquesAsigandosAResto){
+	char* pathBloqueInicial=malloc(strlen(pathBloques)+10);
+	strcpy(pathBloqueInicial,pathBloques);
+	string_append_with_format(&pathBloqueInicial,"%d%s",bloqueInicial,".bin");
+	uint32_t cantBloquesALeer=list_size(bloquesAsigandosAResto);
+	int i;
+	tMensajeInfoRestaurante* infoResto=malloc(sizeof(tMensajeInfoRestaurante));
+	char* stringInfo= malloc(sizeResto+40);
+	int bloqueActual=0;
+	struct stat info;
+	int e=0;
+
+	e=stat(pathBloqueInicial,&info);
+
+	if(e==0){
+		log_info(logger,"Leyendo bloques");
+
+		for (i=0; i<cantBloquesALeer;i++){
+			bloqueActual=atoi(list_get(bloquesAsigandosAResto,i));
+			char* pathBloqueActual=malloc(strlen(pathBloques)+30);
+			strcpy(pathBloqueActual,pathBloques);
+			string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+			int eActual=0;
+
+			struct stat infoBloqueActual;
+			eActual=stat(pathBloqueActual,&infoBloqueActual);
+
+			if(eActual==0){
+				FILE* archivoBloqueActual = fopen(pathBloqueActual, "r+");
+
+				char* map = mmap(0, info.st_size-sizeof(int), PROT_READ | PROT_WRITE,MAP_SHARED, fileno(archivoBloqueActual), 0);
+				if (map == MAP_FAILED) {
+					close(fileno(archivoBloqueActual));
+					perror("Error mapeando el archivo");
+					exit(EXIT_FAILURE);
+
+				}
+
+				if(i==cantBloquesALeer-1){
+					string_append(&stringInfo,map);
+
+				}else {
+					int bloqueSiguiente=atoi(list_get(bloquesAsigandosAResto,i+1));
+					char* newMap=malloc(strlen(map)-strlen(string_itoa(bloqueSiguiente)));
+					newMap=removerBloqueSiguienteDeString(map,string_itoa(bloqueSiguiente));
+					string_append(&stringInfo,newMap);
+
+				}
+
+			}
+
+		}
+		mapearInfo(stringInfo,infoResto);
+
+
+	}else log_error(logger,"El archivo de bloque inicial no existe");
+
+	return infoResto;
+}
+
+//MENSAJE 6
+tMensajeInfoRestaurante *obtenerInfoRestaurante(char* nombreResto){
+	char* pathArchivoInfoActual=malloc(strlen(pathRestaurantes)+strlen(nombreResto)+30);
+	tMensajeInfoRestaurante* infoResto=malloc(sizeof(tMensajeInfoRestaurante));
+	strcpy(pathArchivoInfoActual,pathRestaurantes);
+	string_append_with_format(&pathArchivoInfoActual,"%s%s","/",nombreResto);
+	string_append_with_format(&pathArchivoInfoActual,"%s%s","/","Info.AFIP");
+
+	struct stat info;
+	int e=0;
+	int map=0;
+	int bloqueInicial=0;
+	int sizeResto=0;
+	t_list* bloquesAsigandosAResto=list_create();
+	bloquesAsigandosAResto=dictionary_get(diccionarioBloquesAsignadosARestos,nombreResto);
+
+
+	e=stat(pathArchivoInfoActual,&info);
+
+	if(e==0){
+		log_info(logger,"Leyendo archivo resto...");
+		FILE* archivoInfoResto=fopen(pathArchivoInfoActual,"r+");
+		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archivoInfoResto), 0);
+
+		if (map == MAP_FAILED) {
+			close(fileno(archivoInfoResto));
+			perror("Error mapeando el archivo");
+			exit(EXIT_FAILURE);
+
+		}
+
+		char** lineasArchivo = string_split(map, "\n");
+
+		sizeResto= atoi(string_substring_from(lineasArchivo[0], 5));
+		//bloqueInicial = atoi(string_substring_from(lineasArchivo[1], 14));
+		bloqueInicial=atoi(list_get(bloquesAsigandosAResto,0));
+
+		infoResto=leerBloquesResto(bloqueInicial,sizeResto,bloquesAsigandosAResto);
+
+		fclose(archivoInfoResto);
+
+
+	}
+
+	return infoResto;
+
+
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -173,6 +303,8 @@ int main(int argc, char *argv[]) {
 	montarFS(infoBloques,infoBloques->magicNumber);
 
 	infoBloques=leerInfoBloques();
+
+	obtenerInfoRestaurante("Resto");
 
 	levantarConsola();
 

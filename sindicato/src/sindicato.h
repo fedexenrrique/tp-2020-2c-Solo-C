@@ -31,6 +31,8 @@
 #include <pthread.h>
 #include <signal.h>
 #include "commons/bitarray.h"
+#include "commons/collections/list.h"
+
 
 typedef struct{
 
@@ -92,6 +94,21 @@ typedef struct{
 	char* magicNumber;
 }tInfoBloques;
 
+typedef struct{
+	uint32_t posCantCocineros;
+	uint32_t sizeCantCocineros;
+	uint32_t posPosicion;
+	uint32_t sizePosicion;
+	uint32_t posAfinidad;
+	uint32_t sizeAfinidad;
+	uint32_t posPlatos;
+	uint32_t sizePlatos;
+	uint32_t posPreciosPlatos;
+	uint32_t sizePreciosPlatos;
+	uint32_t posCantHornos;
+	uint32_t sizeCantHornos;
+}tPosicionesEnArchivoRestaurante;
+
 tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;
@@ -99,6 +116,10 @@ t_bitarray* bitMap;
 tInfoBloques* infoBloques;
 int fdArchivoBitmap;
 int mapBitArray;
+t_dictionary* diccionarioBloquesAsignadosARestos;
+t_dictionary* diccionarioBloquesAsignadosARecetas;
+t_dictionary* diccionarioPosPropiedadesEnArchivo;
+
 
 char* pathFiles;
 char* pathMetadata;
