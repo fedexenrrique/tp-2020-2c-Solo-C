@@ -148,3 +148,66 @@ t_frame * buscar_frame_libre(){
 
 	return frame_libre;
 }
+
+void   iniciar_dump_cache  (int signal ){
+
+	switch(signal){
+		case SIGUSR1:
+			dampear_memoria();
+			break;
+		default:
+			;
+	}
+
+}
+
+void dampear_memoria (){
+
+	t_list * lista_nueva_paginas_en_memoria=list_create();
+
+	void iterar_comidas(void * elemento){
+
+		t_pagina_comida * comida=(t_pagina_comida*)elemento;
+
+		if(comida->esta_en_memoria_principal==TRUE){
+			list_add(lista_nueva_paginas_en_memoria,comida->contenido);
+		}
+	}
+
+	void iterar_pedidos(void * elemento){
+
+		t_pedido_seg * pedido=(t_pedido_seg*)elemento;
+
+		list_iterate(pedido->comidas_del_pedido,iterar_comidas);
+	}
+
+	void agregar_pedidos_a_nueva_lista(void * elemento){
+
+		t_restaurante * restaurante=(t_restaurante*)elemento;
+
+		list_iterate(restaurante->tabla_pedidos,iterar_pedidos);
+	}
+
+	bool ordenar_nueva_lista(void * primer_elem,void * segundo_elem){
+
+		//t_comida * comida1=(t_comida)primer_elem;
+		//t_comida * comida2=(t_comida)segundo_elem;
+
+		if(primer_elem<segundo_elem)
+			return TRUE;
+		return FALSE;
+	}
+
+	void mostrar_nueva_lista(void * elemento){
+
+
+	}
+
+	list_iterate(lista_restarurantes,agregar_pedidos_a_nueva_lista);			//Agrego todas las paginas q estan en memoria a una nueva lista
+
+	list_sort(lista_nueva_paginas_en_memoria,ordenar_nueva_lista);				//Ordeno lista segun su ubicacion en memoria
+
+	list_iterate(lista_nueva_paginas_en_memoria,mostrar_nueva_lista);
+
+}
+

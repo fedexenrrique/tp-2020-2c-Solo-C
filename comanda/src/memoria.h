@@ -59,7 +59,9 @@ void *          reservar_memoria_inicial         (int                     );
 t_restaurante * crear_tabla_segmentos_restaurante(char *                  );
 bool            agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
 
-t_frame * buscar_frame_libre();
+t_frame * buscar_frame_libre ()  ;
+void      iniciar_dump_cache(int);
+void      dampear_memoria   (   );
 
 
 #endif /* MEMORIA_H_ */
