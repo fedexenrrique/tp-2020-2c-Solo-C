@@ -137,7 +137,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		break;
 	case SELECCIONAR_RESTAURANTE: ;
 		bool seleccionado = procedimiento_02_seleccionar_restaurante( header_recibido );
-		responder_seleccionar_restaurante( socket_aceptado, seleccionado );
+		responder_02_seleccionar_restaurante( socket_aceptado, seleccionado );
 		break;
 	case CONSULTAR_PLATOS: ;
 		char ** platos = procedimiento_04_consultar_platos( header_recibido );
@@ -395,41 +395,13 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb_repartidor ) {
 		t_info_restarante * resto = p_pcb_repartidor->pedido->restaurante_asociado;
 
 		if ( p_pcb_repartidor->pos_x == resto->posx && p_pcb_repartidor->pos_y == resto->posy ) { // ESTOY en RESTAURANTE
-/*
-			if ( p_ent->hacia_ent != 0 ) { // intercambio
 
-				t_entrenador * otro_ent = _identificar_entrenador_para_intercambiar();
+			enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda
+									, p_pcb_repartidor->pedido->restaurante_asociado->resto_nombre
+									, p_pcb_repartidor->pedido->id_pedido);
 
-				_realizar_intercambio_de_pokemons(otro_ent);
 
-				_chequeo_objetivos_de_entrenador_post_interbloqueo(p_ent   );
 
-				_chequeo_objetivos_de_entrenador_post_interbloqueo(otro_ent);
-
-				p_ent->estado    = ( p_ent->cant_lograda    == p_ent->cant_maxima    ) ? FINAL : BLOQ;
-
-				otro_ent->estado = ( otro_ent->cant_lograda == otro_ent->cant_maxima ) ? FINAL : BLOQ;
-
-			} else {
-
-				int atrapar = atrapar_pokemon(p_ent);
-
-				if ( atrapar == 1 || atrapar == 0 ) { // atrapar
-
-					log_info(logger, "Atrapar pokemon '%s' en la ubicación (%d,%d).", p_ent->hacia_pok, p_ent->hacia_x, p_ent->hacia_y);
-
-					p_ent->hacia_pok = NULL;
-
-				} else {
-
-					g_count_cpu     --;
-
-					p_ent->cant_cpu --;
-
-				}
-
-			} // fin intercambio
-*/
 			p_pcb_repartidor->estado = FINAL ; // atrapar - próximo estado
 
 		} else if ( p_pcb_repartidor->pos_x != resto->posx || p_pcb_repartidor->pos_y != resto->posy ) { // ir al pokemon
@@ -509,26 +481,44 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) { // Restaurante con nombre
 
-		l_restaurante_seleccionado = malloc(header_recibido->size + 1);
+		uint32_t pos_x, pos_y, size_resto, despla = 0;
 
-		memcpy(l_restaurante_seleccionado, header_recibido->payload, header_recibido->size );
+		memcpy( &pos_x, header_recibido->payload + despla, sizeof(uint32_t) );
 
-		l_restaurante_seleccionado[header_recibido->size] = '\0';
+		despla += sizeof(uint32_t);
+
+		memcpy( &pos_y, header_recibido->payload + despla, sizeof(uint32_t) );
+
+		despla += sizeof(uint32_t);
+
+		memcpy( &size_resto, header_recibido->payload + despla, sizeof(uint32_t) );
+
+		despla += sizeof(uint32_t);
+
+		l_restaurante_seleccionado = malloc( size_resto +1 );
+
+		memcpy(l_restaurante_seleccionado, header_recibido->payload + despla , size_resto );
+
+		l_restaurante_seleccionado[size_resto] = '\0';
 
 		bool esta_en_lista = list_any_satisfy( lista_resto_conectados, _detecta_restaurante_en_lista );
 
 		if ( esta_en_lista ) {
 
-			printf( "Cliente Nro.: '%d' asociado a restaurante: '%s'.\n", header_recibido->id_proceso, l_restaurante_seleccionado );
+			printf( "Cliente Nro.: '%d' en la posición (%d,%d) se asociado al restaurante: '%s'.\n"
+					, header_recibido->id_proceso, pos_x, pos_y, l_restaurante_seleccionado );
 
 			t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
 
 			t_info_restarante * resto = list_find ( lista_resto_conectados, _detecta_restaurante_en_lista );
 
+			if ( resto == NULL ) return false;
+
 			l_asociar->id_proceso = header_recibido->id_proceso;
+			l_asociar->pos_x      = pos_x;
+			l_asociar->pos_y      = pos_y;
 			l_asociar->restaurante_asociado = resto;
-			l_asociar->id_pedido = 0;
-			l_asociar->list_platos = list_create();
+			l_asociar->id_pedido  = 0;
 
 			list_add( lista_asociaciones_cliente_resto, l_asociar );
 
@@ -542,21 +532,11 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 		}
 
-	} else { // Restaurante Default
+	} else { // falta payload
 
-		printf( "Cliente Nro.: '%d' asociado a restaurante predeterminado.\n", header_recibido->id_proceso );
+		printf( "Cliente Nro.: '%d' no se puede asociar a restaurante predeterminado.\n", header_recibido->id_proceso );
 
-		t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
-
-		l_asociar->id_proceso = header_recibido->id_proceso;
-
-		t_info_restarante * resto_default = list_find( lista_resto_conectados, _detecta_restaurante_en_lista );
-
-		l_asociar->restaurante_asociado = resto_default;
-
-		list_add( lista_asociaciones_cliente_resto, l_asociar );
-
-		return true;
+		return false;
 
 	}
 
@@ -590,8 +570,6 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
 uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
-	void _aux_destroy_elem_plato ( void * p_elem ) { free(p_elem); }
-
 	bool _chequeo_existencia_asociacion ( void * p_elem ) {
 
 		return ((t_cliente_resto *) p_elem)->id_proceso == header_recibido->id_proceso;
@@ -604,11 +582,9 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	if ( asociacion->id_pedido != 0 ) {
 
-		printf("Se elimina pedido '%d' pre-existente.\n", asociacion->id_pedido );
+		log_info(logger, "Se elimina pedido '%d' pre-existente.\n", asociacion->id_pedido );
 
 		asociacion->id_pedido = 0;
-
-		list_destroy_and_destroy_elements( asociacion->list_platos, _aux_destroy_elem_plato );
 
 	}
 
@@ -625,9 +601,6 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 		printf("Se pudo guardar el pedido.\n");
 
 	} else printf("No se pudo guardar el pedido.\n");
-
-
-	asociacion->list_platos = list_create();
 
 	return id_pedido_generado;
 
@@ -680,8 +653,6 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 										    , asociacion->id_pedido
 										    , nombre_plato
 										    , cantidad_platos);
-
-	auxiliar_aniadir_plato( asociacion->list_platos, cantidad_platos, nombre_plato );
 
 	return guardado;
 
@@ -749,33 +720,10 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	} else printf( "No se pudo confirmar el pedido.\n" );
 
-/*
-	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+	enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda
+							, nombre_resto
+							, id_pedido);
 
-		return ( ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ) ? true : false ;
-
-	}
-
-	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
-
-	if ( asociacion == NULL || asociacion->id_pedido == 0 || asociacion->restaurante_asociado == NULL) {
-
-		printf("No hay pedido en elaboración para confirmar.");
-
-		return false;
-
-	}
-
-	asociacion->estado = PENDIENTE_PLANIF;
-
-	list_remove_by_condition( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
-
-	queue_push( queue_confirmados_cliente_resto, asociacion );
-
-	sem_post( &g_nro_pedidos_confirmados );
-
-	printf("Despertar LONG-TERM Scheduler .\n");
-*/
 	return confirmacion;
 
 }
