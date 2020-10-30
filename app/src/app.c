@@ -499,7 +499,9 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 		memcpy(l_restaurante_seleccionado, header_recibido->payload + despla , size_resto );
 
-		l_restaurante_seleccionado[size_resto] = '\0';
+		l_restaurante_seleccionado[size_resto ] = '\0';
+
+		printf( "'%s'\n", l_restaurante_seleccionado);
 
 		bool esta_en_lista = list_any_satisfy( lista_resto_conectados, _detecta_restaurante_en_lista );
 

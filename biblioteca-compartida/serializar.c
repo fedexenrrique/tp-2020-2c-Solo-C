@@ -490,19 +490,19 @@ bool enviar_02_seleccionar_restaurante( char* p_ip, char* p_puerto, uint32_t p_p
 
 		l_payload = malloc( size_payload );
 
-		memcpy( l_payload, &p_pos_x, sizeof(uint32_t) );
+		memcpy( l_payload + despla , &p_pos_x, sizeof(uint32_t) );
 
 		despla += sizeof(uint32_t);
 
-		memcpy( l_payload, &p_pos_y, sizeof(uint32_t) );
+		memcpy( l_payload + despla , &p_pos_y, sizeof(uint32_t) );
 
 		despla += sizeof(uint32_t);
 
-		memcpy( l_payload, &size_resto, sizeof(uint32_t) );
+		memcpy( l_payload + despla , &size_resto, sizeof(uint32_t) );
 
 		despla += sizeof(uint32_t);
 
-		memcpy( l_payload, p_restaurante, size_resto );
+		memcpy( l_payload + despla , p_restaurante, size_resto );
 
 		despla += size_resto;
 
