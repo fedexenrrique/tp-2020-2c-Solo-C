@@ -58,6 +58,8 @@ void            crear_pagina_memoria             (t_list *,int            );
 void *          reservar_memoria_inicial         (int                     );
 t_restaurante * crear_tabla_segmentos_restaurante(char *                  );
 bool            agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
+void            copiar_pagina_en_memoria         (void *   , t_comida  *  );
+void            leer_pagina_en_memoria           (void *    , t_comida *  );
 
 t_frame * buscar_frame_libre ()  ;
 void      iniciar_dump_cache(int);

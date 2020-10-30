@@ -211,3 +211,41 @@ void dampear_memoria (){
 
 }
 
+void copiar_pagina_en_memoria(void * direccion_frame, t_comida * comida){
+
+	int offset=0;
+
+
+	memcpy(direccion_frame+offset,&comida->cantidad_lista_comida, sizeof(comida->cantidad_lista_comida));
+	offset+=sizeof(uint32_t);
+
+	memcpy(direccion_frame+offset,&comida->cantidad_total_comida, sizeof(comida->cantidad_total_comida));
+	offset+=sizeof(uint32_t);
+
+	memcpy(direccion_frame+offset,comida->nombre_comida, SIZE_VECTOR_NOMBRE_PLATO);
+
+	mem_hexdump(direccion_frame,SIZE_PAGINA);
+
+	free(comida);
+
+	log_info(logger,"Se guardo la pagina en memoria principal");
+
+}
+
+void leer_pagina_en_memoria(void * direccion_frame,t_comida * comida){
+
+	int offset=0;
+
+
+	memcpy(&comida->cantidad_lista_comida,direccion_frame+offset, sizeof(comida->cantidad_lista_comida));
+	offset+=sizeof(uint32_t);
+
+	memcpy(&comida->cantidad_total_comida,direccion_frame+offset, sizeof(comida->cantidad_total_comida));
+	offset+=sizeof(uint32_t);
+
+	memcpy(comida->nombre_comida,direccion_frame+offset, SIZE_VECTOR_NOMBRE_PLATO);
+
+	mem_hexdump(comida,SIZE_PAGINA);
+
+
+}

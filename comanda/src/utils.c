@@ -218,7 +218,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		goto envio_de_respuesta;
 
 	t_restaurante * restaurante=NULL;
-	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+	restaurante=list_find(lista_restarurantes,buscar_restaurante);//Busco si existe el restaurant
 
 
 	if(restaurante==NULL){
@@ -231,7 +231,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		goto envio_de_respuesta;
 
 	t_pedido_seg * pedido=NULL;
-	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);//Busco si se encuentra el pedido
 
 	if(pedido==NULL){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
@@ -241,19 +241,27 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 
 	t_pagina_comida * adm_comida=NULL;
 
-	if(!list_is_empty(pedido->comidas_del_pedido))						//Verifico que no este vacia la lista
+	if(!list_is_empty(pedido->comidas_del_pedido))						//Verifico que no este vacia la lista de platos del pedido
 			adm_comida=list_find(pedido->comidas_del_pedido,buscar_comida);
 
 	if(adm_comida!=NULL){
 		printf("Se encontro el plato de comida en el pedido. Se va a sumar la nueva cantidad.\n");//El caso de que ya exista ese plato en el pedido
-		t_comida * comida=(t_comida *)adm_comida->contenido;
+
+		t_comida * comida=malloc(sizeof(t_comida ));
+
+		leer_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
+		log_info(logger,"La cantidad total del plato antes de sumarse lo nuevo es %d",comida->cantidad_total_comida);
+
 		comida->cantidad_total_comida+=plato->cantidad_plato;
 		log_info(logger,"El plato %s ahora tiene una cantidad total de: %d",comida->nombre_comida,comida->cantidad_total_comida);
+
+		copiar_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
+
 		}
 	else{
 		printf("No se encontro el plato de comida en el pedido, asique se va a crear\n");
 		adm_comida=malloc(sizeof(t_pagina_comida));
-		adm_comida->esta_en_memoria_principal=FALSE;
+		//adm_comida->esta_en_memoria_principal=FALSE;
 		adm_comida->frame=malloc(sizeof(t_frame));
 		adm_comida->frame->direccion_frame=NULL;
 		adm_comida->frame->nro_frame=-1;
@@ -265,10 +273,10 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 		strcpy(comida->nombre_comida,plato->nombre_plato);
 
 		log_info(logger,"El nombre de la comida es: %s",comida->nombre_comida);
-		log_info(logger,"La cantidad de comida para cocinar es: %s",comida->cantidad_total_comida);
+		log_info(logger,"La cantidad de comida para cocinar es: %d",comida->cantidad_total_comida);
 
 
-		adm_comida->frame=buscar_frame_libre();
+		adm_comida->frame=buscar_frame_libre();							//Busco un frame libre en la MP para agregar el plato
 
 		if(adm_comida->frame==NULL){
 
@@ -278,21 +286,8 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 			//Y despues devolveria el frame con el marco liberado
 		}
 
-		int offset=0;
 
-		memcpy(adm_comida->frame->direccion_frame+offset,&comida->cantidad_lista_comida, sizeof(comida->cantidad_lista_comida));
-		offset+=sizeof(comida->cantidad_lista_comida);
-
-		memcpy(adm_comida->frame->direccion_frame+offset,&comida->cantidad_total_comida, sizeof(comida->cantidad_total_comida));
-		offset+=sizeof(comida->cantidad_total_comida);
-
-		memcpy(adm_comida->frame->direccion_frame+offset,comida->nombre_comida, SIZE_VECTOR_NOMBRE_PLATO);
-
-		mem_hexdump(adm_comida->frame->direccion_frame,SIZE_PAGINA);
-
-		free(comida);
-
-		log_info(logger,"Se guardo la pagina en memoria principal");
+		copiar_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 
 		adm_comida->contenido=adm_comida->frame->direccion_frame;
 		adm_comida->direccion_memoria_swap=NULL;
