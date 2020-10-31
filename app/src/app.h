@@ -59,26 +59,28 @@ typedef enum {
 } enum_estado;
 
 typedef struct {
-	uint32_t    posx;
-	uint32_t    posy;
+	uint32_t    resto_x;
+	uint32_t    resto_y;
 	char*       resto_nombre;
 	uint32_t    socket_conectado;
 	char**      list_platos;
 } t_info_restarante;
 
-t_list * lista_asociaciones_cliente_resto; // t_cliente_resto
+t_list * lista_clientes; // t_cliente_resto
 
 t_queue * queue_confirmados_cliente_resto; // t_cliente_resto
 
 t_list * lista_resto_conectados; // t_info_restarante
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
-	uint32_t            id_proceso;
-	uint32_t            pos_x;
-	uint32_t            pos_y;
-	t_info_restarante * restaurante_asociado;
+	uint32_t            id_cliente;
+	uint32_t            cliente_x;
+	uint32_t            cliente_y;
+	char * 				nombre_resto;
 	uint32_t            id_pedido;
-} t_cliente_resto;
+	uint32_t            resto_x;
+	uint32_t            resto_y;
+} t_cliente_a_resto;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t cantidad_plato;
@@ -88,16 +90,33 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 sem_t g_nro_cpus;
 sem_t g_nro_pedidos_confirmados; // Repartidores NUEVOS a LISTOS (obtienen un pedido)
 
+typedef enum {
+
+	RESTO  = 100,
+	CLI    = 101,
+
+} e_yendo_a;
+
 typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
+
 	pthread_t   thread_metadata;
 	uint32_t    id_repartidor;
-	uint32_t    pos_x;
-	uint32_t    pos_y;
-	uint32_t    freq_descanso;
-	uint32_t    tiempo_descanso;
+	uint32_t    repa_x;
+	uint32_t    repa_y;
+	e_yendo_a   yendo_a;
+	uint32_t    metros_por_descanso;
+	uint32_t    tiempo_de_descanso;
+	uint32_t    cansancio;
 	sem_t       semaforo;
 	enum_estado estado;
-	t_cliente_resto * pedido;
+	uint32_t    id_cliente;
+	uint32_t    cliente_x;
+	uint32_t    cliente_y;
+	char * 		nombre_resto;
+	uint32_t    id_pedido;
+	uint32_t    resto_x;
+	uint32_t    resto_y;
+
 } t_pcb_repartidor;
 
 t_queue * g_cola_nuevos;
@@ -111,8 +130,6 @@ t_config * leer_config         ( void );
 void       escuchar_cliente    ( int socket_cliente );
 
 t_list   * obtener_restaurante_hardcodeado();
-
-void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socket_aceptado );
 
 void bucle_resto_conectado ( uint32_t sock_aceptado );
 
@@ -132,7 +149,7 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido );
 
 bool procesamiento_09_confirmar_pedido ( t_header * header_recibido );
 
-void agregar_pedid_a_planificacion (t_cliente_resto * asociacion);
+void agregar_pedid_a_planificacion (t_cliente_a_resto * asociacion);
 
 void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, char * p_nom_plato );
 
