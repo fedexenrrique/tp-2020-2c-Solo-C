@@ -230,7 +230,7 @@ void copiar_pagina_en_memoria(void * direccion_frame, t_comida * comida){
 
 	mem_hexdump(direccion_frame,SIZE_PAGINA);
 
-	free(comida);
+	//free(comida);
 
 	log_info(logger,"Se guardo la pagina en memoria principal");
 
@@ -249,7 +249,7 @@ void leer_pagina_en_memoria(void * direccion_frame,t_comida * comida){
 
 	memcpy(comida->nombre_comida,direccion_frame+offset, SIZE_VECTOR_NOMBRE_PLATO);
 
-	mem_hexdump(comida,SIZE_PAGINA);
+	mem_hexdump(&comida,SIZE_PAGINA);
 
 
 }
