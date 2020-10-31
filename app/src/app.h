@@ -73,12 +73,12 @@ t_queue * queue_confirmados_cliente_resto; // t_cliente_resto
 t_list * lista_resto_conectados; // t_info_restarante
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
-	uint32_t            id_proceso;
-	uint32_t            pos_x;
-	uint32_t            pos_y;
-	t_info_restarante * restaurante_asociado;
+	uint32_t            id_cliente;
+	uint32_t            cliente_x;
+	uint32_t            cliente_y;
+	char * 				nombre_resto;
 	uint32_t            id_pedido;
-} t_cliente_resto;
+} t_cliente_a_resto;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t cantidad_plato;
@@ -88,16 +88,30 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 sem_t g_nro_cpus;
 sem_t g_nro_pedidos_confirmados; // Repartidores NUEVOS a LISTOS (obtienen un pedido)
 
+typedef enum {
+
+	RESTO  = 100,
+	CLI    = 101,
+
+} e_yendo_a;
+
 typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
+
 	pthread_t   thread_metadata;
 	uint32_t    id_repartidor;
-	uint32_t    pos_x;
-	uint32_t    pos_y;
-	uint32_t    freq_descanso;
-	uint32_t    tiempo_descanso;
+	uint32_t    repa_x;
+	uint32_t    repa_y;
+	e_yendo_a   yendo_a;
+	uint32_t    tiempo_de_descanso;
+	uint32_t    cansancio;
 	sem_t       semaforo;
 	enum_estado estado;
-	t_cliente_resto * pedido;
+	uint32_t    id_proceso;
+	uint32_t    cliente_x;
+	uint32_t    cliente_y;
+	char * 		nombre_resto;
+	uint32_t    id_pedido;
+
 } t_pcb_repartidor;
 
 t_queue * g_cola_nuevos;

@@ -262,6 +262,8 @@ void long_term_scheduler( void ) {
 
 		l_repartidor->estado = LISTO;
 
+		l_repartidor->yendo_a= RESTO;
+
 		printf("El repartidor '%d' esta asignado al pedido '%d'.\n'", l_repartidor->id_repartidor, pedido_cliente_resto->id_pedido );
 
 		queue_push( g_cola_listos, l_repartidor ); // REPARTIDOR "LISTO" (con pedido asignado)
@@ -400,30 +402,94 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb_repartidor ) {
 									, p_pcb_repartidor->pedido->restaurante_asociado->resto_nombre
 									, p_pcb_repartidor->pedido->id_pedido);
 
+			if ( p_pcb_repartidor->yendo_a == RESTO ){
 
+				p_pcb_repartidor->yendo_a = CLI;
 
-			p_pcb_repartidor->estado = FINAL ; // atrapar - próximo estado
+				if ( p_pcb_repartidor->pos_x != p_pcb_repartidor->pedido->pos_x || p_pcb_repartidor->pos_y != p_pcb_repartidor->pedido->pos_y ) { // ir al pokemon
 
-		} else if ( p_pcb_repartidor->pos_x != resto->posx || p_pcb_repartidor->pos_y != resto->posy ) { // ir al pokemon
+					if ( p_pcb_repartidor->pos_x != p_pcb_repartidor->pedido->pos_x ) {
 
-			if ( p_pcb_repartidor->pos_x != resto->posx ) {
+						if ( p_pcb_repartidor->pos_x < p_pcb_repartidor->pedido->pos_x )
+							p_pcb_repartidor->pos_x++;
+						else
+							p_pcb_repartidor->pos_x--;
 
-				if ( p_pcb_repartidor->pos_x < resto->posx )
-					p_pcb_repartidor->pos_x++;
-				else
-					p_pcb_repartidor->pos_x--;
+					} else if ( p_pcb_repartidor->pos_y != p_pcb_repartidor->pedido->pos_y ) {
 
-			} else if ( p_pcb_repartidor->pos_y != resto->posy ) {
+						if ( p_pcb_repartidor->pos_y < p_pcb_repartidor->pedido->pos_y )
+							p_pcb_repartidor->pos_y++;
+						else
+							p_pcb_repartidor->pos_y--;
 
-				if ( p_pcb_repartidor->pos_y < resto->posy )
-					p_pcb_repartidor->pos_y++;
-				else
-					p_pcb_repartidor->pos_y--;
+					}
+
+					log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d). "
+							, p_pcb_repartidor->id_repartidor , p_pcb_repartidor->pos_x , p_pcb_repartidor->pos_y );
+
+				}
+
+			} else {
+
+				p_pcb_repartidor->estado = FINAL ; // atrapar - próximo estado
 
 			}
 
-			log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d). "
-					, p_pcb_repartidor->id_repartidor , p_pcb_repartidor->pos_x , p_pcb_repartidor->pos_y );
+		} else {
+
+			if ( p_pcb_repartidor->yendo_a == RESTO ) {
+
+				if ( p_pcb_repartidor->pos_x != resto->posx || p_pcb_repartidor->pos_y != resto->posy ) { // ir al pokemon
+
+					if ( p_pcb_repartidor->pos_x != resto->posx ) {
+
+						if ( p_pcb_repartidor->pos_x < resto->posx )
+							p_pcb_repartidor->pos_x++;
+						else
+							p_pcb_repartidor->pos_x--;
+
+					} else if ( p_pcb_repartidor->pos_y != resto->posy ) {
+
+						if ( p_pcb_repartidor->pos_y < resto->posy )
+							p_pcb_repartidor->pos_y++;
+						else
+							p_pcb_repartidor->pos_y--;
+
+					}
+
+					log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d). "
+							, p_pcb_repartidor->id_repartidor , p_pcb_repartidor->pos_x , p_pcb_repartidor->pos_y );
+
+				}
+
+			}
+
+			if ( p_pcb_repartidor->yendo_a == CLI ) {
+
+				if ( p_pcb_repartidor->pos_x != p_pcb_repartidor->pedido->pos_x || p_pcb_repartidor->pos_y != p_pcb_repartidor->pedido->pos_y ) { // ir al pokemon
+
+					if ( p_pcb_repartidor->pos_x != p_pcb_repartidor->pedido->pos_x ) {
+
+						if ( p_pcb_repartidor->pos_x < p_pcb_repartidor->pedido->pos_x )
+							p_pcb_repartidor->pos_x++;
+						else
+							p_pcb_repartidor->pos_x--;
+
+					} else if ( p_pcb_repartidor->pos_y != p_pcb_repartidor->pedido->pos_y ) {
+
+						if ( p_pcb_repartidor->pos_y < p_pcb_repartidor->pedido->pos_y )
+							p_pcb_repartidor->pos_y++;
+						else
+							p_pcb_repartidor->pos_y--;
+
+					}
+
+					log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d). "
+							, p_pcb_repartidor->id_repartidor , p_pcb_repartidor->pos_x , p_pcb_repartidor->pos_y );
+
+				}
+
+			}
 
 		}
 
