@@ -1087,60 +1087,53 @@ bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, 
 
 		if ( header_restaurantes->nro_msg == RESPUESTA_OBTENER_PEDIDO ) {
 
+			uint32_t despla = 0;
 
+			uint32_t estado = 0;
 
-		} else {
-
-			if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
-			free(header_restaurantes);
-			return FALSE;
-
-		}
-
-		t_list   * lista_platos;
-
-		if ( header_restaurantes->nro_msg != CONSULTAR_PLATOS ) {
-
-			perror("No es la respuesta esperada.");
-			exit(-1);
-
-		}
-
-		if ( header_restaurantes->size > 0 ) {
-
-			lista_platos = list_create();
-
-			int despla = 0;
-
-			int cantidad_platos = 0;
-
-			memcpy( &cantidad_platos, header_restaurantes->payload + despla, sizeof(uint32_t) );
+			memcpy( &estado, header_restaurantes->payload + despla, sizeof(uint32_t) );
 
 			despla += sizeof(uint32_t);
 
-			for ( int i = 0; i < cantidad_platos; i++ ) {
+			uint32_t cantidad = 1;
 
-				uint32_t act_size;
+			// memcpy( &cantidad, header_restaurantes->payload + despla, sizeof(uint32_t) );
 
-				memcpy( &act_size    , header_restaurantes->payload + despla, sizeof(uint32_t) );
+			despla += sizeof(uint32_t);
+
+			for ( int i = 0; i < cantidad ; i++ ) {
+
+				uint32_t cant_lista = 0;
+
+				memcpy( &cant_lista, header_restaurantes->payload + despla, sizeof(uint32_t) );
+
 				despla += sizeof(uint32_t);
 
-				char * nombre_plato = malloc(act_size + 1);
+				uint32_t cant_total = 0;
 
-				memcpy( nombre_plato , header_restaurantes->payload + despla, act_size );
-				despla += act_size;
+				memcpy( &cant_total, header_restaurantes->payload + despla, sizeof(uint32_t) );
 
-				nombre_plato[act_size] = '\0';
+				despla += sizeof(uint32_t);
 
-				printf("\n%s\n", nombre_plato);
+				char * nombre_plato = malloc(24+1);
 
-				list_add(lista_platos, nombre_plato);
+				memcpy( nombre_plato, header_restaurantes->payload + despla, 24 );
+
+				nombre_plato[24] = '\0';
+
+				despla += sizeof(uint32_t);
+
+				printf("Hay %d platos listos de %d pedidos de '%s'\n", cant_lista, cant_total, nombre_plato );
 
 			}
 
-			return lista_platos;
+		} else {
 
-		} else return NULL;
+		}
+
+		if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
+		free(header_restaurantes);
+		return FALSE;
 
 	}
 

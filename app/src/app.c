@@ -722,11 +722,41 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	} else printf( "No se pudo confirmar el pedido.\n" );
 
-	enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda
-							, nombre_resto
-							, id_pedido);
+	confirmacion = TRUE;
+
+	bool _control_existe_pedido ( void * p_elem ) {
+
+		return ((t_cliente_resto*)p_elem)->id_pedido == id_pedido ;
+
+	}
+
+	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_pedido );
+
+	if ( asociacion == NULL ) {
+
+		printf("Se requiere asociar un restaurante y crear un pedido previamente a solicitar un plato.");
+
+		return false;
+
+	} else {
+
+		agregar_pedid_a_planificacion (asociacion);
+
+	}
+
+
+
+	// enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido);
 
 	return confirmacion;
+
+}
+
+void agregar_pedid_a_planificacion (t_cliente_resto * asociacion) {
+
+	queue_push( queue_confirmados_cliente_resto, asociacion );
+
+	sem_post( &g_nro_pedidos_confirmados );
 
 }
 

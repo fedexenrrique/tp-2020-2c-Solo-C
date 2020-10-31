@@ -132,6 +132,8 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido );
 
 bool procesamiento_09_confirmar_pedido ( t_header * header_recibido );
 
+void agregar_pedid_a_planificacion (t_cliente_resto * asociacion);
+
 void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, char * p_nom_plato );
 
 void procesamiento_mensaje( void * socket_cliente );
