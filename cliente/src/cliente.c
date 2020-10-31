@@ -18,7 +18,6 @@ int main(int argc, char **argv) {
 	logger = log_create("cliente.log","CLIENTE",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
-
 	if ( argc == 1 ) {
 
 		listar_comandos();
@@ -45,7 +44,7 @@ int main(int argc, char **argv) {
     		    
 				case SELECCIONAR_RESTAURANTE:
     		    	printf(" 02- SELECCIONAR_RESTAURANTE HACIA: APP \n");
-    		    	( enviar_seleccionar_restaurante(g_ip_app, g_puerto_app, g_id_proceso, argv[3]) ) ?
+    		    	( enviar_02_seleccionar_restaurante(g_ip_app, g_puerto_app, g_posicion_x, g_posicion_y, g_id_proceso, argv[3]) ) ?
     		    			printf("El restaurante está en lista y se seleccionó.\n") :
 							printf("El restaurante no es válido.\n") ;
 		    		break;
@@ -67,7 +66,7 @@ int main(int argc, char **argv) {
     		    	if ( id_pedido == -1 )
     		    		printf("No se pudo crear el pedido.\n");
     		    	else
-    		    		printf("Se creó el pedido con ID '%d'.\n", id_pedido );
+    		    		log_error(logger, "Se creó el pedido con ID '%d'.\n", id_pedido );
 
     		    	break;
     		    

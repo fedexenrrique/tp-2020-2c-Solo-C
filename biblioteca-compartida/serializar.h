@@ -142,6 +142,12 @@ typedef struct{
 	uint32_t		cantidad_hornos;
 }t_respuesta_info_restaurante;
 
+typedef struct {
+	char *   		comida;
+	uint32_t		cantTotal;
+	uint32_t		CantLista;
+} t_12_plato;
+
 
 t_log    * logger;
 t_config * config;
@@ -175,8 +181,8 @@ t_pedido * recibir_pedido          (void * payload           );//Deserializa id 
 void       deserializar_respuesta_obtener_pedido(t_header *  );//Deserializa y muestra toda la informacion de un pedido
 
 
-bool enviar_seleccionar_restaurante( char* p_ip, char* p_puerto, int p_id_process, char * p_restaurante );
-void responder_seleccionar_restaurante( int socket_cliente, bool seleccionado );
+bool enviar_02_seleccionar_restaurante( char* p_ip, char* p_puerto, uint32_t p_pos_x,uint32_t p_pos_y,uint32_t p_id_process, char * p_restaurante );
+void responder_02_seleccionar_restaurante( int socket_cliente, bool seleccionado );
 
 t_list * enviar_04_consultar_platos( char* p_ip, char* p_puerto, uint32_t p_id_process );
 void responder_04_consultar_platos( uint32_t socket_cliente, char ** p_platos );
@@ -194,6 +200,10 @@ bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
 		                         ,char * p_nom_resto, uint32_t p_id_pedido
 		                         ,char * p_nom_plato, uint32_t p_cant_plato );
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato, uint32_t cantidad_plato);
+
+bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
+
+//int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 
 int  	        enviar_plato_listo      (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato);

@@ -74,10 +74,10 @@ t_list * lista_resto_conectados; // t_info_restarante
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t            id_proceso;
+	uint32_t            pos_x;
+	uint32_t            pos_y;
 	t_info_restarante * restaurante_asociado;
 	uint32_t            id_pedido;
-	enum_estado         estado;
-	t_list *            list_platos; // t_elem_pedido
 } t_cliente_resto;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
@@ -131,6 +131,8 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido );
 bool procesamiento_07_aniadir_plato( t_header * header_recibido );
 
 bool procesamiento_09_confirmar_pedido ( t_header * header_recibido );
+
+void agregar_pedid_a_planificacion (t_cliente_resto * asociacion);
 
 void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, char * p_nom_plato );
 
