@@ -274,6 +274,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 
 		log_info(logger,"El nombre de la comida es: %s",comida->nombre_comida);
 		log_info(logger,"La cantidad de comida para cocinar es: %d",comida->cantidad_total_comida);
+		log_info(logger,"La cantidad de comida ya cocinada es: %d",comida->cantidad_lista_comida);
 
 
 		adm_comida->frame=buscar_frame_libre();							//Busco un frame libre en la MP para agregar el plato
@@ -297,10 +298,10 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 
 		list_add(pedido->comidas_del_pedido,adm_comida);            //Guardo la nueva comida en el pedido
 
-		t_pagina_comida * prueba_comida=(t_pagina_comida *)list_get(pedido->comidas_del_pedido,0);
-		mem_hexdump(prueba_comida->contenido, sizeof(t_comida));
-		t_comida * contenido_comida=(t_comida *)prueba_comida->contenido;
-		log_error(logger,"Probando el nombre de la comida despues de haberse guardado, %s",contenido_comida->nombre_comida);
+		//t_pagina_comida * prueba_comida=(t_pagina_comida *)list_get(pedido->comidas_del_pedido,0);
+		//mem_hexdump(prueba_comida->contenido, sizeof(t_comida));
+		//t_comida * contenido_comida=(t_comida *)prueba_comida->contenido;
+		//log_error(logger,"Probando el nombre de la comida despues de haberse guardado, %s",contenido_comida->nombre_comida);
 
 		log_info(logger,"Ahora la cantidad de frames libres en memoria es: %d",list_size(tabla_frames_libres));
 
@@ -358,10 +359,16 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 			}
 			void _serializar_tabla_comida(void * elemento){
 				t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
-				t_comida * comida=(t_comida*)adm_comida->contenido;
-				offset+=sizeof(estado_pedido);
 
-				memcpy(buffer+offset,&comida->cantidad_lista_comida,sizeof(uint32_t));
+				t_comida * comida=malloc(sizeof(t_comida ));
+
+				leer_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
+
+				//t_comida * comida=(t_comida*)adm_comida->contenido;
+
+				copiar_pagina_en_memoria(buffer,comida);
+
+				/*memcpy(buffer+offset,&comida->cantidad_lista_comida,sizeof(uint32_t));
 				offset+=sizeof(uint32_t);
 
 				memcpy(buffer+offset,&comida->cantidad_total_comida,sizeof(uint32_t));
@@ -370,16 +377,16 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 				//int size_nombre=string_length(comida->nombre_comida);
 				log_error(logger,"El tamaño del nombre es: %d",string_length(comida->nombre_comida));
 
-				memcpy(buffer+offset,comida->nombre_comida,SIZE_VECTOR_NOMBRE_PLATO);
-				offset+=SIZE_VECTOR_NOMBRE_PLATO;
-
-				mem_hexdump(buffer, 2*sizeof(uint32_t)+SIZE_VECTOR_NOMBRE_PLATO);
+				memcpy(buffer+offset,comida->nombre_comida,SIZE_VECTOR_NOMBRE_PLATO);*/
+				offset+=SIZE_PAGINA;
 
 				printf("Estoy iterando la lista del pedido\n");
-				printf("Cantidad lista de comida: %d\n",comida->cantidad_lista_comida);
-				printf("Cantidad total de comida: %d\n", comida->cantidad_total_comida);
-				printf("Nombre del plato: %s\n",comida->nombre_comida);
+				printf("El valor del offset es: %d \n",offset);
+				printf("Cantidad lista de comida: %d \n",comida->cantidad_lista_comida);
+				printf("Cantidad total pedida del plato: %d \n", comida->cantidad_total_comida);
+				printf("Nombre del plato: %s \n",comida->nombre_comida);
 
+				free(comida);
 
 			}
 
@@ -415,9 +422,12 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 		log_info(logger,"El size del payload es: %d",size_payload);
 		buffer=malloc(size_payload);
 
-		memcpy(buffer,&pedido->estado,sizeof(estado_pedido));
+		memcpy(buffer,&(pedido->estado),sizeof(estado_pedido));
+		offset+=sizeof(estado_pedido);
 
 		list_iterate(pedido->comidas_del_pedido,_serializar_tabla_comida);
+
+		mem_hexdump(buffer, SIZE_PAGINA);
 	    }
 
 

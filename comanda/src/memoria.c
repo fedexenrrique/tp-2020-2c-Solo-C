@@ -217,9 +217,13 @@ void copiar_pagina_en_memoria(void * direccion_frame, t_comida * comida){
 
 
 	memcpy(direccion_frame+offset,&comida->cantidad_lista_comida, sizeof(comida->cantidad_lista_comida));
+	printf("----------\n");
+	mem_hexdump(direccion_frame+offset,4);
 	offset+=sizeof(uint32_t);
 
 	memcpy(direccion_frame+offset,&comida->cantidad_total_comida, sizeof(comida->cantidad_total_comida));
+	printf("----------\n");
+	mem_hexdump(direccion_frame+offset,4);
 	offset+=sizeof(uint32_t);
 
 	memcpy(direccion_frame+offset,comida->nombre_comida, SIZE_VECTOR_NOMBRE_PLATO);
