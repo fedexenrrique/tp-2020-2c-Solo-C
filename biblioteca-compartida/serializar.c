@@ -1426,6 +1426,7 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 	t_list * lista_platos_del_pedido=list_create();
 	int cantidad_total_platos=encabezado->size/sizeof(t_comida);
 	t_pedido_seg * pedido=malloc(sizeof(t_pedido));
+	int offset=0;
 
 			void mostrar_platos_pedido(void * elemento){
 				t_comida * comida=(t_comida*)elemento;
@@ -1440,20 +1441,20 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
 	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
 
-	memcpy(&pedido->estado,encabezado->payload,sizeof(estado_pedido));
-	encabezado->payload+=sizeof(estado_pedido);
+	memcpy(&pedido->estado,encabezado->payload+offset,sizeof(estado_pedido));
+	offset+=sizeof(estado_pedido);
 
 	for(int i=0;i<cantidad_total_platos;i++){
 		t_comida * comida=malloc(sizeof(t_comida));
 
-		memcpy(&(comida->cantidad_lista_comida),encabezado->payload,sizeof(uint32_t));
-		encabezado->payload+=sizeof(uint32_t);
+		memcpy(&(comida->cantidad_lista_comida),encabezado->payload+offset,sizeof(uint32_t));
+		offset+=sizeof(uint32_t);
 
-		memcpy(&(comida->cantidad_total_comida),encabezado->payload,sizeof(uint32_t));
-		encabezado->payload+=sizeof(uint32_t);
+		memcpy(&(comida->cantidad_total_comida),encabezado->payload+offset,sizeof(uint32_t));
+		offset+=sizeof(uint32_t);
 
-		memcpy(comida->nombre_comida,encabezado->payload,SIZE_VECTOR_NOMBRE_PLATO);
-		encabezado->payload+=sizeof(SIZE_VECTOR_NOMBRE_PLATO);
+		memcpy(comida->nombre_comida,encabezado->payload+offset,SIZE_VECTOR_NOMBRE_PLATO);
+		offset+=SIZE_VECTOR_NOMBRE_PLATO;
 
 		list_add(lista_platos_del_pedido,comida);
 		log_error(logger,"El numero de iteracion es: %d",i);
