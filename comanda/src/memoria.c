@@ -74,7 +74,7 @@ void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memori
 		else
 			frame->direccion_frame=p_inicio_memoria_principal+(i*SIZE_PAGINA);
 
-		log_info(logger,"La direccion de memoria del frame es %p y la logica es %d",frame->direccion_frame,frame->direccion_frame-p_inicio_memoria_principal);
+		//log_info(logger,"La direccion de memoria del frame es %p y la logica es %d",frame->direccion_frame,frame->direccion_frame-p_inicio_memoria_principal);
 
 		list_add(tabla_frames_libres,frame);
 	}
