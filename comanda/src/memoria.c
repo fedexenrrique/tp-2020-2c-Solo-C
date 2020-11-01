@@ -35,20 +35,11 @@ void iniciar_memoria(){
 	list_pointer_memory_swap     =list_create();
 
 	tabla_frames_libres=list_create();
+	tabla_frames_libres_swap=list_create();
 
-	crear_pagina_memoria(list_pointer_memory_principal,size_memoria_principal);
+	crear_paginas_memoria(list_pointer_memory_principal,size_memoria_principal,tabla_frames_libres);  //Creo los frame de c/memoria y los agrego a su tabla de frames libres
+	crear_paginas_memoria(list_pointer_memory_swap,size_memoria_swap,tabla_frames_libres_swap);
 
-/*	t_admin_memory_message * pointer_block=malloc(sizeof(t_admin_memory_message));
-	pointer_block->estado=LIBRE;
-	pointer_block->inicio_bloque=p_inicio_memoria_total;
-	pointer_block->fin_bloque=p_inicio_memoria_total+size_memoria_total;
-	pointer_block->size_mensaje=0;
-	pointer_block->mensaje=NULL;
-	pointer_block->last_used=0;
-	log_info(logger,"La memoria comienza en la direccion: %p", pointer_block->inicio_bloque);
-	log_info(logger,"La memoria finaliza en la direccion: %p", pointer_block->fin_bloque);
-	list_add(list_pointer_memory,pointer_block);
-*/
 }
 
 void * reservar_memoria_inicial(int size_memoria_total){
@@ -61,7 +52,7 @@ void * reservar_memoria_inicial(int size_memoria_total){
 
 }
 
-void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memoria_principal){
+void crear_paginas_memoria(t_list * list_pointer_memory_principal,int size_memoria_principal,t_list * tabla_frames){
 
 	int cantidad_paginas=size_memoria_principal/SIZE_PAGINA;
 
@@ -76,11 +67,18 @@ void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memori
 
 		//log_info(logger,"La direccion de memoria del frame es %p y la logica es %d",frame->direccion_frame,frame->direccion_frame-p_inicio_memoria_principal);
 
-		list_add(tabla_frames_libres,frame);
+		list_add(tabla_frames,frame);
 	}
+	char * nombre=string_new();
 
-	log_info(logger,"Hay %d  marcos libres",list_size(tabla_frames_libres));
-	log_info(logger,"Se dividio la memoria principal en %d  frames",cantidad_paginas);
+	if(tabla_frames==tabla_frames_libres)
+		string_append(&nombre,"Principal");
+	else
+		string_append(&nombre,"Swap");
+
+	log_info(logger,"Se dividio la memoria %s en %d  frames",nombre,cantidad_paginas);
+	log_info(logger,"Hay %d  marcos libres en la memoria %s",list_size(tabla_frames),nombre);
+
 
 }
 

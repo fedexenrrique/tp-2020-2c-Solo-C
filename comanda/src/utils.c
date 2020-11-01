@@ -286,7 +286,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 			copiar_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 
 			adm_comida->contenido=adm_comida->frame->direccion_frame;
-			adm_comida->direccion_memoria_swap=NULL;
+			adm_comida->frame_swap=NULL;
 			adm_comida->esta_en_memoria_principal=TRUE;
 			//adm_comida->last_used=---;
 
