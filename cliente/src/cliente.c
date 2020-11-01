@@ -177,9 +177,9 @@ int main(int argc, char **argv) {
 
 		    	if (confirmacion) {
 
-		    		printf( "Se confirmó el pedido.\n" );
+		    		log_info(logger, "Se confirmó el pedido.\n" );
 
-		    	} else printf( "No se pudo confirmar el pedido.\n" );
+		    	} else log_info( logger,"No se pudo confirmar el pedido.\n" );
 
 				break;
 

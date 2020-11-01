@@ -13,6 +13,7 @@
 int main(void) {
 
 	int servidor_comanda=iniciar_comanda();
+	signal(SIGUSR1, iniciar_dump_cache);
 
 
 	while(1) {
@@ -27,7 +28,6 @@ int main(void) {
 
 	}
 
-	puts("!!!Hello World!!!");
-	prueba_biblioteca_compartida();
+
 	return EXIT_SUCCESS;
 }

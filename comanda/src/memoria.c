@@ -200,6 +200,13 @@ void dampear_memoria (){
 
 	void mostrar_nueva_lista(void * elemento){
 
+		t_pagina_comida * comida=(t_pagina_comida*)elemento;
+		t_comida * plato=(t_comida*)comida->contenido;
+		char * cadena=NULL;
+		cadena=string_from_format("\n Plato: %s  -  Posicion en memoria:  %d",plato->nombre_comida,(comida->frame->direccion_frame)-p_inicio_memoria_principal);
+		//string_append_with_format(&cadena, " COLA:%16s ID:%d  posicion: %d",cola,msg_queue->id_msg,posicion);
+		txt_write_in_stdout(cadena);
+
 
 	}
 
@@ -217,13 +224,9 @@ void copiar_pagina_en_memoria(void * direccion_frame, t_comida * comida){
 
 
 	memcpy(direccion_frame+offset,&comida->cantidad_lista_comida, sizeof(comida->cantidad_lista_comida));
-	printf("----------\n");
-	mem_hexdump(direccion_frame+offset,4);
 	offset+=sizeof(uint32_t);
 
 	memcpy(direccion_frame+offset,&comida->cantidad_total_comida, sizeof(comida->cantidad_total_comida));
-	printf("----------\n");
-	mem_hexdump(direccion_frame+offset,4);
 	offset+=sizeof(uint32_t);
 
 	memcpy(direccion_frame+offset,comida->nombre_comida, SIZE_VECTOR_NOMBRE_PLATO);

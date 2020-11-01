@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <pthread.h>
+#include <commons/txt.h>
 #include <commons/string.h>
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>

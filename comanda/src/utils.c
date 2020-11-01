@@ -163,7 +163,7 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
-	printf("\n");
+	printf("-------------------\n");
 
 }
 
@@ -332,7 +332,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){ //---
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
-	printf("\n");
+	printf("-------------------\n");
 
 }
 
@@ -439,7 +439,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 
 	free(nuevo_encabezado);
 	//free(comida);
-	printf("\n");
+	printf("-------------------\n");
 }
 
 
@@ -470,6 +470,7 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 
 							bool buscar_comida(void * elemento){
 								t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
+
 								t_comida * comida=(t_comida*)adm_comida->contenido;
 
 								if(string_equals_ignore_case(comida->nombre_comida,plato->nombre_plato)){
@@ -480,11 +481,13 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 							bool verificar_pedido_terminado(void * elemento){
 
 								t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
+								t_comida * comida=malloc(sizeof(t_comida));
 
-								t_comida * comida=(t_comida*)adm_comida->contenido;
+								leer_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 
-								if(comida->cantidad_lista_comida!=comida->cantidad_total_comida)
-									return TRUE;
+								if(comida->cantidad_lista_comida!=comida->cantidad_total_comida){
+									free(comida);
+									return TRUE;}
 								return FALSE;
 							}
 
@@ -530,13 +533,18 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 		}
 	else{log_info(logger,"Se encontro el plato en el pedido");
-		t_comida * comida=(t_comida*)adm_comida->contenido;
+		t_comida * comida=malloc(sizeof(t_comida));
+		leer_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
+
 		if(comida->cantidad_lista_comida<comida->cantidad_total_comida){
 			comida->cantidad_lista_comida++;
 			exito=TRUE;
 			log_info(logger,"Ahora la cantidad lista del plato es: %d",comida->cantidad_lista_comida);
+			copiar_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
+			free(comida);
+		}else
+			log_info(logger,"Se cocinaron todos los platos de: %s", comida->nombre_comida);
 
-			}
 		t_pagina_comida * comida_pedido=NULL;											//Verifico si todos los platos del pedido estan completos. De ser asi, cambio el pedido a TERMINADO
 		comida_pedido=list_find(pedido->comidas_del_pedido,verificar_pedido_terminado);
 
@@ -566,7 +574,7 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
-	printf("\n");
+	printf("-------------------\n");
 
 
 }
@@ -657,7 +665,7 @@ void administrar_confirmar_pedido(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
-	printf("\n");
+	printf("-------------------\n");
 
 
 }
@@ -746,7 +754,7 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
 
 	free(nuevo_encabezado);
-	printf("\n");
+	printf("-------------------\n");
 
 
 }
