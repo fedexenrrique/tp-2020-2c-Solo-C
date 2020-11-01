@@ -287,7 +287,9 @@ void short_term_scheduler( void ) {
 
 		if ( ! queue_is_empty(g_cola_listos) ) {
 
-			t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_pop( g_cola_listos );
+			t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_peek( g_cola_listos );
+
+			printf("Se va a planificar al pedido '%d'. \n", l_repartidor->id_pedido);
 
 		 // if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR"  ) ) planificar_round_robin(l_repartidor); else
 			if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "FIFO") ) planificar_fifo       (l_repartidor); else {
@@ -296,15 +298,21 @@ void short_term_scheduler( void ) {
 				exit(-1);
 
 			}
-/*
-			void * last_executed = queue_pop(g_queue_ready);
+
+			t_pcb_repartidor* last_executed = (t_pcb_repartidor*) queue_pop(g_cola_listos );
 
 			if (last_executed->estado == BLOQ ) {
 
-				list_add(g_queue_blocked, (void*) last_executed);
+				queue_push( g_cola_bloqueados, last_executed );
 
 			}
-*/
+
+			if (last_executed->estado == FINAL ) {
+
+				queue_push( g_cola_nuevos, last_executed );
+
+			}
+
 		} else sleep(g_retardo_ciclo_cpu);
 
 	}
@@ -313,7 +321,10 @@ void short_term_scheduler( void ) {
 
 void planificar_fifo(t_pcb_repartidor * p_pcb) {
 
+	p_pcb->estado = EJEC;
+
 	sem_wait( &g_nro_cpus );
+
 	sem_post( &p_pcb->semaforo );
 
 }
@@ -478,7 +489,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			} else {
 
-				p_pcb->estado = FINAL ; // atrapar - próximo estado
+				p_pcb->estado = FINAL ;
 
 			}
 
@@ -523,8 +534,6 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 		mostrar_info_pcb_repartidor( p_pcb );
 
 		sem_post( &g_nro_cpus );
-
-		if ( p_pcb->estado == FINAL ) break;
 
 	}
 
@@ -814,10 +823,6 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 		agregar_pedid_a_planificacion (asociacion);
 
 	}
-
-
-
-	// enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido);
 
 	return confirmacion;
 
