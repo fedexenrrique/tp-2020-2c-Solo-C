@@ -31,6 +31,13 @@ void administrar_confirmar_pedido(t_header*,int);
 void administrar_plato_listo     (t_header*,int);
 void administrar_finalizar_pedido(t_header*,int);
 
+uint64_t   timestamp                 (void       );
+void       armar_y_enviar_respuesta  (cod_msg,int);
+bool       sumar_cantidad_total_plato(t_pagina_comida*,t_guardar_plato*);
+bool       crear_nuevo_plato         (t_guardar_plato*,t_pedido_seg *  );
+bool       sumar_plato_listo         (t_pagina_comida *);
+void       verificar_pedido_completo (t_pedido_seg *   );
+
 
 
 #endif /* UTILS_H_ */
