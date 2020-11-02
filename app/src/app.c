@@ -5,7 +5,7 @@ int main(void) {
 
 	g_generador_id_repartidor = 90222000;
 
-	lista_asociaciones_cliente_resto = list_create();
+	lista_clientes = list_create();
 
 	lista_resto_conectados  = list_create();
 
@@ -90,8 +90,8 @@ t_config * leer_config(void) {
 
 	t_info_restarante * resto_default = malloc( sizeof(t_info_restarante) );
 
-	resto_default->posx = g_posicion_rest_default_x;
-	resto_default->posy = g_posicion_rest_default_y;
+	resto_default->resto_x = g_posicion_rest_default_x;
+	resto_default->resto_y = g_posicion_rest_default_y;
 	resto_default->resto_nombre     = "default";
 	resto_default->socket_conectado = 0;
 	resto_default->list_platos = g_platos_default;
@@ -102,11 +102,11 @@ t_config * leer_config(void) {
 
 }
 
-void mostrar_info_pcb_repartidor ( t_pcb_repartidor * p_repa ) {
+void mostrar_info_pcb_repartidor ( t_pcb_repartidor * p_pcb ) {
 
-	printf("\nInformación del repartidor '%d'.\n", p_repa->id_repartidor );
-	printf("Se encuentra posicionado en ( %d, %d ).\n", p_repa->pos_x, p_repa->pos_y );
-	printf("Descansa cada %d metros un tiempo de %d minutos.\n", p_repa->freq_descanso, p_repa->tiempo_descanso );
+	printf("\nInformación del repartidor '%d'.\n", p_pcb->id_repartidor );
+	printf("Se encuentra posicionado en ( %d, %d ).\n", p_pcb->repa_x, p_pcb->repa_y );
+	printf("Descansa cada %d metros un tiempo de %d minutos.\n", p_pcb->metros_por_descanso, p_pcb->tiempo_de_descanso );
 
 }
 
@@ -168,7 +168,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 		printf("tratamiento de conexión.....\n");
 
-		manejar_restaurante_conectado(header_recibido, socket_aceptado);
+		// manejar_restaurante_conectado(header_recibido, socket_aceptado);
 
 		t_header aux_head;
 
@@ -200,7 +200,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	close( socket_aceptado );
 
 }
-
+/*
 void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socket_aceptado ) {
 
 	t_info_restarante * l_resto = malloc( sizeof(l_resto) );
@@ -232,6 +232,7 @@ void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socke
 
 
 }
+*/
 
 void bucle_resto_conectado ( uint32_t sock_aceptado ) {
 
@@ -254,15 +255,25 @@ void long_term_scheduler( void ) {
 
 		printf("LONG-TERM Scheduler funcionando.\n");
 
-		t_cliente_resto * pedido_cliente_resto = (t_cliente_resto*) queue_pop ( queue_confirmados_cliente_resto );
+		t_cliente_a_resto * confirmado = (t_cliente_a_resto*) queue_pop ( queue_confirmados_cliente_resto );
 
 		t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_pop( g_cola_nuevos );
 
-		l_repartidor->pedido = pedido_cliente_resto;
+		l_repartidor->cliente_x = confirmado->cliente_x;
+
+		l_repartidor->cliente_y = confirmado->cliente_y;
+
+		l_repartidor->id_pedido = confirmado->id_pedido;
+
+		l_repartidor->id_cliente = confirmado->id_cliente;
+
+		l_repartidor->nombre_resto = confirmado->nombre_resto;
 
 		l_repartidor->estado = LISTO;
 
-		printf("El repartidor '%d' esta asignado al pedido '%d'.\n'", l_repartidor->id_repartidor, pedido_cliente_resto->id_pedido );
+		l_repartidor->yendo_a= RESTO;
+
+		printf("El repartidor '%d' esta asignado al pedido '%d'.\n'", l_repartidor->id_repartidor, confirmado->id_pedido );
 
 		queue_push( g_cola_listos, l_repartidor ); // REPARTIDOR "LISTO" (con pedido asignado)
 
@@ -276,7 +287,9 @@ void short_term_scheduler( void ) {
 
 		if ( ! queue_is_empty(g_cola_listos) ) {
 
-			t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_pop( g_cola_listos );
+			t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_peek( g_cola_listos );
+
+			printf("Se va a planificar al pedido '%d'. \n", l_repartidor->id_pedido);
 
 		 // if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR"  ) ) planificar_round_robin(l_repartidor); else
 			if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "FIFO") ) planificar_fifo       (l_repartidor); else {
@@ -285,15 +298,21 @@ void short_term_scheduler( void ) {
 				exit(-1);
 
 			}
-/*
-			void * last_executed = queue_pop(g_queue_ready);
+
+			t_pcb_repartidor* last_executed = (t_pcb_repartidor*) queue_pop(g_cola_listos );
 
 			if (last_executed->estado == BLOQ ) {
 
-				list_add(g_queue_blocked, (void*) last_executed);
+				queue_push( g_cola_bloqueados, last_executed );
 
 			}
-*/
+
+			if (last_executed->estado == FINAL ) {
+
+				queue_push( g_cola_nuevos, last_executed );
+
+			}
+
 		} else sleep(g_retardo_ciclo_cpu);
 
 	}
@@ -302,7 +321,10 @@ void short_term_scheduler( void ) {
 
 void planificar_fifo(t_pcb_repartidor * p_pcb) {
 
+	p_pcb->estado = EJEC;
+
 	sem_wait( &g_nro_cpus );
+
 	sem_post( &p_pcb->semaforo );
 
 }
@@ -340,10 +362,10 @@ void _aux_01_long_term_scheduler ( void ) {
 		char ** repartidor_posiciones = (char **) string_split ( g_repartidores[posicion] , "|" );
 
 		l_repartidor->id_repartidor = g_generador_id_repartidor++;
-		l_repartidor->pos_x = (uint32_t) atoi( repartidor_posiciones[0] );
-		l_repartidor->pos_y = (uint32_t) atoi( repartidor_posiciones[1] );
-		l_repartidor->freq_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
-		l_repartidor->tiempo_descanso = (uint32_t) atoi( g_tiempo_de_descanso     [posicion] );
+		l_repartidor->repa_x = (uint32_t) atoi( repartidor_posiciones[0] );
+		l_repartidor->repa_y = (uint32_t) atoi( repartidor_posiciones[1] );
+		l_repartidor->metros_por_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
+		l_repartidor->tiempo_de_descanso = (uint32_t) atoi( g_tiempo_de_descanso     [posicion] );
 
 		free( repartidor_posiciones[0] );
 		free( repartidor_posiciones[1] );
@@ -376,86 +398,142 @@ void _aux_01_long_term_scheduler ( void ) {
 
 }
 
-void ejecucion_repartidor ( t_pcb_repartidor * p_pcb_repartidor ) {
+void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
+
+	void _moverse_hacia_restaurante () {
+
+		if ( p_pcb->repa_x != p_pcb->resto_x || p_pcb->repa_y != p_pcb->resto_y ) { // ir al pokemon
+
+			if ( p_pcb->repa_x != p_pcb->resto_x ) {
+
+				if ( p_pcb->repa_x < p_pcb->resto_x )
+
+					p_pcb->repa_x++;
+
+				else
+
+					p_pcb->repa_x--;
+
+			} else if ( p_pcb->repa_y != p_pcb->resto_y ) {
+
+				if ( p_pcb->repa_y < p_pcb->resto_y )
+
+					p_pcb->repa_y++;
+
+				else
+
+					p_pcb->repa_y--;
+
+			}
+
+			log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d).", p_pcb->id_repartidor , p_pcb->repa_x , p_pcb->repa_y );
+
+		}
+
+	}
+
+	void _moverse_hacia_cliente () {
+
+		if ( p_pcb->repa_x != p_pcb->cliente_x || p_pcb->repa_y != p_pcb->cliente_y ) { // ir al cliente
+
+			if ( p_pcb->repa_x != p_pcb->cliente_x ) {
+
+				if ( p_pcb->repa_x < p_pcb->cliente_x )
+
+					p_pcb->repa_x++;
+				else
+
+					p_pcb->repa_x--;
+
+			} else if ( p_pcb->repa_y != p_pcb->cliente_y ) {
+
+				if ( p_pcb->repa_y < p_pcb->cliente_y )
+
+					p_pcb->repa_y++;
+
+				else
+
+					p_pcb->repa_y--;
+
+			}
+
+			log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d).", p_pcb->id_repartidor , p_pcb->repa_x , p_pcb->repa_y );
+
+		}
+
+	}
 
 	void _repartidor_en_bicicleta(void) {
 
-		if ( p_pcb_repartidor->estado != EJEC ) {
+		if ( p_pcb->estado != EJEC ) {
 
-			p_pcb_repartidor->estado = EJEC;
+			p_pcb->estado = EJEC;
 
 			// g_count_cxt_switch++;
 
-			mostrar_info_pcb_repartidor( p_pcb_repartidor );
+			mostrar_info_pcb_repartidor( p_pcb );
 
 		}
 
 		sleep(g_retardo_ciclo_cpu);
 
-		t_info_restarante * resto = p_pcb_repartidor->pedido->restaurante_asociado;
+		if ( p_pcb->repa_x == p_pcb->resto_x && p_pcb->repa_y == p_pcb->resto_y ) { // ESTOY en RESTAURANTE
 
-		if ( p_pcb_repartidor->pos_x == resto->posx && p_pcb_repartidor->pos_y == resto->posy ) { // ESTOY en RESTAURANTE
+			enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, p_pcb->nombre_resto, p_pcb->id_pedido );
 
-			enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda
-									, p_pcb_repartidor->pedido->restaurante_asociado->resto_nombre
-									, p_pcb_repartidor->pedido->id_pedido);
+			if ( p_pcb->yendo_a == RESTO ){
 
+				p_pcb->yendo_a = CLI;
 
+				_moverse_hacia_cliente();
 
-			p_pcb_repartidor->estado = FINAL ; // atrapar - próximo estado
+			} else {
 
-		} else if ( p_pcb_repartidor->pos_x != resto->posx || p_pcb_repartidor->pos_y != resto->posy ) { // ir al pokemon
-
-			if ( p_pcb_repartidor->pos_x != resto->posx ) {
-
-				if ( p_pcb_repartidor->pos_x < resto->posx )
-					p_pcb_repartidor->pos_x++;
-				else
-					p_pcb_repartidor->pos_x--;
-
-			} else if ( p_pcb_repartidor->pos_y != resto->posy ) {
-
-				if ( p_pcb_repartidor->pos_y < resto->posy )
-					p_pcb_repartidor->pos_y++;
-				else
-					p_pcb_repartidor->pos_y--;
+				p_pcb->estado = FINAL ;
 
 			}
 
-			log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d). "
-					, p_pcb_repartidor->id_repartidor , p_pcb_repartidor->pos_x , p_pcb_repartidor->pos_y );
+		} else {
+
+			if ( p_pcb->yendo_a == RESTO ) {
+
+				_moverse_hacia_restaurante();
+
+			} else if ( p_pcb->yendo_a == CLI ) {
+
+				_moverse_hacia_cliente();
+
+			}
 
 		}
 
 	}
 
-	printf( "Se inició correctamente el Hilo del Repartidor '%d'.\n", p_pcb_repartidor->id_repartidor );
+	printf( "Se inició correctamente el Hilo del Repartidor '%d'.\n", p_pcb->id_repartidor );
 
 	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR") ) while (1) {
 
-		sem_wait(&p_pcb_repartidor->semaforo);
+		sem_wait(&p_pcb->semaforo);
 
 		_repartidor_en_bicicleta();
 
-		if ( p_pcb_repartidor->estado != EJEC ) mostrar_info_pcb_repartidor( p_pcb_repartidor );
+		if ( p_pcb->estado != EJEC ) mostrar_info_pcb_repartidor( p_pcb );
 
 		sem_post(&g_nro_cpus);
 
-		if ( p_pcb_repartidor->estado == FINAL ) break;
+		if ( p_pcb->estado == FINAL ) break;
 
 	}
 
 	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "FIFO") ) while (1) {
 
-		sem_wait(&p_pcb_repartidor->semaforo);
+		sem_wait(&p_pcb->semaforo);
 
-		do { _repartidor_en_bicicleta(); } while ( p_pcb_repartidor->estado == EJEC );
+		do { _repartidor_en_bicicleta(); } while ( p_pcb->estado == EJEC );
 
-		mostrar_info_pcb_repartidor( p_pcb_repartidor );
+		mostrar_info_pcb_repartidor( p_pcb );
 
 		sem_post( &g_nro_cpus );
-
-		if ( p_pcb_repartidor->estado == FINAL ) break;
 
 	}
 
@@ -473,11 +551,11 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 	bool _detecta_asociacion_previa_de_id ( void * p_elem ) {
 
-		return ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ;
+		return ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ;
 
 	}
 
-	list_remove_by_condition( lista_asociaciones_cliente_resto, _detecta_asociacion_previa_de_id ); // Elimina asociación previa
+	list_remove_by_condition( lista_clientes, _detecta_asociacion_previa_de_id ); // Elimina asociación previa
 
 	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) { // Restaurante con nombre
 
@@ -510,19 +588,21 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 			printf( "Cliente Nro.: '%d' en la posición (%d,%d) se asociado al restaurante: '%s'.\n"
 					, header_recibido->id_proceso, pos_x, pos_y, l_restaurante_seleccionado );
 
-			t_cliente_resto * l_asociar = malloc( sizeof(t_cliente_resto) );
+			t_cliente_a_resto * l_confirmar = malloc( sizeof(t_cliente_a_resto) );
 
 			t_info_restarante * resto = list_find ( lista_resto_conectados, _detecta_restaurante_en_lista );
 
 			if ( resto == NULL ) return false;
 
-			l_asociar->id_proceso = header_recibido->id_proceso;
-			l_asociar->pos_x      = pos_x;
-			l_asociar->pos_y      = pos_y;
-			l_asociar->restaurante_asociado = resto;
-			l_asociar->id_pedido  = 0;
+			l_confirmar->id_cliente = header_recibido->id_proceso;
+			l_confirmar->cliente_x  = pos_x;
+			l_confirmar->cliente_y  = pos_y;
+			l_confirmar->nombre_resto = resto->resto_nombre;
+			l_confirmar->id_pedido  = 0;
+			l_confirmar->resto_x    = resto->resto_x;
+			l_confirmar->resto_x    = resto->resto_y;
 
-			list_add( lista_asociaciones_cliente_resto, l_asociar );
+			list_add( lista_clientes, l_confirmar );
 
 			return true;
 
@@ -548,17 +628,17 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
 	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
-		return ( ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ) ? true : false ;
+		return ( ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ) ? true : false ;
 
 	}
 
-	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
+	t_cliente_a_resto * asociacion = list_find( lista_clientes , _control_existe_asociacion_cliente_resto );
 
 	if ( asociacion != NULL ) {
 
 		printf("Se encontró asociación.");
 
-		return asociacion->restaurante_asociado->list_platos;
+		return NULL; // DEBE RETORNAR LA LISTA DE PLATOS
 
 	} else {
 
@@ -574,11 +654,11 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	bool _chequeo_existencia_asociacion ( void * p_elem ) {
 
-		return ((t_cliente_resto *) p_elem)->id_proceso == header_recibido->id_proceso;
+		return ((t_cliente_a_resto *) p_elem)->id_cliente == header_recibido->id_proceso;
 
 	}
 
-	t_cliente_resto * asociacion = (t_cliente_resto *) list_find( lista_asociaciones_cliente_resto, _chequeo_existencia_asociacion );
+	t_cliente_a_resto * asociacion = (t_cliente_a_resto *) list_find( lista_clientes, _chequeo_existencia_asociacion );
 
 	if ( asociacion == NULL ) return -1;
 
@@ -612,11 +692,11 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 
 	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
-		return ((t_cliente_resto*)p_elem)->id_proceso == header_recibido->id_proceso ;
+		return ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ;
 
 	}
 
-	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_asociacion_cliente_resto );
+	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_asociacion_cliente_resto );
 
 	if ( asociacion == NULL || asociacion->id_pedido == 0 ) {
 
@@ -651,7 +731,7 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 	printf("\n%s\n", nombre_plato);
 
 	bool guardado = enviar_08_guardar_plato(  g_ip_comanda , g_puerto_comanda
-										    , asociacion->restaurante_asociado->resto_nombre
+										    , asociacion->nombre_resto
 										    , asociacion->id_pedido
 										    , nombre_plato
 										    , cantidad_platos);
@@ -726,11 +806,11 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	bool _control_existe_pedido ( void * p_elem ) {
 
-		return ((t_cliente_resto*)p_elem)->id_pedido == id_pedido ;
+		return ((t_cliente_a_resto*)p_elem)->id_pedido == id_pedido ;
 
 	}
 
-	t_cliente_resto * asociacion = list_find( lista_asociaciones_cliente_resto, _control_existe_pedido );
+	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_pedido );
 
 	if ( asociacion == NULL ) {
 
@@ -744,15 +824,11 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	}
 
-
-
-	// enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido);
-
 	return confirmacion;
 
 }
 
-void agregar_pedid_a_planificacion (t_cliente_resto * asociacion) {
+void agregar_pedid_a_planificacion (t_cliente_a_resto * asociacion) {
 
 	queue_push( queue_confirmados_cliente_resto, asociacion );
 
