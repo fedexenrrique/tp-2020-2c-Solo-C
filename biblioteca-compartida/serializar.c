@@ -697,6 +697,48 @@ bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, char * p_nom_resto
 
 }
 
+bool enviar_09_confirmar_pedido_hack ( char* p_ip, char* p_puerto ) {
+
+	bool _recibir_09_confirmacion_pedido( uint32_t p_conexion ) {
+
+		t_header * header_response = recibir_buffer( p_conexion );
+
+		bool resultado = ( header_response->nro_msg == OK) ? TRUE : FALSE ;
+
+		free ( header_response );
+
+		return resultado;
+
+	}
+
+	uint32_t conexion = crear_socket_y_conectar(p_ip, p_puerto);
+
+	t_header header_request;
+
+	header_request.modulo     = APP;
+	header_request.id_proceso = 0;
+	header_request.nro_msg    = CONFIRMAR_PEDIDO_HACK;
+	header_request.size       = 0;
+	header_request.payload    = NULL;
+
+	if ( enviar_buffer( conexion, &header_request ) ) {
+
+		bool resultado = _recibir_09_confirmacion_pedido(conexion);
+
+		close( conexion );
+
+		return resultado;
+
+	} else {
+
+		close(conexion);
+
+		return false;
+
+	}
+
+}
+
 void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado ) {
 
 	t_header header_response;

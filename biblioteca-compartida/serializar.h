@@ -70,6 +70,7 @@ typedef enum {
 	RESPUESTA_OBTENER_PEDIDO            = 18,
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
+	CONFIRMAR_PEDIDO_HACK				= 303,
 
 } cod_msg;
 
@@ -196,6 +197,7 @@ void responder_07_aniadir_plato( uint32_t socket_cliente, bool p_resultado );
 
 void responder_09_confirmar_pedido ( uint32_t socket_cliente, bool p_resultado );
 
+bool enviar_09_confirmar_pedido_hack ( char* p_ip, char* p_puerto );
 
 bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
 		                         ,char * p_nom_resto, uint32_t p_id_pedido
