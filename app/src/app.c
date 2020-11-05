@@ -11,15 +11,13 @@ int main(void) {
 
 	queue_confirmados_cliente_resto = queue_create();
 
+	sem_init(&g_nro_cpus ,0 ,0);
+
 	g_sockets_abiertos      = list_create();
 
 	g_cola_listos = queue_create();
 
 	g_cola_nuevos = queue_create();
-
-	sem_init( &g_nro_cpus                  , 0, 0 );
-
-	sem_init( &g_nro_pedidos_confirmados   , 0, 0 );
 
 	signal(SIGINT, sigint);
 
@@ -85,8 +83,6 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "PLATOS_DEFAULT"              ) ) g_platos_default              = config_get_array_value(config, "PLATOS_DEFAULT");
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_X"     ) ) g_posicion_rest_default_x     = config_get_int_value(config, "POSICION_REST_DEFAULT_X");
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_Y"     ) ) g_posicion_rest_default_y     = config_get_int_value(config, "POSICION_REST_DEFAULT_Y");
-
-	sem_init( &g_nro_cpus, 0, g_grado_de_multiprocesamiento );
 
 	t_info_restarante * resto_default = malloc( sizeof(t_info_restarante) );
 
@@ -160,6 +156,13 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		bool confirmacion = procesamiento_09_confirmar_pedido ( header_recibido );
 		responder_09_confirmar_pedido ( socket_aceptado, confirmacion );
 		break;
+
+	case CONFIRMAR_PEDIDO_HACK: ;
+		printf("HACK DE CONFIRMAR PEDIDO");
+		procesamiento_09_confirmar_pedido_hack ( );
+		responder_09_confirmar_pedido ( socket_aceptado, TRUE );
+		break;
+
 	case PLATO_LISTO:
 		break;
 	case CONSULTAR_PEDIDO:
@@ -236,120 +239,48 @@ void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socke
 
 void bucle_resto_conectado ( uint32_t sock_aceptado ) {
 
-	sem_wait( &g_semaphore_envios_resto );
-	// list_iterate(p_msg_queue, _control_mensaje_individual);
-	sleep(5);
-	sem_post( &g_semaphore_envios_resto );
-
 }
 
 void long_term_scheduler( void ) {
 
-	_aux_01_long_term_scheduler();
+	_aux_long_term_scheduler();
 
-	while ( 1 ) {  // planificar
+	while (1) {
 
-		while ( queue_size( g_cola_nuevos ) == 0 ) sleep(1); // necesita un REPARTIDOR en estado NUEVO.
+		if ( queue_size(queue_confirmados_cliente_resto) != 0 && queue_size(g_cola_nuevos) != 0 ){
 
-		sem_wait( &g_nro_pedidos_confirmados );
+			t_pcb_repartidor * l_repartidor = queue_pop(g_cola_nuevos);
 
-		printf("LONG-TERM Scheduler funcionando.\n");
+			t_cliente_a_resto * l_confirmado = queue_pop(queue_confirmados_cliente_resto);
 
-		t_cliente_a_resto * confirmado = (t_cliente_a_resto*) queue_pop ( queue_confirmados_cliente_resto );
+			printf("Estoy por planificar el repartidor %d hasta con el pedido %d.\n", l_repartidor->id_repartidor, l_confirmado->id_pedido);
 
-		t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_pop( g_cola_nuevos );
+			l_repartidor->cliente_x = l_confirmado->cliente_x;
 
-		l_repartidor->cliente_x = confirmado->cliente_x;
+			l_repartidor->cliente_y = l_confirmado->cliente_y;
 
-		l_repartidor->cliente_y = confirmado->cliente_y;
+			l_repartidor->id_cliente= l_confirmado->id_cliente;
 
-		l_repartidor->id_pedido = confirmado->id_pedido;
+			l_repartidor->id_pedido = l_confirmado->id_pedido;
 
-		l_repartidor->id_cliente = confirmado->id_cliente;
+			l_repartidor->nombre_resto = l_confirmado->nombre_resto;
 
-		l_repartidor->nombre_resto = confirmado->nombre_resto;
+			l_repartidor->resto_x = l_confirmado->resto_x;
 
-		l_repartidor->estado = LISTO;
+			l_repartidor->resto_y = l_confirmado->resto_y;
 
-		l_repartidor->yendo_a= RESTO;
+			l_repartidor->yendo_a = RESTO;
 
-		printf("El repartidor '%d' esta asignado al pedido '%d'.\n'", l_repartidor->id_repartidor, confirmado->id_pedido );
 
-		queue_push( g_cola_listos, l_repartidor ); // REPARTIDOR "LISTO" (con pedido asignado)
+			queue_push( g_cola_listos, l_repartidor );
 
-	}
-
-}
-
-void short_term_scheduler( void ) {
-
-	while ( 1 ) {  // planificar
-
-		if ( ! queue_is_empty(g_cola_listos) ) {
-
-			t_pcb_repartidor * l_repartidor = (t_pcb_repartidor*) queue_peek( g_cola_listos );
-
-			printf("Se va a planificar al pedido '%d'. \n", l_repartidor->id_pedido);
-
-		 // if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR"  ) ) planificar_round_robin(l_repartidor); else
-			if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "FIFO") ) planificar_fifo       (l_repartidor); else {
-
-				log_info(logger, "Algoritmo de planificación equivocado. Revise su archivo de configuración.");
-				exit(-1);
-
-			}
-
-			t_pcb_repartidor* last_executed = (t_pcb_repartidor*) queue_pop(g_cola_listos );
-
-			if (last_executed->estado == BLOQ ) {
-
-				queue_push( g_cola_bloqueados, last_executed );
-
-			}
-
-			if (last_executed->estado == FINAL ) {
-
-				queue_push( g_cola_nuevos, last_executed );
-
-			}
-
-		} else sleep(g_retardo_ciclo_cpu);
+		} else sleep(1);
 
 	}
 
 }
 
-void planificar_fifo(t_pcb_repartidor * p_pcb) {
-
-	p_pcb->estado = EJEC;
-
-	sem_wait( &g_nro_cpus );
-
-	sem_post( &p_pcb->semaforo );
-
-}
-
-/*
-void planificar_round_robin(t_pcb_repartidor * p_pcb ) {
-
-	for (int i = 0; i < g_quantum; i++) {
-
-		sem_post(&next_ready_ent->sem_entrenador);
-		sem_wait(&g_cpu_entrenadores);
-
-		if ( next_ready_ent->estado != EJEC ) {
-			g_count_cxt_switch++;
-			break;
-		}
-
-	}
-
-}
-*/
-
-
-
-void _aux_01_long_term_scheduler ( void ) {
+void _aux_long_term_scheduler() {
 
 	uint32_t posicion = 0;
 
@@ -373,11 +304,12 @@ void _aux_01_long_term_scheduler ( void ) {
 
 		sem_init( &l_repartidor->semaforo, 0, 0 );
 
+		sem_init( &l_repartidor->cpu, 0, 0 );
+
 		mostrar_info_pcb_repartidor( l_repartidor );
 
 		queue_push( g_cola_nuevos, l_repartidor );
 
-		// TODO: corregir funcion de ejecución de repartidor
 		pthread_create(&l_repartidor->thread_metadata  , NULL, (void*) &ejecucion_repartidor, (void*) l_repartidor  );
 
 		posicion++;
@@ -395,8 +327,40 @@ void _aux_01_long_term_scheduler ( void ) {
 		exit(-1);
 
 	}
+}
+
+void short_term_scheduler( void ) {
+
+	uint32_t size_cola_listos = 0;
+
+	while(1){
+
+		if ( queue_size( g_cola_listos ) != size_cola_listos && queue_size( g_cola_listos ) != 0 ) {
+
+			size_cola_listos = queue_size( g_cola_listos );
+
+			printf("El tamaño de la cola de listos es ahora de %d.\n", size_cola_listos );
+
+			if (size_cola_listos == 0) size_cola_listos = -1;
+
+			t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_listos );
+
+			repa->estado = EJEC;
+
+			sem_post(&repa->semaforo);
+
+			sem_wait(&repa->cpu);
+
+		} else sleep(1);
+
+	}
 
 }
+
+
+
+
+
 
 void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
@@ -477,7 +441,8 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		sleep(g_retardo_ciclo_cpu);
 
-		if ( p_pcb->repa_x == p_pcb->cliente_x && p_pcb->repa_y == p_pcb->cliente_y && p_pcb->yendo_a == CLI ) { // ESTOY en RESTAURANTE
+
+		if ( p_pcb->repa_x == p_pcb->cliente_x && p_pcb->repa_y == p_pcb->cliente_y && p_pcb->yendo_a == CLI ) { // ESTOY en CLIENTE
 
 			// finalizar pedido
 
@@ -495,7 +460,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			}
 
-		} else {
+		} else { // EN CAMINO
 
 			if ( p_pcb->yendo_a == RESTO ) {
 
@@ -517,13 +482,18 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		sem_wait(&p_pcb->semaforo);
 
-		_repartidor_en_bicicleta();
+		while (1) {
+			printf("mensaje del repartidor %d.\n", p_pcb->id_repartidor);
+			sleep(1);
+		}
 
-		if ( p_pcb->estado != EJEC ) mostrar_info_pcb_repartidor( p_pcb );
+		// _repartidor_en_bicicleta();
 
-		sem_post(&g_nro_cpus);
+		// if ( p_pcb->estado != EJEC ) mostrar_info_pcb_repartidor( p_pcb );
 
-		if ( p_pcb->estado == FINAL ) break;
+		// sem_post(&g_nro_cpus);
+
+		// if ( p_pcb->estado == FINAL ) break;
 
 	}
 
@@ -533,9 +503,15 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		do { _repartidor_en_bicicleta(); } while ( p_pcb->estado == EJEC );
 
+		p_pcb->estado = NUEVO;
+
+		queue_push( g_cola_nuevos, p_pcb );
+
+		sem_post(&p_pcb->cpu);
+
 		mostrar_info_pcb_repartidor( p_pcb );
 
-		sem_post( &g_nro_cpus );
+		// sem_post( &g_nro_cpus );
 
 	}
 
@@ -830,11 +806,69 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 }
 
+bool procesamiento_09_confirmar_pedido_hack ( void ) {
+
+	t_cliente_a_resto * asociacion = malloc(sizeof(t_cliente_a_resto));
+
+	asociacion->cliente_x=10;
+
+	asociacion->cliente_y=10;
+
+	asociacion->id_cliente= 999;
+
+	asociacion->id_pedido= 999;
+
+	asociacion->nombre_resto= "default";
+
+	asociacion->resto_x=20;
+
+	asociacion->resto_y=20;
+
+	agregar_pedid_a_planificacion (asociacion);
+
+	t_cliente_a_resto * asociacion2 = malloc(sizeof(t_cliente_a_resto));
+
+	asociacion2->cliente_x=25;
+
+	asociacion2->cliente_y=25;
+
+	asociacion2->id_cliente= 999;
+
+	asociacion2->id_pedido= 999;
+
+	asociacion2->nombre_resto= "default";
+
+	asociacion2->resto_x=30;
+
+	asociacion2->resto_y=30;
+
+	agregar_pedid_a_planificacion (asociacion2);
+
+	t_cliente_a_resto * asociacion3 = malloc(sizeof(t_cliente_a_resto));
+
+	asociacion3->cliente_x=25;
+
+	asociacion3->cliente_y=25;
+
+	asociacion3->id_cliente= 999;
+
+	asociacion3->id_pedido= 999;
+
+	asociacion3->nombre_resto= "default";
+
+	asociacion3->resto_x=25;
+
+	asociacion3->resto_y=25;
+
+	agregar_pedid_a_planificacion (asociacion3);
+
+	return true;
+
+}
+
 void agregar_pedid_a_planificacion (t_cliente_a_resto * asociacion) {
 
 	queue_push( queue_confirmados_cliente_resto, asociacion );
-
-	sem_post( &g_nro_pedidos_confirmados );
 
 }
 
