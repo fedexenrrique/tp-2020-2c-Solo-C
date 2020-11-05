@@ -477,7 +477,13 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		sleep(g_retardo_ciclo_cpu);
 
-		if ( p_pcb->repa_x == p_pcb->resto_x && p_pcb->repa_y == p_pcb->resto_y ) { // ESTOY en RESTAURANTE
+		if ( p_pcb->repa_x == p_pcb->cliente_x && p_pcb->repa_y == p_pcb->cliente_y && p_pcb->yendo_a == CLI ) { // ESTOY en RESTAURANTE
+
+			// finalizar pedido
+
+			p_pcb->estado = FINAL ;
+
+		} else if ( p_pcb->repa_x == p_pcb->resto_x && p_pcb->repa_y == p_pcb->resto_y && p_pcb->yendo_a == RESTO ) { // ESTOY en RESTAURANTE
 
 			enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, p_pcb->nombre_resto, p_pcb->id_pedido );
 
@@ -486,10 +492,6 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 				p_pcb->yendo_a = CLI;
 
 				_moverse_hacia_cliente();
-
-			} else {
-
-				p_pcb->estado = FINAL ;
 
 			}
 
