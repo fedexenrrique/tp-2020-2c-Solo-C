@@ -113,6 +113,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    id_pedido;
 	uint32_t    resto_x;
 	uint32_t    resto_y;
+	sem_t       cpu;
 
 } t_pcb_repartidor;
 

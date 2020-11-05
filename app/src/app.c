@@ -269,6 +269,9 @@ void long_term_scheduler( void ) {
 
 			l_repartidor->resto_y = l_confirmado->resto_y;
 
+			l_repartidor->yendo_a = RESTO;
+
+
 			queue_push( g_cola_listos, l_repartidor );
 
 		} else sleep(1);
@@ -300,6 +303,8 @@ void _aux_long_term_scheduler() {
 		free( repartidor_posiciones );
 
 		sem_init( &l_repartidor->semaforo, 0, 0 );
+
+		sem_init( &l_repartidor->cpu, 0, 0 );
 
 		mostrar_info_pcb_repartidor( l_repartidor );
 
@@ -343,6 +348,8 @@ void short_term_scheduler( void ) {
 			repa->estado = EJEC;
 
 			sem_post(&repa->semaforo);
+
+			sem_wait(&repa->cpu);
 
 		} else sleep(1);
 
@@ -434,7 +441,13 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		sleep(g_retardo_ciclo_cpu);
 
-		if ( p_pcb->repa_x == p_pcb->resto_x && p_pcb->repa_y == p_pcb->resto_y ) { // ESTOY en RESTAURANTE
+		if ( p_pcb->repa_x == p_pcb->cliente_x && p_pcb->repa_y == p_pcb->cliente_y && p_pcb->yendo_a == CLI ) { // ESTOY en CLIENTE
+
+			// finalizar pedido
+
+			p_pcb->estado = FINAL ;
+
+		} else if ( p_pcb->repa_x == p_pcb->resto_x && p_pcb->repa_y == p_pcb->resto_y && p_pcb->yendo_a == RESTO ) { // ESTOY en RESTAURANTE
 
 			enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, p_pcb->nombre_resto, p_pcb->id_pedido );
 
@@ -450,7 +463,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			}
 
-		} else {
+		} else { // EN CAMINO
 
 			if ( p_pcb->yendo_a == RESTO ) {
 
@@ -491,14 +504,15 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		sem_wait(&p_pcb->semaforo);
 
-		while (1) {
-			printf("mensaje del repartidor %d.\n", p_pcb->id_repartidor);
-			sleep(1);
-		}
+		do { _repartidor_en_bicicleta(); } while ( p_pcb->estado == EJEC );
 
-		// do { _repartidor_en_bicicleta(); } while ( p_pcb->estado == EJEC );
+		p_pcb->estado = NUEVO;
 
-		//mostrar_info_pcb_repartidor( p_pcb );
+		queue_push( g_cola_nuevos, p_pcb );
+
+		sem_post(&p_pcb->cpu);
+
+		mostrar_info_pcb_repartidor( p_pcb );
 
 		// sem_post( &g_nro_cpus );
 
@@ -809,9 +823,9 @@ bool procesamiento_09_confirmar_pedido_hack ( void ) {
 
 	asociacion->nombre_resto= "default";
 
-	asociacion->resto_x=-10;
+	asociacion->resto_x=20;
 
-	asociacion->resto_y=-10;
+	asociacion->resto_y=20;
 
 	agregar_pedid_a_planificacion (asociacion);
 
@@ -827,9 +841,9 @@ bool procesamiento_09_confirmar_pedido_hack ( void ) {
 
 	asociacion2->nombre_resto= "default";
 
-	asociacion2->resto_x=-10;
+	asociacion2->resto_x=30;
 
-	asociacion2->resto_y=-10;
+	asociacion2->resto_y=30;
 
 	agregar_pedid_a_planificacion (asociacion2);
 
@@ -845,9 +859,9 @@ bool procesamiento_09_confirmar_pedido_hack ( void ) {
 
 	asociacion3->nombre_resto= "default";
 
-	asociacion3->resto_x=-10;
+	asociacion3->resto_x=25;
 
-	asociacion3->resto_y=-10;
+	asociacion3->resto_y=25;
 
 	agregar_pedid_a_planificacion (asociacion3);
 
