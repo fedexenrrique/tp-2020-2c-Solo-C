@@ -513,6 +513,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 		sem_post(&p_pcb->cpu);
 
 		mostrar_info_pcb_repartidor( p_pcb );
+;
 
 		// sem_post( &g_nro_cpus );
 
