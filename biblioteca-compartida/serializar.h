@@ -206,6 +206,8 @@ int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre
 
 bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
 
+bool enviar_13_finalizar_pedido (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
+
 //int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );
 

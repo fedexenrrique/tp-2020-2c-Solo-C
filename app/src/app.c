@@ -11,7 +11,7 @@ int main(void) {
 
 	queue_confirmados_cliente_resto = queue_create();
 
-	sem_init(&g_nro_cpus ,0 ,0);
+	sem_init( &g_nro_cpus ,0 ,0);
 
 	g_sockets_abiertos      = list_create();
 
@@ -24,9 +24,9 @@ int main(void) {
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
-	pthread_create(&g_thread_long_term_scheduler  , NULL, (void*) &long_term_scheduler, (void*) NULL  );
+	pthread_create( &g_thread_long_term_scheduler  , NULL, (void*) &long_term_scheduler, (void*) NULL  );
 
-	pthread_create(&g_thread_short_term_scheduler , NULL, (void*) &short_term_scheduler, (void*) NULL  );
+	pthread_create( &g_thread_short_term_scheduler , NULL, (void*) &short_term_scheduler, (void*) NULL  );
 
 	// medium_term_scheduler();
 
@@ -390,7 +390,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			}
 
-			log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d).", p_pcb->id_repartidor , p_pcb->repa_x , p_pcb->repa_y );
+			log_info( logger, "El repartidor '%d'. va al restaurante (%d,%d) y avanza a (%d,%d)", p_pcb->id_repartidor , p_pcb->resto_x, p_pcb->resto_y, p_pcb->repa_x , p_pcb->repa_y );
 
 		}
 
@@ -421,7 +421,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			}
 
-			log_info( logger, "El repartidor '%d'. avanzó a la posición (%d,%d).", p_pcb->id_repartidor , p_pcb->repa_x , p_pcb->repa_y );
+			log_info( logger, "El repartidor '%d'. va el cliente en (%d,%d) y avanza a (%d,%d)", p_pcb->id_repartidor , p_pcb->cliente_x, p_pcb->cliente_y, p_pcb->repa_x , p_pcb->repa_y );
 
 		}
 
@@ -444,7 +444,15 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		if ( p_pcb->repa_x == p_pcb->cliente_x && p_pcb->repa_y == p_pcb->cliente_y && p_pcb->yendo_a == CLI ) { // ESTOY en CLIENTE
 
-			// finalizar pedido
+			bool finalizo = enviar_13_finalizar_pedido   ( g_ip_comanda, g_puerto_comanda, p_pcb->nombre_resto, p_pcb->id_pedido );
+
+			if ( finalizo )
+
+				printf("Finalizó pedido correctamente.");
+
+			else
+
+				printf("Hubo un problema al finalizar el pedido.");
 
 			p_pcb->estado = FINAL ;
 
@@ -578,7 +586,7 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 			l_confirmar->nombre_resto = resto->resto_nombre;
 			l_confirmar->id_pedido  = 0;
 			l_confirmar->resto_x    = resto->resto_x;
-			l_confirmar->resto_x    = resto->resto_y;
+			l_confirmar->resto_y    = resto->resto_y;
 
 			list_add( lista_clientes, l_confirmar );
 
