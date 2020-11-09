@@ -117,12 +117,6 @@ void manejo_modulo_conectado(void * socket_cliente){
 
 	}
 
-
-
-
-
-
-
 }
 
 
@@ -131,15 +125,8 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
 	t_pedido * pedido=(t_pedido*)encabezado->payload;
 
-		bool buscar_restaurante(void * elemento){
-			t_restaurante * restaurante=(t_restaurante*)elemento;
-
-			if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido->nombre_restaurante)){
-					return TRUE;
-					}
-			return FALSE;
-		}
-	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);   //Busca si existe el restaurante
+	t_restaurante * restaurante=NULL;
+	restaurante=busqueda_de_restaurante(pedido->nombre_restaurante);
 
 	if(restaurante==NULL)
 		restaurante=crear_tabla_segmentos_restaurante(pedido->nombre_restaurante);   //Si no existe el restaurant, lo crea
@@ -159,33 +146,10 @@ void administrar_guardar_pedido(t_header * encabezado,int socket_cliente){
 
 
 
-
-
-
 void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 
 	t_guardar_plato * plato=(t_guardar_plato*)encabezado->payload;
 	bool exito=FALSE;
-
-
-					bool buscar_restaurante(void * elemento){
-						t_restaurante * restaurante=(t_restaurante*)elemento;
-
-						if(string_equals_ignore_case(restaurante->nombre_restaurante,plato->pedido->nombre_restaurante)){
-								return TRUE;
-								}
-						return FALSE;
-					}
-
-					bool buscar_pedido(void * elemento){
-						t_pedido_seg * pedido=(t_pedido_seg*)elemento;
-						//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
-
-						if(pedido->id_pedido==plato->pedido->id_pedido){
-								return TRUE;
-								}
-						return FALSE;
-					}
 
 					bool buscar_comida(void * elemento){
 						t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
@@ -201,8 +165,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_restaurante * restaurante=NULL;
-	restaurante=list_find(lista_restarurantes,buscar_restaurante);//Busco si existe el restaurant
-
+	restaurante=busqueda_de_restaurante(plato->pedido->nombre_restaurante);
 
 	if(restaurante==NULL){
 		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
@@ -214,7 +177,8 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_pedido_seg * pedido=NULL;
-	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);//Busco si se encuentra el pedido
+	pedido=buscar_el_pedido(plato->pedido,restaurante->tabla_pedidos);
+			//list_find(restaurante->tabla_pedidos,buscar_pedido);//Busco si se encuentra el pedido
 
 	if(pedido==NULL){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
@@ -258,24 +222,6 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 	uint32_t size_payload=0;
 	t_comida * comida=malloc(sizeof(t_comida ));
 
-			bool buscar_restaurante(void * elemento){
-				t_restaurante * restaurante=(t_restaurante*)elemento;
-
-				if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido_solicitado->nombre_restaurante)){
-						return TRUE;
-						}
-				return FALSE;
-			}
-
-			bool buscar_pedido(void * elemento){
-				t_pedido_seg * pedido=(t_pedido_seg*)elemento;
-				//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
-
-				if(pedido->id_pedido==pedido_solicitado->id_pedido){
-						return TRUE;
-						}
-				return FALSE;
-			}
 			void _serializar_tabla_comida(void * elemento){
 				t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
 
@@ -301,7 +247,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_restaurante * restaurante=NULL;
-	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+	restaurante=busqueda_de_restaurante(pedido_solicitado->nombre_restaurante);
 
 
 	if(restaurante==NULL){
@@ -314,7 +260,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_pedido_seg * pedido=NULL;
-	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+	pedido=buscar_el_pedido(pedido_solicitado,restaurante->tabla_pedidos);
 
 	if(pedido==NULL){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
@@ -323,7 +269,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 		printf("Se encontro el pedido numero: %d\n",pedido->id_pedido);
 
 		int size_lista_pedido=list_size(pedido->comidas_del_pedido);
-		log_error(logger,"El tamaño de la lista del pedido es: %d",size_lista_pedido);
+		log_info(logger,"El tamaño de la lista del pedido es: %d",size_lista_pedido);
 		size_payload=(SIZE_PAGINA*size_lista_pedido)+sizeof(estado_pedido);
 		log_info(logger,"El size del payload es: %d",size_payload);
 		buffer=malloc(size_payload);
@@ -340,7 +286,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 	envio_de_respuesta:
 	;
 	cod_msg tipo_msj=RESPUESTA_OBTENER_PEDIDO;
-	armar_y_enviar_respuesta(tipo_msj,socket_cliente);
+	armar_envio_obtener_pedido(tipo_msj,socket_cliente,size_payload,buffer);
 }
 
 
@@ -348,26 +294,6 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 
 	t_guardar_plato * plato=(t_guardar_plato*)encabezado->payload;
 	bool exito=FALSE;
-
-
-							bool buscar_restaurante(void * elemento){
-								t_restaurante * restaurante=(t_restaurante*)elemento;
-
-								if(string_equals_ignore_case(restaurante->nombre_restaurante,plato->pedido->nombre_restaurante)){
-										return TRUE;
-										}
-								return FALSE;
-							}
-
-							bool buscar_pedido(void * elemento){
-								t_pedido_seg * pedido=(t_pedido_seg*)elemento;
-								//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
-
-								if(pedido->id_pedido==plato->pedido->id_pedido){
-										return TRUE;
-										}
-								return FALSE;
-							}
 
 							bool buscar_comida(void * elemento){
 								t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
@@ -384,7 +310,7 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_restaurante * restaurante=NULL;
-	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+	restaurante=busqueda_de_restaurante(plato->pedido->nombre_restaurante);
 
 
 	if(restaurante==NULL){
@@ -397,7 +323,7 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_pedido_seg * pedido=NULL;
-	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+	pedido=buscar_el_pedido(plato->pedido,restaurante->tabla_pedidos);
 
 	if(pedido==NULL){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
@@ -446,32 +372,11 @@ void administrar_confirmar_pedido(t_header * encabezado,int socket_cliente){
 	t_pedido * pedido_solicitado=(t_pedido*)encabezado->payload;
 	bool exito=FALSE;
 
-						bool buscar_restaurante(void * elemento){
-							t_restaurante * restaurante=(t_restaurante*)elemento;
-
-							if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido_solicitado->nombre_restaurante)){
-									return TRUE;
-									}
-							return FALSE;
-						}
-
-						bool buscar_pedido(void * elemento){
-							t_pedido_seg * pedido=(t_pedido_seg*)elemento;
-							//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
-
-							if(pedido->id_pedido==pedido_solicitado->id_pedido){
-									return TRUE;
-									}
-							return FALSE;
-						}
-
-
 	if(list_is_empty(lista_restarurantes))								//Verifico que no este vacia la lista
 		goto envio_de_respuesta;
 
 	t_restaurante * restaurante=NULL;
-	restaurante=list_find(lista_restarurantes,buscar_restaurante);
-
+	restaurante=busqueda_de_restaurante(pedido_solicitado->nombre_restaurante);
 
 	if(restaurante==NULL){
 		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
@@ -483,7 +388,7 @@ void administrar_confirmar_pedido(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_pedido_seg * pedido=NULL;
-	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
+	pedido=buscar_el_pedido(pedido_solicitado,restaurante->tabla_pedidos);
 
 	if(pedido==NULL){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
@@ -517,15 +422,6 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 	t_pedido * pedido_solicitado=(t_pedido*)encabezado->payload;
 	bool exito=FALSE;
 
-						bool buscar_restaurante(void * elemento){
-							t_restaurante * restaurante=(t_restaurante*)elemento;
-
-							if(string_equals_ignore_case(restaurante->nombre_restaurante,pedido_solicitado->nombre_restaurante)){
-									return TRUE;
-									}
-							return FALSE;
-						}
-
 						bool buscar_pedido(void * elemento){
 							t_pedido_seg * pedido=(t_pedido_seg*)elemento;
 							//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
@@ -548,7 +444,7 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 		goto envio_de_respuesta;
 
 	t_restaurante * restaurante=NULL;
-	restaurante=list_find(lista_restarurantes,buscar_restaurante);
+	restaurante=busqueda_de_restaurante(pedido_solicitado->nombre_restaurante);
 
 
 	if(restaurante==NULL){
@@ -616,6 +512,27 @@ void armar_y_enviar_respuesta(cod_msg tipo_msj,int socket_cliente){
 	printf("-------------------\n");
 
 
+}
+
+void       armar_envio_obtener_pedido     (cod_msg tipo_msj,int socket_cliente,int size_payload,void * buffer){
+
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	nuevo_encabezado->nro_msg=RESPUESTA_OBTENER_PEDIDO;
+	nuevo_encabezado->size=size_payload;
+	nuevo_encabezado->payload=buffer;
+
+	mem_hexdump(buffer, size_payload);
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+
+	free(nuevo_encabezado);
+	//free(comida);
+	printf("-------------------\n");
 }
 
 bool sumar_cantidad_total_plato(t_pagina_comida * adm_comida,t_guardar_plato * plato){
@@ -747,6 +664,40 @@ bool sumar_plato_listo(t_pagina_comida * adm_comida){
 t_pedido * recibir_consulta_pedido(void * payload){
 
 	t_pedido * pedido=recibir_pedido(payload);
+
+	return pedido;
+}
+
+t_restaurante * busqueda_de_restaurante(char * nombre_restaurante){
+
+		bool buscar_restaurante(void * elemento){
+			t_restaurante * restaurante=(t_restaurante*)elemento;
+
+			if(string_equals_ignore_case(restaurante->nombre_restaurante,nombre_restaurante)){
+					return TRUE;
+					}
+			return FALSE;
+		}
+	t_restaurante * restaurante=list_find(lista_restarurantes,buscar_restaurante);   //Busca si existe el restaurante
+
+	return restaurante;
+
+}
+
+t_pedido_seg * buscar_el_pedido(t_pedido * pedido_solicitado, t_list * tabla_pedidos){
+
+			bool buscar_pedido(void * elemento){
+				t_pedido_seg * pedido=(t_pedido_seg*)elemento;
+				//printf("El numero de pedido que estoy iterando es: %d\n",pedido->id_pedido);
+
+				if(pedido->id_pedido==pedido_solicitado->id_pedido){
+						return TRUE;
+						}
+				return FALSE;
+			}
+
+	t_pedido_seg * pedido=NULL;
+	pedido= list_find(tabla_pedidos,buscar_pedido);//Busco si se encuentra el pedido
 
 	return pedido;
 }
