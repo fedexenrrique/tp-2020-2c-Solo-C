@@ -1697,10 +1697,11 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 
 			void mostrar_platos_pedido(void * elemento){
 				t_comida * comida=(t_comida*)elemento;
-
+				printf("-------------------\n");
 				log_info(logger,"El plato es: %s",comida->nombre_comida);
 				log_info(logger,"La cantidad total pedida del plato es: %d",comida->cantidad_total_comida);
 				log_info(logger,"La cantidad total pedida que ya se encuentra lista es: %d",comida->cantidad_lista_comida);
+				printf("\n");
 			}
 
 	log_error(logger,"Por empezar a deserializar");
@@ -1708,7 +1709,7 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
 	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
 
-	memcpy(&pedido->estado,encabezado->payload+offset,sizeof(estado_pedido));
+	memcpy(&(pedido->estado),encabezado->payload+offset,sizeof(estado_pedido));
 	offset+=sizeof(estado_pedido);
 
 	for(int i=0;i<cantidad_total_platos;i++){
