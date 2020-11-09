@@ -44,7 +44,7 @@ pthread_t  g_thread_long_term_scheduler;
 pthread_t  g_thread_medium_term_scheduler;
 pthread_t  g_thread_short_term_scheduler;
 
-sem_t g_semaphore_envios_resto;
+sem_t g_nro_cpus ;
 
 typedef enum {
 
@@ -68,7 +68,7 @@ typedef struct {
 
 t_list * lista_clientes; // t_cliente_resto
 
-t_queue * queue_confirmados_cliente_resto; // t_cliente_resto
+t_queue * queue_confirmados_cliente_resto; // t_cliente_a_resto
 
 t_list * lista_resto_conectados; // t_info_restarante
 
@@ -86,9 +86,6 @@ typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t cantidad_plato;
 	char *   nombre_plato;
 } t_elem_pedido;
-
-sem_t g_nro_cpus;
-sem_t g_nro_pedidos_confirmados; // Repartidores NUEVOS a LISTOS (obtienen un pedido)
 
 typedef enum {
 
@@ -116,6 +113,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    id_pedido;
 	uint32_t    resto_x;
 	uint32_t    resto_y;
+	sem_t       cpu;
 
 } t_pcb_repartidor;
 
@@ -149,6 +147,8 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido );
 
 bool procesamiento_09_confirmar_pedido ( t_header * header_recibido );
 
+bool procesamiento_09_confirmar_pedido_hack ( void );
+
 void agregar_pedid_a_planificacion (t_cliente_a_resto * asociacion);
 
 void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, char * p_nom_plato );
@@ -156,7 +156,7 @@ void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, cha
 void procesamiento_mensaje( void * socket_cliente );
 void mostrar_info_pcb_repartidor ( t_pcb_repartidor * p_repa );
 
-void _aux_01_long_term_scheduler ( void );
+void _aux_long_term_scheduler(void);
 
 void planificar_fifo(t_pcb_repartidor * p_pcb);
 
