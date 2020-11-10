@@ -101,7 +101,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    repa_x;
 	uint32_t    repa_y;
 	e_yendo_a   yendo_a;
-	uint32_t    metros_por_descanso;
+	uint32_t    freq_de_descanso;
 	uint32_t    tiempo_de_descanso;
 	uint32_t    cansancio;
 	sem_t       semaforo;
@@ -134,6 +134,10 @@ void bucle_resto_conectado ( uint32_t sock_aceptado );
 void long_term_scheduler( void );
 
 void short_term_scheduler( void );
+
+void medium_term_scheduler( void );
+
+void descanso_repartidor ( t_pcb_repartidor * p_pcb );
 
 void ejecucion_repartidor ( t_pcb_repartidor * p_pcb );
 

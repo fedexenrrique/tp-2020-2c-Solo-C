@@ -19,14 +19,18 @@ int main(void) {
 
 	g_cola_nuevos = queue_create();
 
+	g_cola_bloqueados = queue_create();
+
 	signal(SIGINT, sigint);
 
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
-	pthread_create( &g_thread_long_term_scheduler  , NULL, (void*) &long_term_scheduler, (void*) NULL  );
+	pthread_create( &g_thread_long_term_scheduler  , NULL, (void*) &long_term_scheduler   , (void*) NULL  );
 
-	pthread_create( &g_thread_short_term_scheduler , NULL, (void*) &short_term_scheduler, (void*) NULL  );
+	pthread_create( &g_thread_medium_term_scheduler, NULL, (void*) &medium_term_scheduler , (void*) NULL  );
+
+	pthread_create( &g_thread_short_term_scheduler , NULL, (void*) &short_term_scheduler  , (void*) NULL  );
 
 	// medium_term_scheduler();
 
@@ -102,7 +106,7 @@ void mostrar_info_pcb_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 	printf("\nInformación del repartidor '%d'.\n", p_pcb->id_repartidor );
 	printf("Se encuentra posicionado en ( %d, %d ).\n", p_pcb->repa_x, p_pcb->repa_y );
-	printf("Descansa cada %d metros un tiempo de %d minutos.\n", p_pcb->metros_por_descanso, p_pcb->tiempo_de_descanso );
+	printf("Descansa cada %d metros un tiempo de %d minutos.\n", p_pcb->freq_de_descanso, p_pcb->tiempo_de_descanso );
 
 }
 
@@ -295,7 +299,7 @@ void _aux_long_term_scheduler() {
 		l_repartidor->id_repartidor = g_generador_id_repartidor++;
 		l_repartidor->repa_x = (uint32_t) atoi( repartidor_posiciones[0] );
 		l_repartidor->repa_y = (uint32_t) atoi( repartidor_posiciones[1] );
-		l_repartidor->metros_por_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
+		l_repartidor->freq_de_descanso   = (uint32_t) atoi( g_frecuencia_de_descanso [posicion] );
 		l_repartidor->tiempo_de_descanso = (uint32_t) atoi( g_tiempo_de_descanso     [posicion] );
 
 		free( repartidor_posiciones[0] );
@@ -357,16 +361,61 @@ void short_term_scheduler( void ) {
 
 }
 
+void medium_term_scheduler( void ) {
 
+	uint32_t size_cola_bloq = 0;
 
+	while(1){
 
+		if ( queue_size( g_cola_bloqueados ) != size_cola_bloq && queue_size( g_cola_bloqueados ) != 0 ) {
 
+			size_cola_bloq = queue_size( g_cola_bloqueados );
+
+			printf("El tamaño de la cola de bloqueados es ahora de %d.\n", size_cola_bloq );
+
+			if (size_cola_bloq == 0) size_cola_bloq = -1;
+
+			t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_bloqueados );
+
+			pthread_t thread_data;
+
+			pthread_create( &thread_data , NULL, (void*) &descanso_repartidor, (void*) repa  );
+
+		} else sleep(1);
+
+	}
+
+}
+
+void descanso_repartidor ( t_pcb_repartidor * p_pcb ) {
+
+	uint32_t tiempo_de_descanso = p_pcb->tiempo_de_descanso;
+
+	printf( "Tengo que descansar %d minutos.\n", tiempo_de_descanso );
+
+	while ( tiempo_de_descanso != 0) {
+
+		tiempo_de_descanso--;
+
+		sleep( g_retardo_ciclo_cpu );
+
+	}
+
+	p_pcb->cansancio = 0;
+
+	p_pcb->estado = LISTO;
+
+	queue_push( g_cola_listos, p_pcb );
+
+	mostrar_info_pcb_repartidor( p_pcb );
+
+}
 
 void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 	void _moverse_hacia_restaurante () {
 
-		if ( p_pcb->repa_x != p_pcb->resto_x || p_pcb->repa_y != p_pcb->resto_y ) { // ir al pokemon
+		if ( p_pcb->repa_x != p_pcb->resto_x || p_pcb->repa_y != p_pcb->resto_y ) {
 
 			if ( p_pcb->repa_x != p_pcb->resto_x ) {
 
@@ -389,6 +438,8 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 					p_pcb->repa_y--;
 
 			}
+
+			p_pcb->cansancio++;
 
 			log_info( logger, "El repartidor '%d'. va al restaurante (%d,%d) y avanza a (%d,%d)", p_pcb->id_repartidor , p_pcb->resto_x, p_pcb->resto_y, p_pcb->repa_x , p_pcb->repa_y );
 
@@ -421,6 +472,8 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			}
 
+			p_pcb->cansancio++;
+
 			log_info( logger, "El repartidor '%d'. va el cliente en (%d,%d) y avanza a (%d,%d)", p_pcb->id_repartidor , p_pcb->cliente_x, p_pcb->cliente_y, p_pcb->repa_x , p_pcb->repa_y );
 
 		}
@@ -433,13 +486,17 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			p_pcb->estado = EJEC;
 
-			// g_count_cxt_switch++;
-
 			mostrar_info_pcb_repartidor( p_pcb );
 
 		}
 
 		sleep(g_retardo_ciclo_cpu);
+
+		if ( p_pcb->cansancio == p_pcb->freq_de_descanso ) {
+
+			p_pcb->estado = BLOQ;
+
+		}
 
 
 		if ( p_pcb->repa_x == p_pcb->cliente_x && p_pcb->repa_y == p_pcb->cliente_y && p_pcb->yendo_a == CLI ) { // ESTOY en CLIENTE
@@ -511,15 +568,29 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		do { _repartidor_en_bicicleta(); } while ( p_pcb->estado == EJEC );
 
-		p_pcb->estado = NUEVO;
+		if ( p_pcb->estado == BLOQ ) {
 
-		queue_push( g_cola_nuevos, p_pcb );
+			printf("Salí de CPU por cansancio.\n");
 
-		sem_post(&p_pcb->cpu);
+			queue_push( g_cola_bloqueados, p_pcb );
 
-		mostrar_info_pcb_repartidor( p_pcb );
+			sem_post(&p_pcb->cpu);
 
-		// sem_post( &g_nro_cpus );
+			mostrar_info_pcb_repartidor( p_pcb );
+
+		} else {
+
+			printf("Salí de CPU por finalización.\n");
+
+			p_pcb->estado = NUEVO;
+
+			queue_push( g_cola_nuevos, p_pcb );
+
+			sem_post(&p_pcb->cpu);
+
+			mostrar_info_pcb_repartidor( p_pcb );
+
+		}
 
 	}
 
