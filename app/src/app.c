@@ -11,9 +11,11 @@ int main(void) {
 
 	queue_confirmados_cliente_resto = queue_create();
 
-	sem_init( &g_nro_cpus ,0 ,0);
+	sem_init( &sem_nuevos  ,0 ,0);
 
-	g_sockets_abiertos      = list_create();
+	sem_init( &sem_listos  ,0 ,0);
+
+	sem_init( &sem_bloq    ,0 ,0);
 
 	g_cola_listos = queue_create();
 
@@ -45,18 +47,12 @@ int main(void) {
 
 		uint32_t socket_aceptado = aceptar_conexion( g_socket_cliente );
 
-		uint32_t * _socket_aceptado = malloc( sizeof(uint32_t) );
-
-		memcpy( _socket_aceptado, &socket_aceptado, sizeof(uint32_t) );
-
 		if ( socket_aceptado <= 0) {
 
 			perror("Error al aceptar el socket.");
 			exit(-1);
 
 		}
-
-		list_add( g_sockets_abiertos, _socket_aceptado );
 
 		pthread_t  thread_app;
 
@@ -278,6 +274,8 @@ void long_term_scheduler( void ) {
 
 			queue_push( g_cola_listos, l_repartidor );
 
+			sem_post(&sem_listos);
+
 		} else sleep(1);
 
 	}
@@ -310,11 +308,19 @@ void _aux_long_term_scheduler() {
 
 		sem_init( &l_repartidor->cpu, 0, 0 );
 
+		sem_init( &l_repartidor->sem_bloq, 0, 0 );
+
+		sem_init( &l_repartidor->bloq, 0, 0 );
+
 		mostrar_info_pcb_repartidor( l_repartidor );
 
 		queue_push( g_cola_nuevos, l_repartidor );
 
 		pthread_create(&l_repartidor->thread_metadata  , NULL, (void*) &ejecucion_repartidor, (void*) l_repartidor  );
+
+		pthread_t thread_data;
+
+		pthread_create( &thread_data , NULL, (void*) &descanso_repartidor, (void*) l_repartidor  );
 
 		posicion++;
 
@@ -339,23 +345,21 @@ void short_term_scheduler( void ) {
 
 	while(1){
 
-		if ( queue_size( g_cola_listos ) != size_cola_listos && queue_size( g_cola_listos ) != 0 ) {
+		sem_wait(&sem_listos);
 
-			size_cola_listos = queue_size( g_cola_listos );
+		size_cola_listos = queue_size( g_cola_listos );
 
-			printf("El tamaño de la cola de listos es ahora de %d.\n", size_cola_listos );
+		printf("El tamaño de la cola de listos es ahora de %d.\n", size_cola_listos );
 
-			if (size_cola_listos == 0) size_cola_listos = -1;
+		if (size_cola_listos == 0) size_cola_listos = -1;
 
-			t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_listos );
+		t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_listos );
 
-			repa->estado = EJEC;
+		repa->estado = EJEC;
 
-			sem_post(&repa->semaforo);
+		sem_post(&repa->semaforo);
 
-			sem_wait(&repa->cpu);
-
-		} else sleep(1);
+		sem_wait(&repa->cpu);
 
 	}
 
@@ -363,31 +367,23 @@ void short_term_scheduler( void ) {
 
 void medium_term_scheduler( void ) {
 
-	uint32_t size_cola_bloq = 0;
-
 	while(1){
 
-		if ( queue_size( g_cola_bloqueados ) != size_cola_bloq && queue_size( g_cola_bloqueados ) != 0 ) {
+		sem_wait(&sem_bloq);
 
-			size_cola_bloq = queue_size( g_cola_bloqueados );
+		t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_bloqueados );
 
-			printf("El tamaño de la cola de bloqueados es ahora de %d.\n", size_cola_bloq );
+		sem_post(&repa->sem_bloq);
 
-			if (size_cola_bloq == 0) size_cola_bloq = -1;
-
-			t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_bloqueados );
-
-			pthread_t thread_data;
-
-			pthread_create( &thread_data , NULL, (void*) &descanso_repartidor, (void*) repa  );
-
-		} else sleep(1);
+		sem_wait(&repa->bloq);
 
 	}
 
 }
 
-void descanso_repartidor ( t_pcb_repartidor * p_pcb ) {
+void descanso_repartidor ( t_pcb_repartidor * p_pcb ) { while (1) {
+
+	sem_wait( &p_pcb->sem_bloq );
 
 	uint32_t tiempo_de_descanso = p_pcb->tiempo_de_descanso;
 
@@ -407,9 +403,13 @@ void descanso_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 	queue_push( g_cola_listos, p_pcb );
 
+	sem_post(&sem_listos);
+
 	mostrar_info_pcb_repartidor( p_pcb );
 
-}
+	sem_post( &p_pcb->bloq );
+
+}}
 
 void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
@@ -573,6 +573,8 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 			printf("Salí de CPU por cansancio.\n");
 
 			queue_push( g_cola_bloqueados, p_pcb );
+
+			sem_post(&sem_bloq);
 
 			sem_post(&p_pcb->cpu);
 

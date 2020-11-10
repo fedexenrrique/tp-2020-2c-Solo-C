@@ -105,6 +105,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    tiempo_de_descanso;
 	uint32_t    cansancio;
 	sem_t       semaforo;
+	sem_t       sem_bloq;
 	enum_estado estado;
 	uint32_t    id_cliente;
 	uint32_t    cliente_x;
@@ -114,12 +115,17 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    resto_x;
 	uint32_t    resto_y;
 	sem_t       cpu;
+	sem_t       bloq;
 
 } t_pcb_repartidor;
 
 t_queue * g_cola_nuevos;
 t_queue * g_cola_listos;
 t_queue * g_cola_bloqueados;
+
+sem_t    sem_nuevos;
+sem_t    sem_listos;
+sem_t    sem_bloq;
 
 // FUNCIONES
 
