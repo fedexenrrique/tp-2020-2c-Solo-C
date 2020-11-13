@@ -31,7 +31,7 @@ void administrar_confirmar_pedido(t_header*,int);
 void administrar_plato_listo     (t_header*,int);
 void administrar_finalizar_pedido(t_header*,int);
 
-uint64_t   timestamp                 (void       );
+//uint64_t   timestamp                 (void       );
 void       armar_y_enviar_respuesta  (cod_msg,int);
 void       armar_envio_obtener_pedido(cod_msg,int,int,void*);
 bool       sumar_cantidad_total_plato(t_pagina_comida*,t_guardar_plato*);

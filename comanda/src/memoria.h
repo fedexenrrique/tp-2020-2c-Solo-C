@@ -53,17 +53,23 @@ t_list * tabla_frames_libres				   ;
 t_list * tabla_frames_libres_swap 			   ;
 
 
-void            iniciar_memoria                  (                        );
-void            crear_paginas_memoria             (t_list *,int ,t_list*  );
-void *          reservar_memoria_inicial         (int                     );
-t_restaurante * crear_tabla_segmentos_restaurante(char *                  );
-bool            agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
-void            copiar_pagina_en_memoria         (void *   , t_comida  *  );
-void            leer_pagina_en_memoria           (void *    , t_comida *  );
+void             iniciar_memoria                  (                        );
+void             crear_paginas_memoria            (t_list *,int ,t_list*   );
+void *           reservar_memoria_inicial         (int                     );
+t_restaurante *  crear_tabla_segmentos_restaurante(char *                  );
+bool             agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
+void             copiar_pagina_en_memoria         (void *   , t_comida  *  );
+void             leer_pagina_en_memoria           (void *    , t_comida *  );
+t_pagina_comida* cargar_pagina_a_memoria_principal(t_pagina_comida *       );
 
-t_frame * buscar_frame_libre ()  ;
-void      iniciar_dump_cache(int);
-void      dampear_memoria   (   );
+t_frame *  seleccionar_victima_en_memoria_principal     ();
+t_frame *  utilizar_algoritmo_remplazo_lru              ();
+t_frame *  utilizar_algoritmo_remplazo_clock_mejorado   ();
+
+t_frame * buscar_frame_libre (t_list*);
+void      iniciar_dump_cache(int     );
+void      dampear_memoria   (        );
+uint64_t  timestamp         (void    );
 
 
 #endif /* MEMORIA_H_ */
