@@ -8,30 +8,9 @@
 #ifndef SINDICATO_H_
 #define SINDICATO_H_
 
-#include "serializar.h"
-#include <stdio.h>
-#include <dirent.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <setjmp.h>
+//#include "serializar.h"
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <stdarg.h>
-#include <math.h>
-#include <pthread.h>
-#include <signal.h>
-#include "commons/bitarray.h"
-#include "commons/collections/list.h"
+#include "utils.h"
 
 
 typedef struct{
@@ -70,6 +49,25 @@ typedef struct{
 }tMensajeInfoRestaurante;
 
 typedef struct{
+	uint32_t sizeNombreRestaurante;
+	char* nombreRestaurante;
+	uint32_t sizeIdPedido;
+	char* idPedido;
+	uint32_t sizePlato;
+	char* plato;
+	uint32_t cantidad;
+
+}tSolicitudAniadirPlato;
+
+typedef struct{
+	char* estadoPedido;
+		char* listaPlatos;
+		char* cantidadPlatos;
+		char* cantidadLista;
+		uint32_t precioTotal;
+}tMensajeInfoPedido;
+
+typedef struct{
 	char* nombreRestaurante;
 	int cantCocineros;
 	char* posicion;
@@ -84,9 +82,16 @@ typedef struct{
 	char* nombreReceta;
 	char* pasos;
 	char* tiemposPasos;
-
-
 }tCreacionReceta;
+
+typedef struct{
+	char* estadoPedido;
+	char* listaPlatos;
+	char* cantidadPlatos;
+	char* cantidadLista;
+	uint32_t precioTotal;
+
+}tCreacionPedido;
 
 typedef struct{
 	uint32_t tamBloques;
@@ -118,6 +123,8 @@ int fdArchivoBitmap;
 int mapBitArray;
 t_dictionary* diccionarioBloquesAsignadosARestos;
 t_dictionary* diccionarioBloquesAsignadosARecetas;
+t_dictionary* diccionarioBloquesAsignadosAPedidos;
+
 t_dictionary* diccionarioPosPropiedadesEnArchivo;
 
 
