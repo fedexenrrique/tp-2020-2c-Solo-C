@@ -29,6 +29,7 @@
 #include <setjmp.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 #include <semaphore.h>
 
@@ -206,6 +207,8 @@ bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato, uint32_t cantidad_plato);
 
 bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
+
+bool enviar_13_finalizar_pedido (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
 
 //int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto);
 t_guardar_plato * recibir_guardar_plato   (void * payload         );

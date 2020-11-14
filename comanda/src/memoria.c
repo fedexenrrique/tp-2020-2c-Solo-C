@@ -35,20 +35,11 @@ void iniciar_memoria(){
 	list_pointer_memory_swap     =list_create();
 
 	tabla_frames_libres=list_create();
+	tabla_frames_libres_swap=list_create();
 
-	crear_pagina_memoria(list_pointer_memory_principal,size_memoria_principal);
+	crear_paginas_memoria(list_pointer_memory_principal,size_memoria_principal,tabla_frames_libres);  //Creo los frame de c/memoria y los agrego a su tabla de frames libres
+	crear_paginas_memoria(list_pointer_memory_swap,size_memoria_swap,tabla_frames_libres_swap);
 
-/*	t_admin_memory_message * pointer_block=malloc(sizeof(t_admin_memory_message));
-	pointer_block->estado=LIBRE;
-	pointer_block->inicio_bloque=p_inicio_memoria_total;
-	pointer_block->fin_bloque=p_inicio_memoria_total+size_memoria_total;
-	pointer_block->size_mensaje=0;
-	pointer_block->mensaje=NULL;
-	pointer_block->last_used=0;
-	log_info(logger,"La memoria comienza en la direccion: %p", pointer_block->inicio_bloque);
-	log_info(logger,"La memoria finaliza en la direccion: %p", pointer_block->fin_bloque);
-	list_add(list_pointer_memory,pointer_block);
-*/
 }
 
 void * reservar_memoria_inicial(int size_memoria_total){
@@ -61,7 +52,7 @@ void * reservar_memoria_inicial(int size_memoria_total){
 
 }
 
-void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memoria_principal){
+void crear_paginas_memoria(t_list * list_pointer_memory_principal,int size_memoria_principal,t_list * tabla_frames){
 
 	int cantidad_paginas=size_memoria_principal/SIZE_PAGINA;
 
@@ -74,13 +65,20 @@ void crear_pagina_memoria(t_list * list_pointer_memory_principal,int size_memori
 		else
 			frame->direccion_frame=p_inicio_memoria_principal+(i*SIZE_PAGINA);
 
-		log_info(logger,"La direccion de memoria del frame es %p y la logica es %d",frame->direccion_frame,frame->direccion_frame-p_inicio_memoria_principal);
+		//log_info(logger,"La direccion de memoria del frame es %p y la logica es %d",frame->direccion_frame,frame->direccion_frame-p_inicio_memoria_principal);
 
-		list_add(tabla_frames_libres,frame);
+		list_add(tabla_frames,frame);
 	}
+	char * nombre=string_new();
 
-	log_info(logger,"Hay %d  marcos libres",list_size(tabla_frames_libres));
-	log_info(logger,"Se dividio la memoria principal en %d  frames",cantidad_paginas);
+	if(tabla_frames==tabla_frames_libres)
+		string_append(&nombre,"Principal");
+	else
+		string_append(&nombre,"Swap");
+
+	log_info(logger,"Se dividio la memoria %s en %d  frames",nombre,cantidad_paginas);
+	log_info(logger,"Hay %d  marcos libres en la memoria %s",list_size(tabla_frames),nombre);
+
 
 }
 
@@ -136,16 +134,17 @@ bool agregar_pedido_a_tabla_segmentos(t_restaurante * restaurante, uint32_t id_p
 
 }
 
-t_frame * buscar_frame_libre(){
+t_frame * buscar_frame_libre(t_list * tabla){
 
 
 	t_frame * frame_libre=NULL;
 
-	if(!list_is_empty(tabla_frames_libres)){
+	if(!list_is_empty(tabla)){
 
-		frame_libre=list_remove(tabla_frames_libres,0);
+		frame_libre=list_remove(tabla,0);
 	}
 
+	log_info(logger,"Se encontro el frame libre numero: %d",frame_libre->nro_frame);
 	return frame_libre;
 }
 
@@ -235,7 +234,7 @@ void copiar_pagina_en_memoria(void * direccion_frame, t_comida * comida){
 
 	//free(comida);
 
-	log_info(logger,"Se guardo la pagina en memoria principal");
+	log_info(logger,"Se guardo la pagina en memoria");
 
 }
 
@@ -256,3 +255,70 @@ void leer_pagina_en_memoria(void * direccion_frame,t_comida * comida){
 
 
 }
+
+t_pagina_comida *          cargar_pagina_a_memoria_principal(t_pagina_comida *  adm_comida  ){
+
+	t_frame * frame_libre=NULL;
+	t_comida * comida=malloc(SIZE_PAGINA);
+	adm_comida->frame=malloc(sizeof(t_frame));
+
+	frame_libre=buscar_frame_libre(tabla_frames_libres);
+	if(frame_libre==NULL){
+		log_info(logger,"La memoria principal se encuentra llena");
+		frame_libre=seleccionar_victima_en_memoria_principal();					//No hay frames libres, utilizo algun metodo de remplazo
+	}
+	log_info(logger,"Pruebo--La direccion del frame encontrado es: %p",frame_libre->direccion_frame);
+
+	adm_comida->frame->nro_frame=frame_libre->nro_frame;
+	adm_comida->frame->direccion_frame=frame_libre->direccion_frame;
+
+	//-----------Copio la informacion de SWAP en Memoria Principal
+	leer_pagina_en_memoria(adm_comida->frame_swap->direccion_frame,comida);
+	copiar_pagina_en_memoria(frame_libre->direccion_frame,comida);
+
+	adm_comida->frame->nro_frame=frame_libre->nro_frame;
+	adm_comida->frame->direccion_frame=frame_libre->direccion_frame;
+
+	adm_comida->esta_en_memoria_principal=TRUE;
+	adm_comida->last_used=timestamp();
+
+	free(comida);
+
+	return adm_comida;
+}
+
+t_frame * seleccionar_victima_en_memoria_principal(){
+
+
+	if(string_equals_ignore_case(algoritmo_remplazo,"LRU")){
+		log_info(logger,"Se va a utilizar el Algoritmo de LRU para eliminar una pagina de la memoria");
+		return utilizar_algoritmo_remplazo_lru();
+	}else{
+		log_info(logger,"Se va a utilizar el Algoritmo de clock mejorado para eliminar una pagina de la memoria");
+		return utilizar_algoritmo_remplazo_clock_mejorado();
+
+	}
+
+}
+
+uint64_t timestamp(void) {
+
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	unsigned long long tiempo = (((unsigned long long )(tv.tv_sec)) * 1000 + ((unsigned long long)(tv.tv_usec))/1000)*(-1);
+
+	return (uint64_t)tiempo;
+}
+
+t_frame *  utilizar_algoritmo_remplazo_lru              (){
+
+	t_frame * frame;
+	return frame;
+
+}
+t_frame *  utilizar_algoritmo_remplazo_clock_mejorado   (){
+
+	t_frame * frame;
+	return frame;
+}
+
