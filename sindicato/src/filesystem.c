@@ -80,6 +80,9 @@ void crearArchivoMetadata(int blockSize,int cantBloques,char* magicNumber){
 
 	fwrite(propiedades,length,1,archivoMetadata);
 
+	free(propiedades);
+	free(pathArchivoMetadata);
+
 	fclose(archivoMetadata);
 
 }
@@ -115,6 +118,7 @@ int crearDirectorioRecetas(){
 	} else
 		log_info(logger, "Directorio de recetas creado");
 
+	free(pathRecetas);
 	return 1;
 
 }
@@ -132,7 +136,7 @@ void crearBloques(int cantBloques){
 	}
 
 	log_info(logger,"Archivos de bloques creados.");
-
+	free(pathBloqueActual);
 
 }
 
@@ -155,6 +159,8 @@ void leerYMapearArchivoBitmap(tInfoBloques* infoBloques){
 		log_error(logger, "No se creo correctamente el bitarray");
 
 	log_info(logger, "La cantidad de bytes del bitmap es %d",bitarray_get_max_bit(bitMap));
+
+	free(pathArchivoBitmap);
 }
 
 int crearArchivoBitmap(tInfoBloques* infoBloques){
@@ -218,6 +224,8 @@ int crearArchivoBitmap(tInfoBloques* infoBloques){
 		}
 	}
 
+	free(pathArchivoBitmap);
+
 }
 void importarInfoBloques(tInfoBloques* infoBloques){
 	char* pathArchivoInfoBloques= malloc(100);
@@ -242,6 +250,9 @@ void importarInfoBloques(tInfoBloques* infoBloques){
 				exit(EXIT_FAILURE);
 
 	}
+
+	//free(pathArchivoInfoBloques);
+	//free(map);
 
 
 }
@@ -288,9 +299,13 @@ void cargarBloquesAsigandosAResto(){
 
 		}
 
+
 		}
 
+
 	}
+	free(pathArchivoBloquesAsignados);
+
 
 }
 
@@ -415,15 +430,10 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 	int bloqueSiguiente=0;
 	int offsetEscritura=0;
 	int offsetFinCadena= strlen(propiedades);
-	char* bytesAEscribir=malloc(infoBloques->tamBloques);
 	int i;
 	int j;
 
 
-	char* pathBloqueActual=malloc(60);
-	strcpy(pathBloqueActual,pathBloques);
-	struct stat infoArchivo;
-	e = stat(pathBloqueActual, &infoArchivo);
 	uint32_t cantBloquesAEscribir=0;
 
 	char* stringBloquesAsignados=string_new();
@@ -436,7 +446,20 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 	if((cantEscritura % infoBloques->tamBloques)==0 && cantEscritura==infoBloques->tamBloques){
 		cantBloquesAEscribir= (cantEscritura)/ (infoBloques->tamBloques);
 		bloqueActual=bloqueInicial;
-		string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+		char* pathBloqueActual=malloc(strlen(pathBloques)+strlen(string_itoa(bloqueActual))+4+1);
+		memcpy(pathBloqueActual,pathBloques,strlen(pathBloques));
+		struct stat infoArchivo;
+		e = stat(pathBloqueActual, &infoArchivo);
+		int offset=0;
+		offset=offset+strlen(pathBloques);
+		//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+		memcpy(pathBloqueActual+offset,string_itoa(bloqueActual),strlen(string_itoa(bloqueActual)));
+		offset=offset+strlen(string_itoa(bloqueActual));
+		memcpy(pathBloqueActual+offset,".bin",4);
+		offset=offset+4;
+
+		pathBloqueActual[offset]='\0';
+
 		FILE* archivoBloqueActual=fopen(pathBloqueActual,"w");
 
 			if(fwrite(propiedades,cantEscritura,1,archivoBloqueActual)==0){
@@ -465,14 +488,37 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 
 				}else dictionary_put(diccionarioBloquesAsignadosAPedidos,nombreRecurso,bloquesAsignadosARecurso);
 
+				char* bytesAEscribir=malloc(infoBloques->tamBloques+1);
+
 				bytesAEscribir=string_substring(propiedades,offsetEscritura,infoBloques->tamBloques-sizeof(uint32_t));
-				string_append_with_format(&bytesAEscribir,"%s%d",string_repeat('0',sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente))),bloqueSiguiente);
+				char* stringCeros=malloc(sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente))+1);
+				int offsetCeros=0;
+				offsetCeros=strlen(bytesAEscribir);
+				strcpy(stringCeros,"");
+				stringCeros=string_repeat('0',sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente)));
+				stringCeros[strlen(stringCeros)]='\0';
+				//string_append_with_format(&bytesAEscribir,"%s%d",,bloqueSiguiente);
+				memcpy(bytesAEscribir+offsetCeros,stringCeros,strlen(stringCeros));
+				offsetCeros=offsetCeros+strlen(stringCeros);
+				memcpy(bytesAEscribir+offsetCeros,string_itoa(bloqueSiguiente),strlen(string_itoa(bloqueSiguiente)));
+				offsetCeros=offsetCeros+strlen(string_itoa(bloqueSiguiente));
+				bytesAEscribir[offsetCeros]='\0';
 				//string_append_with_format(&propiedades,"%d",bloqueSiguiente); //ESCRIBO EL SIZE DE PROPIEDADES+SIZE BLOQUE SIGUIENTE
-				string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+				//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+				int offset=0;
+				char* pathBloqueActual=malloc(strlen(pathBloques)+strlen(string_itoa(bloqueActual))+4+1);
+				memcpy(pathBloqueActual,pathBloques,strlen(pathBloques));
+				offset=offset+strlen(pathBloques);
+				memcpy(pathBloqueActual+offset,string_itoa(bloqueActual),strlen(string_itoa(bloqueActual)));
+				offset=offset+strlen(string_itoa(bloqueActual));
+				memcpy(pathBloqueActual+offset,".bin",4);
+				offset=offset+4;
+				pathBloqueActual[offset]='\0';
 
 				FILE* archivoBloqueActual=fopen(pathBloqueActual,"w");
 
-				if(-1==truncate((int)(fileno(archivoBloqueActual)),infoBloques->tamBloques)){
+				int sizeTruncate=infoBloques->tamBloques;
+				if(-1==truncate(archivoBloqueActual,sizeTruncate)){
 							log_error(logger,"Error al truncar el archivo");
 				}
 
@@ -489,13 +535,26 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 				strcpy(pathBloqueActual,pathBloques);
 
 			}else{
-				bytesAEscribir=string_substring(propiedades,offsetEscritura,strlen(propiedades));
+				int offset=0;
+				char* pathBloqueActual=malloc(strlen(pathBloques)+strlen(string_itoa(bloqueActual))+4+1);
+				memcpy(pathBloqueActual,pathBloques,strlen(pathBloques));
+				offset=offset+strlen(pathBloques);
+				memcpy(pathBloqueActual+offset,string_itoa(bloqueActual),strlen(string_itoa(bloqueActual)));
+				offset=offset+strlen(string_itoa(bloqueActual));
+				memcpy(pathBloqueActual+offset,".bin",4);
+				offset=offset+4;
+				pathBloqueActual[offset]='\0';
+				char* bytesAEscribir=malloc((strlen(propiedades)-offsetEscritura)+1);
 
-				string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+				bytesAEscribir=string_substring(propiedades,offsetEscritura,strlen(propiedades));
+				bytesAEscribir[(strlen(propiedades)-offsetEscritura)]='\0';
+
+				//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
 
 				FILE* archivoBloqueActual=fopen(pathBloqueActual,"w");
+				int sizeTruncate=infoBloques->tamBloques;
 
-				if(-1==truncate((int)(fileno(archivoBloqueActual)),infoBloques->tamBloques)){
+				if(-1==truncate(archivoBloqueActual,sizeTruncate)){
 										log_error(logger,"Error al truncar el archivo");
 				}
 
@@ -504,13 +563,11 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 				}
 
 				fclose(archivoBloqueActual);
-
-
 			}
 		}
 
 		//Actualizo el archivo de bloques asignados al recurso (receta o restaurante)
-
+/*
 		for(j=0;j<list_size(bloquesAsignadosARecurso);j++){
 			int bloqueActual=atoi(list_get(bloquesAsignadosARecurso,j));
 			string_append_with_format(&stringBloquesAsignados,"%d",bloqueActual);
@@ -533,7 +590,7 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 						log_error(logger,"Error al escribir en el archivo de bloques asignados");
 			}
 		}
-
+*/
 
 	}
 

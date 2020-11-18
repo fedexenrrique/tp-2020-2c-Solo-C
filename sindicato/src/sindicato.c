@@ -106,12 +106,23 @@ void levantarConsola() {
 //COMPLETAR
 tInfoBloques* leerInfoBloques(){
 	infoBloques=malloc(sizeof(tInfoBloques));
-	char* pathArchivo=malloc(60);
+	char* pathArchivo=malloc(strlen(pathMetadata)+14);
 	struct stat info;
 	int map=0;
+	int offset=0;
+	int e=0;
 
-	strcpy(pathArchivo,pathMetadata);
-	string_append(&pathArchivo,"Metadata.bin");
+	//strcpy(pathArchivo,pathMetadata);
+	//string_append(&pathArchivo,"Metadata.bin");
+
+	memcpy(pathArchivo,pathMetadata,strlen(pathMetadata));
+	offset=offset+strlen(pathMetadata);
+	memcpy(pathArchivo+offset,"Metadata.bin",12);
+	offset=offset+12;
+	pathArchivo[offset]='\0';
+
+	e=stat(pathArchivo,&info);
+
 
 	FILE* archInfoBloques= fopen(pathArchivo,"r+");
 
@@ -131,6 +142,7 @@ tInfoBloques* leerInfoBloques(){
 		infoBloques->tamBloques=atoi(string_substring(lineasArchivo[0],11,2));
 		infoBloques->cantBloques=atoi(string_substring(lineasArchivo[1],7,2));
 	}
+	free(pathArchivo);
 	return infoBloques;
 }
 
@@ -208,7 +220,8 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 	uint32_t cantBloquesALeer=list_size(bloquesAsigandosAResto);
 	int i;
 	tMensajeInfoRestaurante* infoResto=malloc(sizeof(tMensajeInfoRestaurante));
-	char* stringInfo= malloc(sizeResto+40);
+	char* stringInfo= malloc(sizeResto+1);
+	strcpy(stringInfo,"");
 	int bloqueActual=0;
 	struct stat info;
 	int e=0;
@@ -232,12 +245,14 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 				FILE* archivoBloqueActual = fopen(pathBloqueActual, "r+");
 
 				char* map = mmap(0, info.st_size-sizeof(int), PROT_READ | PROT_WRITE,MAP_SHARED, fileno(archivoBloqueActual), 0);
+
 				if (map == MAP_FAILED) {
 					close(fileno(archivoBloqueActual));
 					perror("Error mapeando el archivo");
 					exit(EXIT_FAILURE);
 
 				}
+				map[info.st_size-sizeof(int)]='\0';
 
 				if(i==cantBloquesALeer-1){ //leo el ultimo bloque
 					string_append(&stringInfo,map);
@@ -245,7 +260,9 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 				}else {//bloques anteriores al ultimo
 					//uint32_t bloqueSiguiente=atoi(list_get(bloquesAsigandosAResto,i+1));
 					char* bloqueSiguiente=string_substring(map,strlen(map)-sizeof(uint32_t),strlen(map));
+					(*bloqueSiguiente)="";
 					char* newMap=malloc(strlen(map)-strlen(string_itoa(bloqueSiguiente)));
+					(*newMap)="";
 					newMap=removerBloqueSiguienteDeString(map,bloqueSiguiente);
 					string_append(&stringInfo,newMap);
 				}
@@ -258,6 +275,8 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 
 	}else log_error(logger,"El archivo de bloque inicial no existe");
 
+	free(pathBloqueInicial);
+	free(stringInfo);
 	return infoResto;
 }
 
@@ -368,17 +387,7 @@ tMensajeInfoPedido *leerBloquesPedido(int bloqueInicial,int sizePedido,t_list* b
 	uint32_t cantBloquesALeer=list_size(bloquesAsigandosAPedido);
 	int i;
 	tMensajeInfoPedido* infoPedido=malloc(sizeof(tMensajeInfoPedido));
-	/*infoPedido->cantidadLista=string_new();
-	strcpy(infoPedido->cantidadLista," ");
-	infoPedido->cantidadPlatos=string_new();
-	strcpy(infoPedido->cantidadPlatos," ");
-	infoPedido->estadoPedido=string_new();
-	strcpy(infoPedido->estadoPedido," ");
-	infoPedido->listaPlatos=string_new();
-	strcpy(infoPedido->listaPlatos," ");*/
 
-
-	//char* stringInfo= malloc(sizePedido+40);
 	int bloqueActual=0;
 	struct stat info;
 	int e=0;
@@ -393,10 +402,16 @@ tMensajeInfoPedido *leerBloquesPedido(int bloqueInicial,int sizePedido,t_list* b
 		for (i=0; i<cantBloquesALeer;i++){
 			bloqueActual=atoi(list_get(bloquesAsigandosAPedido,i));
 			char* pathBloqueActual=malloc(strlen(pathBloques)+string_itoa(bloqueActual)+3+1);
+			int offsetPathBloque=0;
 			//strcpy(pathBloqueActual,pathBloques);
 			memcpy(pathBloqueActual,pathBloques,strlen(pathBloques));
-			string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
-			pathBloqueActual[strlen(pathBloqueActual)]='\0';
+			offsetPathBloque=offsetPathBloque+strlen(pathBloques);
+			memcpy(pathBloqueActual+strlen(pathBloques),string_itoa(bloqueActual),strlen(string_itoa(bloqueActual)));
+			offsetPathBloque=offsetPathBloque+strlen(string_itoa(bloqueActual));
+			memcpy(pathBloqueActual+strlen(pathBloques)+strlen(string_itoa(bloqueActual)),".bin",4);
+			offsetPathBloque=offsetPathBloque+4;
+			//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+			pathBloqueActual[offsetPathBloque]='\0';
 			int eActual=0;
 
 			struct stat infoBloqueActual;
@@ -415,30 +430,39 @@ tMensajeInfoPedido *leerBloquesPedido(int bloqueInicial,int sizePedido,t_list* b
 
 				if(i==cantBloquesALeer-1){
 					//string_append(&stringInfo,map);
+					//int offset=0;
 					memcpy(stringInfo+offsetLeido,map,strlen(map));
-					stringInfo[strlen(stringInfo)]='\0';
+					offsetLeido=offsetLeido+strlen(map);
+					//stringInfo[offset]='\0';
 
 				}else {
 					int bloqueSiguiente=atoi(list_get(bloquesAsigandosAPedido,i+1));
 					char* newMap=malloc(strlen(map)-strlen(string_itoa(bloqueSiguiente))+1);
+					int offsetMap=0;
+					int offsetStringInfo=0;
 					//newMap=removerBloqueSiguienteDeString(map,string_itoa(bloqueSiguiente));
 					newMap=string_substring(map,0,strlen(map)-4);
-					newMap[strlen(newMap)]='\0';
+					offsetMap=offsetMap+strlen(map)-4;
+					newMap[offsetMap]='\0';
 					//string_append(&stringInfo,newMap);
 					memcpy(stringInfo+offsetLeido,newMap,strlen(newMap));
-					stringInfo[strlen(stringInfo)]='\0';
+					offsetStringInfo=offsetStringInfo+strlen(newMap);
 					offsetLeido=offsetLeido+strlen(newMap);
 
 				}
 
+				fclose(archivoBloqueActual);
+
 			}
 
 		}
+		stringInfo[offsetLeido]='\0';
 		mapearInfoPedido(stringInfo,infoPedido);
+		free(stringInfo);
 
 
 	}else log_error(logger,"El archivo de bloque inicial no existe");
-
+	free(pathBloqueInicial);
 	return infoPedido;
 }
 
@@ -457,11 +481,16 @@ tMensajeInfoPedido *obtenerInfoPedido(char* nombreResto,char* nombrePedido,char*
 	int map=0;
 	int bloqueInicial=0;
 	int sizePedido=0;
+	int offset=0;
 	t_list* bloquesAsigandosAPedido=list_create();
 	//string_append_with_format(&idPedido,"%s%s%s",nombreResto,"-",nombrePedido);
 	memcpy(idPedido,nombreResto,strlen(nombreResto));
+	offset=offset+strlen(nombreResto);
 	memcpy(idPedido+strlen(nombreResto),"-",1);
+	offset=offset+1;
 	memcpy(idPedido+strlen(nombreResto)+1,nombrePedido,strlen(nombrePedido));
+	offset=offset+strlen(nombrePedido);
+	idPedido[offset]='\0';
 
 	bloquesAsigandosAPedido=dictionary_get(diccionarioBloquesAsignadosAPedidos,idPedido);
 
@@ -558,7 +587,6 @@ char* convertirArrayAString(char** array, int sizeArray){
 
 }
 char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int cantidad,char* nombreRestaurante){
-	char* stringNuevo;
 
 	int offsetListaPlatos=(strlen(info->listaPlatos)-1);
 	int offsetCantidadPlatos=(strlen(info->cantidadPlatos)-1);
@@ -566,7 +594,7 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 	int sizeArray=0;
 
 
-	if(strstr(info->listaPlatos,nombrePlato)==NULL){ //EL PLATO QUE QUIERO AGREGAR YA EXISTE EN EL PEDIDO, SUMO LA CANTIDAD y EL PRECIO CON LO QUE YA EXISTE
+	if(strstr(info->listaPlatos,nombrePlato)==NULL){ //EL PLATO QUE QUIERO AGREGAR NO  EXISTE: LO AGREGO AL FINAL, AGREGO SU CANTIDAD, CANTIDAD LISTA EN 0 Y SUMO EL PRECIO AL TOTAL
 
 		memcpy(info->listaPlatos+offsetListaPlatos,",",1);
 		offsetListaPlatos++;
@@ -589,7 +617,7 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 		uint32_t precioPlatoActual=buscarPrecioPlatoEnRestaurante(nombrePlato,nombreRestaurante);
 		info->precioTotal=info->precioTotal+(precioPlatoActual*cantidad);
 
-	}else{ //EL PLATO NO EXISTE, DEBO AGREGARLO, AGREGAR, CANTIDAD, Y BUSCAR SU PRECIO PARA SUMARLO AL PRECIO TOTAL DEL PEDIDO
+	}else{ //EL PLATO YA EXISTE, SUMAR LA CANTIDAD, Y BUSCAR SU PRECIO PARA SUMARLO AL PRECIO TOTAL DEL PEDIDO
 		//char* stringPlatos=malloc(strlen(info->listaPlatos)-1);
 		//char* stringCantidades=malloc(strlen(info->cantidadPlatos));
 		//strcpy(stringCantidades,"");
@@ -628,6 +656,7 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 		info->cantidadPlatos=malloc(strlen(stringConCantidadNueva)+1);
 		memcpy(info->cantidadPlatos,stringConCantidadNueva,strlen(stringConCantidadNueva));
 		stringConCantidadNueva[strlen(stringConCantidadNueva)]='\0';
+		info->cantidadPlatos[strlen(stringConCantidadNueva)]='\0';
 
 		uint32_t precioPlatoActual=buscarPrecioPlatoEnRestaurante(nombrePlato,nombreRestaurante);
 		info->precioTotal=info->precioTotal+(precioPlatoActual*cantidad);
@@ -635,8 +664,10 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 
 
 	//string_append_with_format(&listaPlatosNueva,"%s%s",",",nombrePlato);
-
-	stringNuevo=malloc(strlen(info->estadoPedido)+strlen(info->listaPlatos)+strlen(info->cantidadPlatos)+strlen(info->cantidadLista)+sizeof(uint32_t)+1);
+	int sizeStringNuevo=strlen(info->estadoPedido)+strlen(info->listaPlatos)+strlen(info->cantidadPlatos)+strlen(info->cantidadLista)+sizeof(uint32_t)+
+						strlen("ESTADO_PEDIDO=")+ strlen("LISTA_PLATOS=")+strlen("CANTIDAD_PLATOS=")+strlen("CANTIDAD_LISTA=")+strlen("PRECIO_TOTAL=")+1;
+	char*stringNuevo=malloc(sizeStringNuevo);
+	strcpy(stringNuevo,"");
 	sprintf(stringNuevo,"%s%s%s%s%s%s%s%s%s%d","ESTADO_PEDIDO=",info->estadoPedido,
 																  "LISTA_PLATOS=",info->listaPlatos,
 																  "CANTIDAD_PLATOS=", info->cantidadPlatos,
@@ -738,6 +769,7 @@ void grabarNuevoPedidoActualizado(char* stringAGrabar,char* nombreRestaurante,ch
 		if(cantBloquesAEscribir==list_size(bloquesAsigandosAPedido)){//Caso en que se lleno el ultimo bloque si sobrepasarlo, es decir no asigno bloques adicionales
 			//sobreescribir bloques asignados anteriormente
 			//TRUNCAR ARCHIVOS Y ESCRIBIR LOS BLOQUES
+
 		}else{//Caso en que sobrepasa la cantidad de bloques que tenia asignada, tengo que ver cuantos bloques extras tenog que asignar
 			int nBloquesExtrasAAsignar=cantBloquesAEscribir - list_size(bloquesAsigandosAPedido);
 			for(int i=0;nBloquesExtrasAAsignar;i++){ //asigno n bloques mas
@@ -755,6 +787,9 @@ void grabarNuevoPedidoActualizado(char* stringAGrabar,char* nombreRestaurante,ch
 		if (cantBloquesAEscribir == list_size(bloquesAsigandosAPedido)) { //Caso en que no se movio del ultimo bloque, es decir no se agregan bloques nuevos
 			//sobreescribir bloques asignados anteriormente
 			//TRUNCAR ARCHIVOS Y ESCRIBIR LOS BLOQUES
+			int bloqueInicial=atoi(list_get(bloquesAsigandosAPedido,0));
+			escribirBloques(stringAGrabar, strlen(stringAGrabar), bloqueInicial,nombrePedido, bloquesAsigandosAPedido,"PEDIDO","ACTUALIZAR");
+
 		} else {
 			int nBloquesExtrasAAsignar=cantBloquesAEscribir - list_size(bloquesAsigandosAPedido);
 
@@ -1071,20 +1106,6 @@ int main(int argc, char *argv[]) {
 	montarFS(infoBloques,infoBloques->magicNumber);
 	tMensajeInfoRestaurante* info=malloc(sizeof(tMensajeInfoRestaurante));
 	//info=obtenerInfoRestaurante("Resto1");
-
-/*	tMensajeInfoRestaurante* infoRestauranteAEnviar=malloc(sizeof(tMensajeInfoRestaurante));
-	t_respuesta_info_restaurante* respuestaArchivoInfoResto= malloc(sizeof(t_respuesta_info_restaurante));
-	mapearInfoRestauranteARespuesta(info,respuestaArchivoInfoResto);*/
-
-	/*infoBloques=leerInfoBloques();
-	tCreacionPedido* pedidoCreado=malloc(sizeof(tCreacionPedido));
-	pedidoCreado->cantidadLista=string_new();
-	pedidoCreado->cantidadPlatos=string_new();
-	pedidoCreado->estadoPedido=string_new();
-	pedidoCreado->listaPlatos=string_new();
-	pedidoCreado->precioTotal=0;
-*/
-
 
 	//hardcodearPedido(pedidoCreado);
 
