@@ -543,7 +543,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 	printf( "Se inició correctamente el Hilo del Repartidor '%d'.\n", p_pcb->id_repartidor );
 
-	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR") ) while (1) {
+	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "SJF") ) while (1) {
 
 		sem_wait(&p_pcb->semaforo);
 
