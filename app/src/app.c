@@ -379,30 +379,6 @@ void short_term_scheduler( void ) {
 
 	uint32_t size_cola_listos = 0;
 
-	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "FIFO") ) {
-
-		while(1){
-
-			sem_wait(&sem_listos);
-
-			size_cola_listos = queue_size( g_cola_listos );
-
-			printf("El tamaño de la cola de listos es ahora de %d.\n", size_cola_listos );
-
-			if (size_cola_listos == 0) size_cola_listos = -1;
-
-			t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_listos );
-
-			repa->estado = EJEC;
-
-			sem_post(&repa->semaforo);
-
-			sem_wait(&repa->cpu);
-
-		}
-
-	}
-
 	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "SJF") ) {
 
 		while(1){
@@ -416,6 +392,30 @@ void short_term_scheduler( void ) {
 			if (size_cola_listos == 0) size_cola_listos = -1;
 
 			t_pcb_repartidor * repa = _sjf_repartidor();
+
+			repa->estado = EJEC;
+
+			sem_post(&repa->semaforo);
+
+			sem_wait(&repa->cpu);
+
+		}
+
+	}
+
+	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "FIFO") ) {
+
+		while(1){
+
+			sem_wait(&sem_listos);
+
+			size_cola_listos = queue_size( g_cola_listos );
+
+			printf("El tamaño de la cola de listos es ahora de %d.\n", size_cola_listos );
+
+			if (size_cola_listos == 0) size_cola_listos = -1;
+
+			t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_listos );
 
 			repa->estado = EJEC;
 
@@ -619,6 +619,16 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 		_repartidor_en_bicicleta();
 
+		if ( p_pcb->estado == EJEC ) {
+
+			printf("Consumí una ráfaga de CPU.\n");
+
+			list_add( g_lista_listos, p_pcb );
+
+			sem_post(&sem_listos);
+
+		}
+
 		if ( p_pcb->estado == BLOQ ) {
 
 			printf("Salí de CPU por cansancio.\n");
@@ -626,10 +636,6 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 			queue_push( g_cola_bloqueados, p_pcb );
 
 			sem_post(&sem_bloq);
-
-			sem_post(&p_pcb->cpu);
-
-			mostrar_info_pcb_repartidor( p_pcb );
 
 		}
 
@@ -641,11 +647,11 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 			queue_push( g_cola_nuevos, p_pcb );
 
-			sem_post(&p_pcb->cpu);
-
-			mostrar_info_pcb_repartidor( p_pcb );
-
 		}
+
+		sem_post(&p_pcb->cpu);
+
+		mostrar_info_pcb_repartidor( p_pcb );
 
 	}
 
