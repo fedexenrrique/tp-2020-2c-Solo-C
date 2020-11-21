@@ -17,29 +17,30 @@ int main(void) {
 
 	sem_init( &sem_bloq    ,0 ,0);
 
-	g_cola_listos = queue_create();
 
-	g_cola_nuevos = queue_create();
-
-	g_cola_bloqueados = queue_create();
 
 	signal(SIGINT, sigint);
 
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
 	config = leer_config();
 
+	g_cola_nuevos = queue_create();
+
+	g_cola_bloqueados = queue_create();
+
+	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "SJF") )
+
+		g_lista_listos = list_create();
+
+	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "FIFO") )
+
+		g_cola_listos = queue_create();
+
 	pthread_create( &g_thread_long_term_scheduler  , NULL, (void*) &long_term_scheduler   , (void*) NULL  );
 
 	pthread_create( &g_thread_medium_term_scheduler, NULL, (void*) &medium_term_scheduler , (void*) NULL  );
 
 	pthread_create( &g_thread_short_term_scheduler , NULL, (void*) &short_term_scheduler  , (void*) NULL  );
-
-	// medium_term_scheduler();
-
-	// lanzar planificador a largo plazo
-	// lanzar planificador a mediano plazo
-	// lanzar planificador a corto plazo
-	// lanzar repartidores
 
 	g_socket_cliente = crear_socket_escucha("127.0.0.1", g_puerto_escucha );
 
@@ -271,8 +272,13 @@ void long_term_scheduler( void ) {
 
 			l_repartidor->yendo_a = RESTO;
 
+			if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "SJF") )
 
-			queue_push( g_cola_listos, l_repartidor );
+				list_add( g_lista_listos, l_repartidor );
+
+			if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "FIFO") )
+
+				queue_push( g_cola_listos, l_repartidor );
 
 			sem_post(&sem_listos);
 
@@ -341,25 +347,91 @@ void _aux_long_term_scheduler() {
 
 void short_term_scheduler( void ) {
 
+	t_pcb_repartidor * _sjf_repartidor( void ) {
+
+		uint32_t distancia_aux = 9999;
+
+		t_pcb_repartidor * pcb_aux = NULL;
+
+		bool _aux_sjf_remove_condition( void * p_elem ) {
+
+			return p_elem == ((void*) pcb_aux);
+
+		}
+
+		void _aux_sjf ( void * p_elem ) {
+
+			t_pcb_repartidor * elem = (t_pcb_repartidor *) p_elem;
+
+			uint32_t distancia = abs(elem->cliente_x - elem->resto_x) + abs(elem->cliente_y - elem->resto_y)
+					+ ( elem->yendo_a == RESTO ) ?
+							abs(elem->resto_x   - elem->repa_x ) + abs(elem->resto_y   - elem->repa_y) : 0;
+
+			if ( distancia < distancia_aux ) {
+
+				distancia_aux = distancia;
+
+				pcb_aux = elem;
+
+			}
+
+		}
+
+		list_iterate( g_lista_listos, _aux_sjf );
+
+		list_remove_by_condition( g_lista_listos, _aux_sjf_remove_condition );
+
+		return pcb_aux;
+
+	}
+
 	uint32_t size_cola_listos = 0;
 
-	while(1){
+	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "SJF") ) {
 
-		sem_wait(&sem_listos);
+		while(1){
 
-		size_cola_listos = queue_size( g_cola_listos );
+			sem_wait(&sem_listos);
 
-		printf("El tamaño de la cola de listos es ahora de %d.\n", size_cola_listos );
+			size_cola_listos = list_size( g_lista_listos );
 
-		if (size_cola_listos == 0) size_cola_listos = -1;
+			printf("El tamaño de la lista de listos es ahora de %d.\n", size_cola_listos );
 
-		t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_listos );
+			if (size_cola_listos == 0) size_cola_listos = -1;
 
-		repa->estado = EJEC;
+			t_pcb_repartidor * repa = _sjf_repartidor();
 
-		sem_post(&repa->semaforo);
+			repa->estado = EJEC;
 
-		sem_wait(&repa->cpu);
+			sem_post(&repa->semaforo);
+
+			sem_wait(&repa->cpu);
+
+		}
+
+	}
+
+	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "FIFO") ) {
+
+		while(1){
+
+			sem_wait(&sem_listos);
+
+			size_cola_listos = queue_size( g_cola_listos );
+
+			printf("El tamaño de la cola de listos es ahora de %d.\n", size_cola_listos );
+
+			if (size_cola_listos == 0) size_cola_listos = -1;
+
+			t_pcb_repartidor * repa = (t_pcb_repartidor *) queue_pop( g_cola_listos );
+
+			repa->estado = EJEC;
+
+			sem_post(&repa->semaforo);
+
+			sem_wait(&repa->cpu);
+
+		}
 
 	}
 
@@ -401,7 +473,13 @@ void descanso_repartidor ( t_pcb_repartidor * p_pcb ) { while (1) {
 
 	p_pcb->estado = LISTO;
 
-	queue_push( g_cola_listos, p_pcb );
+	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "SJF") )
+
+		list_add( g_lista_listos, p_pcb );
+
+	if ( string_equals_ignore_case( g_algoritmo_de_planificacion , "FIFO") )
+
+		queue_push( g_cola_listos, p_pcb );
 
 	sem_post(&sem_listos);
 
@@ -543,22 +621,45 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 	printf( "Se inició correctamente el Hilo del Repartidor '%d'.\n", p_pcb->id_repartidor );
 
-	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "RR") ) while (1) {
+	if ( string_equals_ignore_case(g_algoritmo_de_planificacion, "SJF") ) while (1) {
 
 		sem_wait(&p_pcb->semaforo);
 
-		while (1) {
-			printf("mensaje del repartidor %d.\n", p_pcb->id_repartidor);
-			sleep(1);
+		_repartidor_en_bicicleta();
+
+		if ( p_pcb->estado == EJEC ) {
+
+			printf("Consumí una ráfaga de CPU.\n");
+
+			list_add( g_lista_listos, p_pcb );
+
+			sem_post(&sem_listos);
+
 		}
 
-		// _repartidor_en_bicicleta();
+		if ( p_pcb->estado == BLOQ ) {
 
-		// if ( p_pcb->estado != EJEC ) mostrar_info_pcb_repartidor( p_pcb );
+			printf("Salí de CPU por cansancio.\n");
 
-		// sem_post(&g_nro_cpus);
+			queue_push( g_cola_bloqueados, p_pcb );
 
-		// if ( p_pcb->estado == FINAL ) break;
+			sem_post(&sem_bloq);
+
+		}
+
+		if ( p_pcb->estado == FINAL ) {
+
+			printf("Salí de CPU por finalización.\n");
+
+			p_pcb->estado = NUEVO;
+
+			queue_push( g_cola_nuevos, p_pcb );
+
+		}
+
+		sem_post(&p_pcb->cpu);
+
+		mostrar_info_pcb_repartidor( p_pcb );
 
 	}
 
