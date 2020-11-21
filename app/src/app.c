@@ -353,6 +353,12 @@ void short_term_scheduler( void ) {
 
 		t_pcb_repartidor * pcb_aux = NULL;
 
+		bool _aux_sjf_remove_condition( void * p_elem ) {
+
+			return p_elem == ((void*) pcb_aux);
+
+		}
+
 		void _aux_sjf ( void * p_elem ) {
 
 			t_pcb_repartidor * elem = (t_pcb_repartidor *) p_elem;
@@ -372,6 +378,8 @@ void short_term_scheduler( void ) {
 		}
 
 		list_iterate( g_lista_listos, _aux_sjf );
+
+		list_remove_by_condition( g_lista_listos, _aux_sjf_remove_condition );
 
 		return pcb_aux;
 
