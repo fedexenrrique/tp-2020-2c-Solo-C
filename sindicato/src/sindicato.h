@@ -69,12 +69,12 @@ typedef struct{
 
 typedef struct{
 	char* nombreRestaurante;
-	int cantCocineros;
+	uint32_t cantCocineros;
 	char* posicion;
 	char* afinidadCocineros;
 	char* platos;
 	char* preciosPlatos;
-	int cantidadHornos;
+	uint32_t cantidadHornos;
 
 }tCreacionRestaurante;
 
@@ -126,6 +126,8 @@ t_dictionary* diccionarioBloquesAsignadosARecetas;
 t_dictionary* diccionarioBloquesAsignadosAPedidos;
 
 t_dictionary* diccionarioPosPropiedadesEnArchivo;
+
+int bloquesLibres;
 
 
 char* pathFiles;

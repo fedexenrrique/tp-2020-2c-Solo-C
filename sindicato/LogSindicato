@@ -5981,3 +5981,424 @@ PUNTO_MONTAJE: /home/utnso/afip
 [ERROR] 04:31:28:923 Sindicato/(24014:24014): Error al truncar el archivo
 [ERROR] 04:31:48:991 Sindicato/(24014:24014): Error al truncar el archivo
 [ERROR] 04:31:51:560 Sindicato/(24014:24014): Error al truncar el archivo
+[INFO] 04:48:23:813 Sindicato/(24920:24920): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:48:23:813 Sindicato/(24920:24920): Preparando punto de montaje.
+[INFO] 04:48:23:813 Sindicato/(24920:24920): Punto de montaje encontrado.
+[INFO] 04:48:23:813 Sindicato/(24920:24920): Leyendo archivo Info de Bloques
+[INFO] 04:48:23:813 Sindicato/(24920:24920): Mapeando Archivo Bitmap...
+[INFO] 04:48:23:813 Sindicato/(24920:24920): La cantidad de bytes del bitmap es 16
+[INFO] 04:48:23:813 Sindicato/(24920:24920): Leyendo archivo resto...
+[INFO] 04:48:23:813 Sindicato/(24920:24920): Leyendo bloques
+[INFO] 04:48:35:611 Sindicato/(24920:24920): Leyendo archivo resto...
+[INFO] 04:48:35:611 Sindicato/(24920:24920): Leyendo bloques
+[INFO] 05:32:46:924 Sindicato/(27021:27021): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 05:32:46:924 Sindicato/(27021:27021): Preparando punto de montaje.
+[INFO] 05:32:46:924 Sindicato/(27021:27021): Punto de montaje encontrado.
+[INFO] 05:32:46:924 Sindicato/(27021:27021): Leyendo archivo Info de Bloques
+[INFO] 05:32:46:924 Sindicato/(27021:27021): Mapeando Archivo Bitmap...
+[INFO] 05:32:46:924 Sindicato/(27021:27021): La cantidad de bytes del bitmap es 16
+[INFO] 05:32:46:925 Sindicato/(27021:27021): Leyendo archivo resto...
+[INFO] 05:32:46:925 Sindicato/(27021:27021): Leyendo bloques
+[INFO] 05:32:51:967 Sindicato/(27021:27021): Leyendo archivo resto...
+[INFO] 05:32:51:967 Sindicato/(27021:27021): Leyendo bloques
+[ERROR] 05:32:55:533 Sindicato/(27021:27021): Error al truncar el archivo
+[ERROR] 05:33:00:96 Sindicato/(27021:27021): Error al truncar el archivo
+[ERROR] 05:33:01:30 Sindicato/(27021:27021): Error al truncar el archivo
+[INFO] 05:33:04:284 Sindicato/(27021:27021): Creación Restaurante
+[INFO] 05:33:04:284 Sindicato/(27021:27021): Creando Reestaurante...
+[INFO] 05:33:04:284 Sindicato/(27021:27021): Nombre: Resto3
+
+[INFO] 05:33:04:284 Sindicato/(27021:27021): Cantidad Cocineros: 5
+
+[INFO] 05:33:04:284 Sindicato/(27021:27021): Creando directorio de restaursnte nuevo...
+[INFO] 05:33:04:285 Sindicato/(27021:27021): El restaurante no existe. Se creará el directorio.
+[INFO] 05:33:04:285 Sindicato/(27021:27021): El directorio de Restaurante se creó correctamente.
+[INFO] 05:33:04:289 Sindicato/(27021:27021): la posicion del bitmap seleccionado es  11
+[INFO] 05:33:11:623 Sindicato/(27021:27021): la posicion del bitmap seleccionado es  11
+[ERROR] 05:33:12:857 Sindicato/(27021:27021): Error al truncar el archivo
+[INFO] 05:33:12:867 Sindicato/(27021:27021): la posicion del bitmap seleccionado es  11
+[ERROR] 05:33:13:735 Sindicato/(27021:27021): Error al truncar el archivo
+[ERROR] 05:33:14:851 Sindicato/(27021:27021): Error al truncar el archivo
+[INFO] 05:37:17:919 Sindicato/(27380:27380): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 05:37:17:919 Sindicato/(27380:27380): Preparando punto de montaje.
+[INFO] 05:37:17:920 Sindicato/(27380:27380): Punto de montaje encontrado.
+[INFO] 05:37:17:920 Sindicato/(27380:27380): Leyendo archivo Info de Bloques
+[INFO] 05:37:17:920 Sindicato/(27380:27380): Mapeando Archivo Bitmap...
+[INFO] 05:37:17:920 Sindicato/(27380:27380): La cantidad de bytes del bitmap es 16
+[INFO] 05:37:24:53 Sindicato/(27380:27380): Creación Restaurante
+[INFO] 05:37:24:53 Sindicato/(27380:27380): Creando Reestaurante...
+[INFO] 05:37:24:53 Sindicato/(27380:27380): Nombre: Resto3
+
+[INFO] 05:37:24:53 Sindicato/(27380:27380): Cantidad Cocineros: 5
+
+[INFO] 05:37:24:53 Sindicato/(27380:27380): Creando directorio de restaursnte nuevo...
+[INFO] 05:37:24:53 Sindicato/(27380:27380): El restaurante no existe. Se creará el directorio.
+[INFO] 05:37:24:53 Sindicato/(27380:27380): El directorio de Restaurante se creó correctamente.
+[INFO] 05:37:24:55 Sindicato/(27380:27380): la posicion del bitmap seleccionado es  11
+[INFO] 05:37:47:270 Sindicato/(27380:27380): la posicion del bitmap seleccionado es  11
+[INFO] 05:38:47:519 Sindicato/(27469:27469): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 05:38:47:519 Sindicato/(27469:27469): Preparando punto de montaje.
+[INFO] 05:38:47:520 Sindicato/(27469:27469): Punto de montaje encontrado.
+[INFO] 05:38:47:524 Sindicato/(27469:27469): Leyendo archivo Info de Bloques
+[INFO] 05:38:47:524 Sindicato/(27469:27469): Mapeando Archivo Bitmap...
+[INFO] 05:38:47:524 Sindicato/(27469:27469): La cantidad de bytes del bitmap es 16
+[INFO] 05:39:13:619 Sindicato/(27469:27469): Creación Restaurante
+[INFO] 05:39:13:619 Sindicato/(27469:27469): Creando Reestaurante...
+[INFO] 05:39:13:619 Sindicato/(27469:27469): Nombre: Resto3
+
+[INFO] 05:39:13:619 Sindicato/(27469:27469): Cantidad Cocineros: 5
+
+[INFO] 05:39:13:619 Sindicato/(27469:27469): Creando directorio de restaursnte nuevo...
+[INFO] 05:39:13:620 Sindicato/(27469:27469): El restaurante no existe. Se creará el directorio.
+[INFO] 05:39:13:620 Sindicato/(27469:27469): El directorio de Restaurante se creó correctamente.
+[INFO] 05:39:13:713 Sindicato/(27469:27469): la posicion del bitmap seleccionado es  11
+[INFO] 05:39:34:792 Sindicato/(27469:27469): la posicion del bitmap seleccionado es  11
+[ERROR] 05:40:47:522 Sindicato/(27469:27469): Error al truncar el archivo
+[INFO] 05:40:57:650 Sindicato/(27469:27469): la posicion del bitmap seleccionado es  11
+[INFO] 23:12:44:466 Sindicato/(4467:4467): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 23:12:44:518 Sindicato/(4467:4467): Preparando punto de montaje.
+[INFO] 23:12:44:518 Sindicato/(4467:4467): Punto de montaje encontrado.
+[INFO] 23:12:44:518 Sindicato/(4467:4467): Leyendo archivo Info de Bloques
+[INFO] 23:12:44:519 Sindicato/(4467:4467): Mapeando Archivo Bitmap...
+[INFO] 23:12:44:519 Sindicato/(4467:4467): La cantidad de bytes del bitmap es 16
+[INFO] 23:12:56:148 Sindicato/(4467:4467): Creación Restaurante
+[INFO] 23:13:29:45 Sindicato/(4467:4467): Creando Reestaurante...
+[INFO] 23:13:29:47 Sindicato/(4467:4467): Nombre: Resto3
+
+[INFO] 23:13:29:47 Sindicato/(4467:4467): Cantidad Cocineros: 5
+
+[INFO] 23:13:29:47 Sindicato/(4467:4467): Creando directorio de restaursnte nuevo...
+[WARNING] 23:13:29:47 Sindicato/(4467:4467): El restaurante ya existe...saliendo
+[INFO] 23:13:47:400 Sindicato/(4467:4467): Creación Restaurante
+[INFO] 23:13:47:400 Sindicato/(4467:4467): Creando Reestaurante...
+[INFO] 23:13:47:400 Sindicato/(4467:4467): Nombre: Resto3
+
+[INFO] 23:13:47:400 Sindicato/(4467:4467): Cantidad Cocineros: 5
+
+[INFO] 23:13:47:400 Sindicato/(4467:4467): Creando directorio de restaursnte nuevo...
+[INFO] 23:13:47:400 Sindicato/(4467:4467): El restaurante no existe. Se creará el directorio.
+[INFO] 23:13:47:401 Sindicato/(4467:4467): El directorio de Restaurante se creó correctamente.
+[INFO] 23:14:03:587 Sindicato/(4467:4467): la posicion del bitmap seleccionado es  11
+[INFO] 23:15:55:424 Sindicato/(4467:4467): la posicion del bitmap seleccionado es  11
+[INFO] 23:48:45:488 Sindicato/(5540:5540): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 23:48:45:488 Sindicato/(5540:5540): Preparando punto de montaje.
+[INFO] 23:48:45:488 Sindicato/(5540:5540): Punto de montaje encontrado.
+[INFO] 23:48:45:488 Sindicato/(5540:5540): Leyendo archivo Info de Bloques
+[INFO] 23:48:45:488 Sindicato/(5540:5540): Mapeando Archivo Bitmap...
+[INFO] 23:48:45:488 Sindicato/(5540:5540): La cantidad de bytes del bitmap es 16
+[INFO] 23:49:01:586 Sindicato/(5540:5540): Creación Restaurante
+[INFO] 23:49:40:915 Sindicato/(5540:5540): Creando Reestaurante...
+[INFO] 23:49:41:518 Sindicato/(5540:5540): Nombre: Resto3
+
+[INFO] 23:49:42:22 Sindicato/(5540:5540): Cantidad Cocineros: 5
+
+[INFO] 23:49:42:923 Sindicato/(5540:5540): Creando directorio de restaursnte nuevo...
+[INFO] 23:49:42:923 Sindicato/(5540:5540): El restaurante no existe. Se creará el directorio.
+[INFO] 23:49:42:923 Sindicato/(5540:5540): El directorio de Restaurante se creó correctamente.
+[INFO] 23:50:01:265 Sindicato/(5540:5540): la posicion del bitmap seleccionado es  11
+[INFO] 23:50:04:495 Sindicato/(5540:5540): la posicion del bitmap seleccionado es  11
+[ERROR] 23:50:05:410 Sindicato/(5540:5540): Error al truncar el archivo
+[INFO] 23:50:06:552 Sindicato/(5540:5540): la posicion del bitmap seleccionado es  11
+[ERROR] 23:50:07:252 Sindicato/(5540:5540): Error al truncar el archivo
+[ERROR] 23:50:08:159 Sindicato/(5540:5540): Error al truncar el archivo
+[INFO] 00:19:09:250 Sindicato/(7359:7359): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:19:09:250 Sindicato/(7359:7359): Preparando punto de montaje.
+[INFO] 00:19:09:250 Sindicato/(7359:7359): Punto de montaje encontrado.
+[INFO] 00:19:09:250 Sindicato/(7359:7359): Leyendo archivo Info de Bloques
+[INFO] 00:19:09:250 Sindicato/(7359:7359): Mapeando Archivo Bitmap...
+[INFO] 00:19:09:250 Sindicato/(7359:7359): La cantidad de bytes del bitmap es 16
+[INFO] 00:19:22:108 Sindicato/(7359:7359): Creación Restaurante
+[INFO] 00:19:22:108 Sindicato/(7359:7359): Creando Reestaurante...
+[INFO] 00:19:22:108 Sindicato/(7359:7359): Nombre: Resto3
+
+[INFO] 00:19:22:108 Sindicato/(7359:7359): Cantidad Cocineros: 5
+
+[INFO] 00:19:22:108 Sindicato/(7359:7359): Creando directorio de restaursnte nuevo...
+[INFO] 00:19:22:108 Sindicato/(7359:7359): El restaurante no existe. Se creará el directorio.
+[INFO] 00:19:22:108 Sindicato/(7359:7359): El directorio de Restaurante se creó correctamente.
+[INFO] 00:20:56:444 Sindicato/(7490:7490): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:20:56:444 Sindicato/(7490:7490): Preparando punto de montaje.
+[INFO] 00:20:56:444 Sindicato/(7490:7490): Punto de montaje encontrado.
+[INFO] 00:20:56:444 Sindicato/(7490:7490): Leyendo archivo Info de Bloques
+[INFO] 00:20:56:444 Sindicato/(7490:7490): Mapeando Archivo Bitmap...
+[INFO] 00:20:56:444 Sindicato/(7490:7490): La cantidad de bytes del bitmap es 16
+[INFO] 00:21:04:886 Sindicato/(7490:7490): Creación Restaurante
+[INFO] 00:21:04:887 Sindicato/(7490:7490): Creando Reestaurante...
+[INFO] 00:21:04:887 Sindicato/(7490:7490): Nombre: Resto3
+
+[INFO] 00:21:04:887 Sindicato/(7490:7490): Cantidad Cocineros: 5
+
+[INFO] 00:21:04:887 Sindicato/(7490:7490): Creando directorio de restaursnte nuevo...
+[INFO] 00:21:04:887 Sindicato/(7490:7490): El restaurante no existe. Se creará el directorio.
+[INFO] 00:21:04:887 Sindicato/(7490:7490): El directorio de Restaurante se creó correctamente.
+[INFO] 00:23:45:454 Sindicato/(7621:7621): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:23:45:455 Sindicato/(7621:7621): Preparando punto de montaje.
+[INFO] 00:23:45:455 Sindicato/(7621:7621): Punto de montaje encontrado.
+[INFO] 00:23:45:455 Sindicato/(7621:7621): Leyendo archivo Info de Bloques
+[INFO] 00:23:45:455 Sindicato/(7621:7621): Mapeando Archivo Bitmap...
+[INFO] 00:23:45:455 Sindicato/(7621:7621): La cantidad de bytes del bitmap es 16
+[INFO] 00:23:53:152 Sindicato/(7621:7621): Creación Restaurante
+[INFO] 00:23:53:152 Sindicato/(7621:7621): Creando Reestaurante...
+[INFO] 00:23:53:152 Sindicato/(7621:7621): Nombre: Resto3
+
+[INFO] 00:23:53:152 Sindicato/(7621:7621): Cantidad Cocineros: 5
+
+[INFO] 00:23:53:152 Sindicato/(7621:7621): Creando directorio de restaursnte nuevo...
+[INFO] 00:23:53:152 Sindicato/(7621:7621): El restaurante no existe. Se creará el directorio.
+[INFO] 00:23:53:153 Sindicato/(7621:7621): El directorio de Restaurante se creó correctamente.
+[INFO] 00:28:42:306 Sindicato/(7842:7842): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:28:42:307 Sindicato/(7842:7842): Preparando punto de montaje.
+[INFO] 00:28:42:307 Sindicato/(7842:7842): Punto de montaje encontrado.
+[INFO] 00:28:42:307 Sindicato/(7842:7842): Leyendo archivo Info de Bloques
+[INFO] 00:28:42:307 Sindicato/(7842:7842): Mapeando Archivo Bitmap...
+[INFO] 00:28:42:307 Sindicato/(7842:7842): La cantidad de bytes del bitmap es 16
+[INFO] 00:29:00:569 Sindicato/(7842:7842): Creación Restaurante
+[INFO] 00:29:00:569 Sindicato/(7842:7842): Creando Reestaurante...
+[INFO] 00:29:00:569 Sindicato/(7842:7842): Nombre: Resto3
+
+[INFO] 00:29:00:569 Sindicato/(7842:7842): Cantidad Cocineros: 5
+
+[INFO] 00:29:00:569 Sindicato/(7842:7842): Creando directorio de restaursnte nuevo...
+[INFO] 00:29:00:569 Sindicato/(7842:7842): El restaurante no existe. Se creará el directorio.
+[INFO] 00:29:00:570 Sindicato/(7842:7842): El directorio de Restaurante se creó correctamente.
+[INFO] 00:30:00:73 Sindicato/(7973:7973): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:30:00:73 Sindicato/(7973:7973): Preparando punto de montaje.
+[INFO] 00:30:00:73 Sindicato/(7973:7973): Punto de montaje encontrado.
+[INFO] 00:30:00:74 Sindicato/(7973:7973): Leyendo archivo Info de Bloques
+[INFO] 00:30:00:74 Sindicato/(7973:7973): Mapeando Archivo Bitmap...
+[INFO] 00:30:00:74 Sindicato/(7973:7973): La cantidad de bytes del bitmap es 16
+[INFO] 00:30:04:269 Sindicato/(7973:7973): Creación Restaurante
+[INFO] 00:30:04:269 Sindicato/(7973:7973): Creando Reestaurante...
+[INFO] 00:30:04:269 Sindicato/(7973:7973): Nombre: Resto3
+
+[INFO] 00:30:04:269 Sindicato/(7973:7973): Cantidad Cocineros: 5
+
+[INFO] 00:30:04:269 Sindicato/(7973:7973): Creando directorio de restaursnte nuevo...
+[INFO] 00:30:04:269 Sindicato/(7973:7973): El restaurante no existe. Se creará el directorio.
+[INFO] 00:30:04:269 Sindicato/(7973:7973): El directorio de Restaurante se creó correctamente.
+[INFO] 00:46:09:760 Sindicato/(8773:8773): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:46:28:518 Sindicato/(8849:8849): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:46:45:339 Sindicato/(8913:8913): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:55:41:600 Sindicato/(9358:9358): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:56:48:71 Sindicato/(9476:9476): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 00:57:47:296 Sindicato/(9574:9574): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:00:04:886 Sindicato/(9744:9744): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:04:09:476 Sindicato/(9925:9925): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 01:05:06:212 Sindicato/(10019:10019): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:29:24:73 Sindicato/(15300:15300): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:54:28:417 Sindicato/(16025:16025): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:55:47:180 Sindicato/(16187:16187): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:56:52:568 Sindicato/(16310:16310): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 03:59:22:565 Sindicato/(16448:16448): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:00:15:965 Sindicato/(16553:16553): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:02:38:406 Sindicato/(16724:16724): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:02:46:179 Sindicato/(16724:16724): Preparando punto de montaje.
+[WARNING] 04:02:46:179 Sindicato/(16724:16724): El punto de montaje no existe. Se creará el directorio.
+[INFO] 04:02:46:179 Sindicato/(16724:16724): El directorio se creó satisfactoriamente.
+[INFO] 04:02:46:179 Sindicato/(16724:16724): Directorio creado
+[INFO] 04:02:46:180 Sindicato/(16724:16724): Creando directorio de files...
+[INFO] 04:02:46:180 Sindicato/(16724:16724): Se creo el directorio para almacenar los restaurantes y las recetas
+[INFO] 04:02:46:180 Sindicato/(16724:16724): Directorio de bloques creado
+[INFO] 04:02:46:180 Sindicato/(16724:16724): Directorio de restaurantes creado
+[INFO] 04:02:46:180 Sindicato/(16724:16724): Directorio de recetas creado
+[INFO] 04:02:46:180 Sindicato/(16724:16724): Creando archivos de bloques...
+[INFO] 04:02:46:213 Sindicato/(16724:16724): Archivos de bloques creados.
+[INFO] 04:02:46:213 Sindicato/(16724:16724): Creando bitmap...
+[INFO] 04:02:46:213 Sindicato/(16724:16724): El Bitmap no existe. Se creará el archivo.
+[INFO] 04:02:46:213 Sindicato/(16724:16724): Creando Archivo Bitmap...
+[INFO] 04:02:46:213 Sindicato/(16724:16724): La cantidad de bytes del bitmap es 1032
+[INFO] 04:04:21:771 Sindicato/(16724:16724): Creación Restaurante
+[INFO] 04:04:21:771 Sindicato/(16724:16724): Creando Reestaurante...
+[INFO] 04:04:21:771 Sindicato/(16724:16724): Nombre: Resto
+
+[INFO] 04:04:21:771 Sindicato/(16724:16724): Cantidad Cocineros: 5
+
+[INFO] 04:04:21:771 Sindicato/(16724:16724): Creando directorio de restaursnte nuevo...
+[INFO] 04:04:21:771 Sindicato/(16724:16724): El restaurante no existe. Se creará el directorio.
+[INFO] 04:04:21:772 Sindicato/(16724:16724): El directorio de Restaurante se creó correctamente.
+[INFO] 04:05:23:930 Sindicato/(16890:16890): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:05:29:303 Sindicato/(16890:16890): Preparando punto de montaje.
+[INFO] 04:05:29:303 Sindicato/(16890:16890): Punto de montaje encontrado.
+[INFO] 04:05:29:304 Sindicato/(16890:16890): Leyendo archivo Info de Bloques
+[INFO] 04:05:29:304 Sindicato/(16890:16890): Mapeando Archivo Bitmap...
+[INFO] 04:05:29:304 Sindicato/(16890:16890): La cantidad de bytes del bitmap es 16
+[INFO] 04:05:34:855 Sindicato/(16890:16890): Creación Restaurante
+[INFO] 04:05:34:855 Sindicato/(16890:16890): Creando Reestaurante...
+[INFO] 04:05:34:855 Sindicato/(16890:16890): Nombre: Resto2
+
+[INFO] 04:05:34:855 Sindicato/(16890:16890): Cantidad Cocineros: 5
+
+[INFO] 04:05:34:855 Sindicato/(16890:16890): Creando directorio de restaursnte nuevo...
+[INFO] 04:05:34:855 Sindicato/(16890:16890): El restaurante no existe. Se creará el directorio.
+[INFO] 04:05:34:855 Sindicato/(16890:16890): El directorio de Restaurante se creó correctamente.
+[INFO] 04:17:31:383 Sindicato/(17215:17215): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:17:34:391 Sindicato/(17215:17215): Preparando punto de montaje.
+[INFO] 04:17:34:392 Sindicato/(17215:17215): Punto de montaje encontrado.
+[INFO] 04:17:34:392 Sindicato/(17215:17215): Leyendo archivo Info de Bloques
+[INFO] 04:17:34:392 Sindicato/(17215:17215): Mapeando Archivo Bitmap...
+[INFO] 04:17:34:392 Sindicato/(17215:17215): La cantidad de bytes del bitmap es 16
+[INFO] 04:17:53:971 Sindicato/(17215:17215): Creacion Receta
+[INFO] 04:17:53:972 Sindicato/(17215:17215): Creando receta...
+
+[INFO] 04:17:53:972 Sindicato/(17215:17215): Milanesa
+[INFO] 04:17:53:972 Sindicato/(17215:17215): Creando directorio de receta nuevo...
+[ERROR] 04:17:53:972 Sindicato/(17215:17215): Es un archivo.
+[ERROR] 04:17:53:972 Sindicato/(17215:17215): Archivo no grabado
+[INFO] 04:18:34:425 Sindicato/(17215:17215): Creacion Receta
+[INFO] 04:18:34:425 Sindicato/(17215:17215): Creando receta...
+
+[INFO] 04:18:34:425 Sindicato/(17215:17215): Milanesa
+[INFO] 04:18:34:425 Sindicato/(17215:17215): Creando directorio de receta nuevo...
+[INFO] 04:18:34:425 Sindicato/(17215:17215): La receta no existe. Se creará el directorio.
+[INFO] 04:19:32:720 Sindicato/(17323:17323): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:19:38:911 Sindicato/(17323:17323): Preparando punto de montaje.
+[INFO] 04:19:38:912 Sindicato/(17323:17323): Punto de montaje encontrado.
+[INFO] 04:19:38:912 Sindicato/(17323:17323): Leyendo archivo Info de Bloques
+[INFO] 04:19:38:912 Sindicato/(17323:17323): Mapeando Archivo Bitmap...
+[INFO] 04:19:38:912 Sindicato/(17323:17323): La cantidad de bytes del bitmap es 16
+[INFO] 04:19:46:960 Sindicato/(17323:17323): Creacion Receta
+[INFO] 04:19:49:707 Sindicato/(17323:17323): Creando receta...
+
+[INFO] 04:19:50:167 Sindicato/(17323:17323): Milanesa
+[INFO] 04:20:10:929 Sindicato/(17323:17323): Creando directorio de receta nuevo...
+[ERROR] 04:20:15:519 Sindicato/(17323:17323): Es un archivo.
+[ERROR] 04:20:45:686 Sindicato/(17323:17323): Archivo no grabado
+[INFO] 04:26:40:246 Sindicato/(17528:17528): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:26:40:247 Sindicato/(17528:17528): Preparando punto de montaje.
+[INFO] 04:26:40:247 Sindicato/(17528:17528): Punto de montaje encontrado.
+[INFO] 04:26:40:247 Sindicato/(17528:17528): Leyendo archivo Info de Bloques
+[INFO] 04:26:40:247 Sindicato/(17528:17528): Mapeando Archivo Bitmap...
+[INFO] 04:26:40:247 Sindicato/(17528:17528): La cantidad de bytes del bitmap es 16
+[INFO] 04:27:28:626 Sindicato/(17528:17528): Creacion Receta
+[INFO] 04:27:28:626 Sindicato/(17528:17528): Creando receta...
+
+[INFO] 04:27:28:626 Sindicato/(17528:17528): Milanesa
+[INFO] 04:27:28:626 Sindicato/(17528:17528): Creando directorio de receta nuevo...
+[INFO] 04:27:32:773 Sindicato/(17528:17528): La receta no existe. Se creará el directorio.
+[INFO] 04:28:27:597 Sindicato/(17528:17528): la posicion del bitmap seleccionado es  8
+[INFO] 04:31:18:107 Sindicato/(17741:17741): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:31:18:108 Sindicato/(17741:17741): Preparando punto de montaje.
+[INFO] 04:31:18:108 Sindicato/(17741:17741): Punto de montaje encontrado.
+[INFO] 04:31:18:108 Sindicato/(17741:17741): Leyendo archivo Info de Bloques
+[INFO] 04:31:18:108 Sindicato/(17741:17741): Mapeando Archivo Bitmap...
+[INFO] 04:31:18:108 Sindicato/(17741:17741): La cantidad de bytes del bitmap es 16
+[INFO] 04:31:24:703 Sindicato/(17741:17741): Creacion Receta
+[INFO] 04:31:24:703 Sindicato/(17741:17741): Creando receta...
+
+[INFO] 04:31:24:703 Sindicato/(17741:17741): Milanesa
+[INFO] 04:31:24:703 Sindicato/(17741:17741): Creando directorio de receta nuevo...
+[INFO] 04:31:27:400 Sindicato/(17741:17741): La receta no existe. Se creará el directorio.
+[INFO] 04:31:27:442 Sindicato/(17741:17741): la posicion del bitmap seleccionado es  9
+[INFO] 04:39:35:786 Sindicato/(18051:18051): 
+PUERTO_ESCUCHA: 5003
+PUNTO_MONTAJE: /home/utnso/afip
+
+[INFO] 04:39:35:786 Sindicato/(18051:18051): Preparando punto de montaje.
+[INFO] 04:39:35:787 Sindicato/(18051:18051): Punto de montaje encontrado.
+[INFO] 04:39:35:787 Sindicato/(18051:18051): Leyendo archivo Info de Bloques
+[INFO] 04:39:35:787 Sindicato/(18051:18051): Mapeando Archivo Bitmap...
+[INFO] 04:39:35:787 Sindicato/(18051:18051): La cantidad de bytes del bitmap es 16
+[INFO] 04:39:41:655 Sindicato/(18051:18051): Creacion Receta
+[INFO] 04:39:41:655 Sindicato/(18051:18051): Creando receta...
+
+[INFO] 04:39:41:655 Sindicato/(18051:18051): Milanesa
+[INFO] 04:39:41:655 Sindicato/(18051:18051): Creando directorio de receta nuevo...
+[INFO] 04:39:43:567 Sindicato/(18051:18051): La receta no existe. Se creará el directorio.
+[INFO] 04:39:43:600 Sindicato/(18051:18051): la posicion del bitmap seleccionado es  10
+[ERROR] 04:40:47:584 Sindicato/(18051:18051): Error al truncar el archivo

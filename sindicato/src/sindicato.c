@@ -27,7 +27,7 @@ void levantarConsola() {
 	printf("*****************************CONSOLA SINDICATO*******************\n");
 
 	while (1) {
-		char lineaComando[200];
+		char lineaComando[200]="";
 		int i;
 		for (i = 0; i <= strlen(lineaComando); i++) {
 			lineaComando[i] = '\0';
@@ -48,13 +48,33 @@ void levantarConsola() {
 
 			tCreacionRestaurante* restaurante=malloc(sizeof(tCreacionRestaurante));
 
+			int sizeNombreResto=strlen(substrings[1])+1;
+			restaurante->nombreRestaurante = malloc(sizeNombreResto);
+			memcpy(restaurante->nombreRestaurante,substrings[1],sizeNombreResto);
+			restaurante->nombreRestaurante[sizeNombreResto]='\0';
 
-			restaurante->nombreRestaurante = substrings[1];
 			restaurante->cantCocineros = atoi(substrings[2]);
-			restaurante->posicion = substrings[3];
-			restaurante->afinidadCocineros = substrings[4];
-			restaurante->platos = substrings[5];
-			restaurante->preciosPlatos = substrings[6];
+
+			int sizePosicion=strlen(substrings[3]+1);
+			restaurante->posicion = malloc(sizePosicion);
+			memcpy(restaurante->posicion,substrings[3],sizePosicion);
+			restaurante->posicion[sizePosicion]='\0';
+
+			int sizeAfinidad=strlen(substrings[4]+1);
+			restaurante->afinidadCocineros = malloc(sizeAfinidad);
+			memcpy(restaurante->afinidadCocineros,substrings[4],sizeAfinidad);
+			restaurante->afinidadCocineros[sizeAfinidad]='\0';
+
+			int sizePlatos=strlen(substrings[5]+1);
+			restaurante->platos = malloc(sizePlatos);
+			memcpy(restaurante->platos,substrings[5],sizePlatos);
+			restaurante->platos[sizePlatos]='\0';
+
+			int sizePrecios=strlen(substrings[6]+1);
+			restaurante->preciosPlatos = malloc(sizePrecios);
+			memcpy(restaurante->preciosPlatos,substrings[6],sizePrecios);
+			restaurante->preciosPlatos[sizePrecios]='\0';
+
 			restaurante->cantidadHornos = atoi(substrings[7]);
 
 			log_info(logger,"Creando Reestaurante...");
@@ -67,7 +87,11 @@ void levantarConsola() {
 				log_error(logger,"Archivo no grabado");
 
 			}
-
+			free(restaurante->nombreRestaurante);
+			free(restaurante->posicion);
+			free(restaurante->afinidadCocineros);
+			free(restaurante->platos);
+			free(restaurante->preciosPlatos);
 			free(restaurante);
 
 
@@ -92,6 +116,7 @@ void levantarConsola() {
 						log_error(logger,"Archivo no grabado");
 
 				}
+			free(receta);
 
 		} else
 			log_error(logger, "Ingrese un comando Valido\n");
@@ -391,7 +416,7 @@ tMensajeInfoPedido *leerBloquesPedido(int bloqueInicial,int sizePedido,t_list* b
 	int bloqueActual=0;
 	struct stat info;
 	int e=0;
-	char* stringInfo=malloc(sizePedido+1);
+	char* stringInfo=malloc(sizePedido+10);
 	int offsetLeido=0;
 
 	e=stat(pathBloqueInicial,&info);
@@ -564,7 +589,7 @@ char* convertirArrayAString(char** array, int sizeArray){
 		sizeString=sizeString+strlen(array[i]);
 		i++;
 	}
-	char* stringCantidades=malloc(5+sizeArray+2); //Size= sizeString + cantidad de ','+ '[' + ']' + '\0'
+	char* stringCantidades=malloc(5+sizeArray+2+1); //Size= sizeString + cantidad de ','+ '[' + ']' + '\0'
 	strcpy(stringCantidades,"[");
 	//memcpy(stringCantidades,parentesisAperturaConStringPlatos,1);
 	int offset=1;
@@ -851,6 +876,13 @@ void mapearInfoRestauranteARespuesta(tMensajeInfoRestaurante* infoRestauranteAEn
 	respuestaArchivoInfoResto->size_precio_platos=strlen(infoRestauranteAEnviar->preciosPlatos);
 	respuestaArchivoInfoResto->precio_platos[strlen(infoRestauranteAEnviar->preciosPlatos)]='\0';
 	respuestaArchivoInfoResto->cantidad_hornos=infoRestauranteAEnviar->cantidadHornos;
+
+	free(posicionAux);
+	free(infoRestauranteAEnviar->posicion);
+	free(infoRestauranteAEnviar->afinidadCocineros);
+	free(infoRestauranteAEnviar->platos);
+	free(infoRestauranteAEnviar->preciosPlatos);
+	free(infoRestauranteAEnviar);
 }
 
 
@@ -945,6 +977,9 @@ void handleConexion(int socketCliente) {
 			log_error(logger,
 					"No se pudo enviar la respuesta al pedido de info del restaurante");
 		}
+
+
+		free(infoRestauranteAEnviar);
 		break;
 	}
 
@@ -960,6 +995,8 @@ void handleConexion(int socketCliente) {
 
 			break;
 		}
+
+
 
 
 	}
@@ -1113,7 +1150,7 @@ int main(int argc, char *argv[]) {
 
 	char* nombreResto=malloc(30);
 	strcpy(nombreResto,"Resto1");
-	agregarPlatoAPedido(nombreResto,"Mila1","Milanesa",2);
+	//agregarPlatoAPedido(nombreResto,"Mila1","Milanesa",2);
 
 	levantarConsola();
 

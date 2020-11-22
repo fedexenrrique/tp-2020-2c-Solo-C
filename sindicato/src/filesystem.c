@@ -228,10 +228,13 @@ int crearArchivoBitmap(tInfoBloques* infoBloques){
 
 }
 void importarInfoBloques(tInfoBloques* infoBloques){
-	char* pathArchivoInfoBloques= malloc(100);
-	strcpy(pathArchivoInfoBloques,"/home/utnso/tp-2020-2c-Solo-C/sindicato/");
-	string_append(&pathArchivoInfoBloques,"infoBloques.bin");
-	char* map=malloc(200);
+	int sizePathInfo=strlen("strlen(/home/utnso/tp-2020-2c-Solo-C/sindicato/infoBloques.bin");
+	int sizeNombreArchivoInfo=15;
+	char* pathArchivoInfoBloques= malloc(sizePathInfo+sizeNombreArchivoInfo+1);
+	memcpy(pathArchivoInfoBloques,"/home/utnso/tp-2020-2c-Solo-C/sindicato/infoBloques.bin",sizePathInfo);
+	pathArchivoInfoBloques[sizePathInfo]='\0';
+	//string_append(&pathArchivoInfoBloques,"infoBloques.bin");
+	char* map=malloc((sizeof(uint32_t)*2) +strlen("AFIP")+2+1);
 	struct stat info;
 	stat(pathArchivoInfoBloques, &info);
 
@@ -239,6 +242,7 @@ void importarInfoBloques(tInfoBloques* infoBloques){
 
 	map=mmap(0,info.st_size,PROT_READ | PROT_WRITE, MAP_SHARED, fileno(archivoInfoBloques), 0);
 
+	map[info.st_size]='\0';
 	char** propiedades= string_split(map,",");
 
 	infoBloques->tamBloques=atoi(propiedades[0]);
@@ -251,7 +255,7 @@ void importarInfoBloques(tInfoBloques* infoBloques){
 
 	}
 
-	//free(pathArchivoInfoBloques);
+	free(pathArchivoInfoBloques);
 	//free(map);
 
 
@@ -354,6 +358,7 @@ void cargarBloquesAsigandosAPedidos(){
 		}
 
 	}
+	free(pathArchivoBloquesAsignados);
 
 }
 
@@ -438,8 +443,6 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 
 	char* stringBloquesAsignados=string_new();
 	strcpy(stringBloquesAsignados,"");
-	char* lineaArchivoBloquesAsignados=string_new(); //malloc((list_size(bloquesAsignadosARecurso)*2) + strlen(nombreRecurso));
-	char* pathArchivoBloquesAsignados=string_new();
 
 	//AGREGAR VERIFICACION DE BLOQUES LIBRES EN LAS SIGUINTES CONDICIONES
 
@@ -488,10 +491,11 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 
 				}else dictionary_put(diccionarioBloquesAsignadosAPedidos,nombreRecurso,bloquesAsignadosARecurso);
 
-				char* bytesAEscribir=malloc(infoBloques->tamBloques+1);
+				char* bytesAEscribir=malloc(infoBloques->tamBloques-sizeof(uint32_t)+1);
 
 				bytesAEscribir=string_substring(propiedades,offsetEscritura,infoBloques->tamBloques-sizeof(uint32_t));
-				char* stringCeros=malloc(sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente))+1);
+
+				/*char* stringCeros=malloc(sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente))+1);
 				int offsetCeros=0;
 				offsetCeros=strlen(bytesAEscribir);
 				strcpy(stringCeros,"");
@@ -504,6 +508,10 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 				offsetCeros=offsetCeros+strlen(string_itoa(bloqueSiguiente));
 				bytesAEscribir[offsetCeros]='\0';
 				//string_append_with_format(&propiedades,"%d",bloqueSiguiente); //ESCRIBO EL SIZE DE PROPIEDADES+SIZE BLOQUE SIGUIENTE
+				//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+				*/
+				string_append_with_format(&bytesAEscribir,"%s%d",string_repeat('0',sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente))),bloqueSiguiente);
+								//string_append_with_format(&propiedades,"%d",bloqueSiguiente); //ESCRIBO EL SIZE DE PROPIEDADES+SIZE BLOQUE SIGUIENTE
 				//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
 				int offset=0;
 				char* pathBloqueActual=malloc(strlen(pathBloques)+strlen(string_itoa(bloqueActual))+4+1);
@@ -523,12 +531,14 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 				}
 
 
-				if(fwrite(bytesAEscribir,strlen(bytesAEscribir)+sizeof(uint32_t),1,archivoBloqueActual)==0){
+				if(fwrite(bytesAEscribir,strlen(bytesAEscribir),1,archivoBloqueActual)==0){
 												log_error(logger,"Error al escribir en el archivo info de restaurante");
 				}
 
 				offsetEscritura=offsetEscritura+infoBloques->tamBloques-sizeof(uint32_t);
 				bloqueActual=bloqueSiguiente;
+
+				free(bytesAEscribir);
 
 				fclose(archivoBloqueActual);
 				strcpy(pathBloqueActual,"");
@@ -562,6 +572,7 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 					log_error(logger,"Error al escribir en el archivo info de restaurante");
 				}
 
+				free(bytesAEscribir);
 				fclose(archivoBloqueActual);
 			}
 		}
@@ -594,15 +605,26 @@ void escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,
 
 	}
 
+	free(propiedades);
+	free(nombreRecurso);
+	free(tipoRecurso);
+	free(operacion);
+
 }
 
 int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathRestoNuevo){
-	char* propiedades = malloc(strlen("CANTIDAD_COCINEROS=POSICION=AFINIDAD_COCINEROS=PLATOS=PRECIO_PLATOS=CANTIDAD_HORNOS=")*2);
-	char* infoPropiedades = malloc(strlen("SIZE=INITIAL_BLOCK=")*2);
+	int sizePropiedades=strlen("CANTIDAD_COCINEROS=POSICION=AFINIDAD_COCINEROS=PLATOS=PRECIO_PLATOS=CANTIDAD_HORNOS=")+
+			strlen(restauranteNuevo->platos)+strlen(restauranteNuevo->posicion)+
+			strlen(restauranteNuevo->preciosPlatos)+strlen(restauranteNuevo->afinidadCocineros)+(sizeof(uint32_t)*2)+8;
+	char* propiedades = malloc(sizePropiedades+1);
 
-	char* pathArchivoInfo=malloc(80);
-	strcpy(pathArchivoInfo,pathRestoNuevo);
-	string_append(&pathArchivoInfo,"Info.AFIP");
+	int sizePathArchivoInfo=strlen(pathRestoNuevo);
+	char* pathArchivoInfo=malloc(sizePathArchivoInfo+1);
+	//strcpy(pathArchivoInfo,pathRestoNuevo);
+	memcpy(pathArchivoInfo,pathRestoNuevo,sizePathArchivoInfo);
+	memcpy(pathArchivoInfo+sizePathArchivoInfo,"Info.AFIP",9);
+	//string_append(&pathArchivoInfo,"Info.AFIP");
+	pathArchivoInfo[sizePathArchivoInfo+9]='\0';
 	t_list* bloquesAsignadosAResto=list_create();
 
 	tPosicionesEnArchivoRestaurante* posEnArchivoRestaurante= malloc(sizeof(tPosicionesEnArchivoRestaurante));
@@ -628,31 +650,18 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 															"CANTIDAD_HORNOS=",restauranteNuevo->cantidadHornos);
 
 	//Cargo en el diccionario la info de las posiciones de las porpiedades que se crean. Al agrega/modificar propiedades del archivo se debe actualizar este diccionario
-	posEnArchivoRestaurante->posCantCocineros=strlen("CANTIDAD_COCINEROS")+1;
-	posEnArchivoRestaurante->sizeCantCocineros=strlen(string_itoa(restauranteNuevo->cantCocineros));
 
-	posEnArchivoRestaurante->posPosicion=strlen("CANTIDAD_COCINEROS")+strlen(string_itoa(restauranteNuevo->cantCocineros))+strlen("POSICION");
-	posEnArchivoRestaurante->sizePosicion=strlen(string_itoa(restauranteNuevo->posicion));
-
-	posEnArchivoRestaurante->posAfinidad=posEnArchivoRestaurante->posPosicion+posEnArchivoRestaurante->sizePosicion+strlen("AFINIDAD_COCINEROS")+1;
-	posEnArchivoRestaurante->sizeAfinidad=strlen(string_itoa(restauranteNuevo->afinidadCocineros));
-
-	posEnArchivoRestaurante->posPlatos=posEnArchivoRestaurante->posAfinidad+posEnArchivoRestaurante->sizeAfinidad+strlen("PLATOS")+1;
-	posEnArchivoRestaurante->sizePlatos=strlen(string_itoa(restauranteNuevo->platos));
-
-	posEnArchivoRestaurante->posPlatos=posEnArchivoRestaurante->posPlatos+posEnArchivoRestaurante->sizePlatos+strlen("PRECIOS_PLATOS")+1;
-	posEnArchivoRestaurante->sizePlatos=strlen(string_itoa(restauranteNuevo->preciosPlatos));
-
-	posEnArchivoRestaurante->posCantHornos=posEnArchivoRestaurante->posPreciosPlatos+posEnArchivoRestaurante->sizePreciosPlatos+strlen("CATIDAD_HORNOS")+1;
-	posEnArchivoRestaurante->sizeCantHornos=strlen(string_itoa(restauranteNuevo->cantidadHornos));
-
+	propiedades[sizePropiedades]='\0';
 	dictionary_put(diccionarioPosPropiedadesEnArchivo,restauranteNuevo->nombreRestaurante,posEnArchivoRestaurante);
 
 	int bloquelibre=buscarBloqueLibre();
+	int sizeInfoPropiedades=strlen("SIZE=INITIAL_BLOCK=")+(sizeof(int)*2)+1;
+	char* infoPropiedades = malloc(sizeInfoPropiedades+1);
 
 	int lengthInfoPropiedades= sprintf(infoPropiedades,"%s%d%s%s%d","SIZE=",lengthPropiedades,"\n",
 														"INITIAL_BLOCK=",bloquelibre);
 
+	infoPropiedades[lengthInfoPropiedades]='\0';
 
 
 	if(fwrite(infoPropiedades,lengthInfoPropiedades,1,archivoRestauranteNuevo)==0){
@@ -713,11 +722,12 @@ int grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo){
 			}
 			return 1;
 
+			free(pathRestoNuevo);
 
 }
 int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva){
-	char* propiedades = malloc(strlen("PASOS=TIEMPO_PASOS=")*2);
-	char* infoPropiedades = malloc(strlen("SIZE=INITIAL_BLOCK=")*2);
+	char* propiedades = malloc(strlen("PASOS=TIEMPO_PASOS=")+strlen(recetaNueva->nombreReceta)+strlen(recetaNueva->pasos)+strlen(recetaNueva->tiemposPasos)+1);
+	char* infoPropiedades = malloc(strlen("SIZE=INITIAL_BLOCK=")+sizeof(uint32_t)+sizeof(uint32_t)+1);
 	t_list* bloquesAsignadosAReceta=list_create();
 
 
@@ -725,14 +735,14 @@ int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva){
 	int lengthPropiedades=sprintf(propiedades,"%s%s%s%s%s%s%s%s"
 														,"PASOS=","[",recetaNueva->pasos,"]",
 														"TIEMPO_PASOS=","[",recetaNueva->tiemposPasos,"]");
-
+	propiedades[strlen(propiedades)]='\0';
 
 	int bloquelibre=buscarBloqueLibre();
 
 	int lengthInfoPropiedades= sprintf(infoPropiedades,"%s%d%s%s%d","SIZE=",lengthPropiedades,"\n",
 															"INITIAL_BLOCK=",bloquelibre);
 
-
+	infoPropiedades[strlen(infoPropiedades)]='\0';
 
 	if(fwrite(infoPropiedades,lengthInfoPropiedades,1,archivoRecetaNueva)==0){
 			log_error(logger,"Error al escribir en el archivo info de receta");
@@ -746,6 +756,8 @@ int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva){
 
 	escribirBloques(propiedades, lengthPropiedades, bloquelibre,recetaNueva->nombreReceta,bloquesAsignadosAReceta,"RECETA","NUEVO");
 
+	free(propiedades);
+	free(infoPropiedades);
 	fclose(archivoRecetaNueva);
 
 
@@ -788,6 +800,8 @@ int grabarArchivoReceta(tCreacionReceta* recetaNueva){
 			return 0;
 		}
 	}
+
+	free(pathRecetaNueva);
 	return 1;
 
 
@@ -882,6 +896,8 @@ t_respuesta_info_restaurante* leerInfoDeResto(char* nombreResto){
 	}
 
 	mapearParametrosDeLista(listaParametros,infoResto);
+	free(map);
+	free(pathInfoResto);
 
 return infoResto;
 }
@@ -915,6 +931,8 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 
 	escribirBloques(propiedades, lengthPropiedades, bloquelibre,nombrePedido, bloquesAsignadosAPedido,"PEDIDO","NUEVO");
 
+	free(propiedades);
+	free(infoPropiedades);
 	fclose(archivoPedidoNuevo);
 
 
