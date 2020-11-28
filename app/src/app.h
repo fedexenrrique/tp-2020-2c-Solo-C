@@ -121,6 +121,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 
 t_queue * g_cola_nuevos;
 t_queue * g_cola_listos;
+t_list  * g_lista_listos;
 t_queue * g_cola_bloqueados;
 
 sem_t    sem_nuevos;

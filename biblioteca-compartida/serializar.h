@@ -72,6 +72,7 @@ typedef enum {
     SELECCIONAR_RESTAURANTE_OK          = 102,
     SELECCIONAR_RESTAURANTE_FAIL        = 202,
 	CONFIRMAR_PEDIDO_HACK				= 303,
+	OBTENER_RECETA						= 19
 
 } cod_msg;
 

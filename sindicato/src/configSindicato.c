@@ -9,6 +9,7 @@ int cargarConfiguracion() {
 	configuracion = malloc(sizeof(tConfiguracion));
 	diccionarioBloquesAsignadosARestos= dictionary_create();
 	diccionarioBloquesAsignadosARecetas=dictionary_create();
+	diccionarioBloquesAsignadosAPedidos=dictionary_create();
 	diccionarioPosPropiedadesEnArchivo=dictionary_create();
 	fd_configuracion = config_create("../sindicato.conf");
 	if (fd_configuracion == NULL) {
