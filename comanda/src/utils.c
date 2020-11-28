@@ -242,7 +242,11 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 			void _serializar_tabla_comida(void * elemento){
 				t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
 
-				printf("El valor del offset es: %d \n",offset);
+				//printf("El valor del offset es: %d \n",offset);
+
+				if (adm_comida->esta_en_memoria_principal!=TRUE){
+					adm_comida=cargar_pagina_a_memoria_principal(adm_comida);			//Busca frame libre y copia lo q esta en SWAP en principal
+				}
 
 				leer_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 
@@ -367,6 +371,12 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 		}
 	else{log_info(logger,"Se encontro el plato en el pedido");
 
+		if(adm_comida->esta_en_memoria_principal!=TRUE){
+
+			adm_comida=cargar_pagina_a_memoria_principal(adm_comida);			//Busca frame libre y copia lo q esta en SWAP en principal
+		}
+
+
 		 exito=sumar_plato_listo(adm_comida);
 
 	     verificar_pedido_completo(pedido);
@@ -461,8 +471,13 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 
 							t_pagina_comida * adm_comida=(t_pagina_comida *)elemento;
 
-							list_add(tabla_frames_libres,adm_comida->frame);
+							list_add(tabla_frames_libres_swap,adm_comida->frame_swap);
+							adm_comida->frame_swap=NULL;
 
+							if(adm_comida->esta_en_memoria_principal==TRUE){
+								list_add(tabla_frames_libres,adm_comida->frame);
+								adm_comida->frame=NULL;
+							}
 						}
 
 
@@ -490,12 +505,16 @@ void administrar_finalizar_pedido(t_header * encabezado,int socket_cliente){
 		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
 		goto envio_de_respuesta;}
 	else{
-		log_info(logger, "Se encontro el pedido %d  y se elimina de la lista de pedidos",pedido->id_pedido);
-		 exito=TRUE;
-		 log_info(logger,"El tamaño de la lista de pedidos despues de eliminar el pedido es: %d",list_size(restaurante->tabla_pedidos));
-		 log_info(logger,"Se FINALIZO el PEDIDO correctamente");
+		 if(pedido->estado==TERMINADO){		 															//Solo finaliza si esta en estado TERMINADO
+			 log_info(logger, "Se encontro el pedido %d  y se elimina de la lista de pedidos",pedido->id_pedido);
+			 exito=TRUE;
+			 log_info(logger,"El tamaño de la lista de pedidos despues de eliminar el pedido es: %d",list_size(restaurante->tabla_pedidos));
+			 log_info(logger,"Se FINALIZO el PEDIDO correctamente");
 
-		 list_iterate(pedido->comidas_del_pedido,agregar_marcos_libres);     //Agrego en la tabla de frames libres, los espacios liberados
+			 list_iterate(pedido->comidas_del_pedido,agregar_marcos_libres);     //Agrego en la tabla de frames libres, los espacios liberados
+		 }else{
+			  log_info(logger,"Se encontro el pedido, pero NO SE FINALIZA ya que no se encuentra en ESTADO TERMINADO");
+		      }
 		 }
 
 
@@ -568,14 +587,20 @@ bool sumar_cantidad_total_plato(t_pagina_comida * adm_comida,t_guardar_plato * p
 
 	copiar_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 
+	adm_comida->last_used=timestamp();
+	adm_comida->modificado=TRUE;
+	adm_comida->bit_de_uso=TRUE;
+
+	log_info(logger,"Se actualiza el timestamp con el valor: %d", adm_comida->last_used);
+
 	return TRUE;
 
 }
 
 bool crear_nuevo_plato (t_guardar_plato * plato,t_pedido_seg * pedido){
 
-	t_comida * comida;
 	t_pagina_comida * adm_comida=malloc(sizeof(t_pagina_comida));
+	t_comida * comida=malloc(sizeof(t_comida));
 
 					void inicializar_vector(){
 						for(int i=0;i<SIZE_VECTOR_NOMBRE_PLATO;i++){
@@ -590,41 +615,20 @@ bool crear_nuevo_plato (t_guardar_plato * plato,t_pedido_seg * pedido){
 		log_info(logger,"No hay mas espacio en la memoria SWAP. No se puede cargar el nuevo plato");
 		return FALSE;
 		}
-
-	comida=malloc(sizeof(t_comida));										//Guardo el nuevo plato en SWAP
+										//Guardo el nuevo plato en SWAP
 	comida->cantidad_lista_comida=0;
 	comida->cantidad_total_comida=plato->cantidad_plato;
 	inicializar_vector();
 	strcpy(comida->nombre_comida,plato->nombre_plato);
 
+	log_info(logger,"Se arranca a copiar el nuevo plato en SWAP");
+	log_info(logger,"Pruebo la direccion y el numero de frame devuelto por la funcion:  %p y %d", adm_comida->frame_swap->direccion_frame,adm_comida->frame_swap->nro_frame);
 	copiar_pagina_en_memoria(adm_comida->frame_swap->direccion_frame,comida);
 
-	//adm_comida->esta_en_memoria_principal=FALSE;
-	//adm_comida->frame=malloc(sizeof(t_frame));
-	//adm_comida->frame->direccion_frame=NULL;
-	//adm_comida->frame->nro_frame=-1;
-
-
+	log_info(logger,"Se arranca con el procedimiento para guardar el nuevo plato en Memoria Principal");
 	adm_comida=cargar_pagina_a_memoria_principal(adm_comida  );
-	/*adm_comida->frame=buscar_frame_libre(tabla_frames_libres);							//Busco un frame libre en la MP para agregar el plato
 
-	if(adm_comida->frame==NULL){
-
-		log_info(logger,"No hay espacio en memoria principal");
-		//return FALSE;
-		//Selecciono una victima
-		//Y despues devolveria el frame con el marco liberado
-		remplazar_pagina_en_memoria_principal(adm_comida );
-		}
-
-
-	copiar_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
-
-	adm_comida->contenido=adm_comida->frame->direccion_frame;
-	adm_comida->frame_swap=NULL;
-	adm_comida->esta_en_memoria_principal=TRUE;
-	adm_comida->last_used=timestamp();
-	*/
+	adm_comida->modificado=FALSE;
 
 	list_add(pedido->comidas_del_pedido,adm_comida);            //Guardo la nueva comida en el pedido
 
@@ -683,10 +687,12 @@ bool sumar_plato_listo(t_pagina_comida * adm_comida){
 
 	if(comida->cantidad_lista_comida<comida->cantidad_total_comida){
 			comida->cantidad_lista_comida++;
-			if(comida->cantidad_lista_comida!=comida->cantidad_total_comida)
+
+			if(comida->cantidad_lista_comida!=comida->cantidad_total_comida)				//Verifico si se completo la cantidad total del plato
 				log_info(logger,"Ahora la cantidad lista del plato es: %d",comida->cantidad_lista_comida);
 			else
 				log_info(logger,"Se encuentran listos todos los platos de %s con una cantidad de: %d",comida->nombre_comida,comida->cantidad_lista_comida);
+
 			copiar_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 			adm_comida->last_used=timestamp();
 			free(comida);
