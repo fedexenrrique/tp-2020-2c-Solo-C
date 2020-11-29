@@ -30,6 +30,7 @@ typedef struct {
 	void *   contenido                  ;
 	bool     modificado                 ;
 	uint64_t last_used                  ;
+	bool     bit_de_uso                 ;
 
 }t_pagina_comida;
 
@@ -46,15 +47,17 @@ void   * p_fin_memoria_swap     			   ;
 int      size_memoria_principal    			   ;
 int      size_memoria_swap      			   ;
 char   * algoritmo_remplazo                    ;
-t_list * list_pointer_memory_principal		   ;
-t_list * list_pointer_memory_swap   		   ;
+int      puntero_clock                         ;
+int      cantidad_frames_memoria_principal     ;
+t_list * list_frames_memory_principal		   ;//No voy a usar todavia
+t_list * list_frames_memory_swap   		       ;//No se usa todavia
 t_list * lista_restarurantes				   ;
 t_list * tabla_frames_libres				   ;
 t_list * tabla_frames_libres_swap 			   ;
 
 
 void             iniciar_memoria                  (                        );
-void             crear_paginas_memoria            (t_list *,int ,t_list*   );
+void             crear_paginas_memoria            (t_list *,int, void *    );
 void *           reservar_memoria_inicial         (int                     );
 t_restaurante *  crear_tabla_segmentos_restaurante(char *                  );
 bool             agregar_pedido_a_tabla_segmentos (t_restaurante *,uint32_t);
@@ -66,10 +69,11 @@ t_frame *  seleccionar_victima_en_memoria_principal     ();
 t_frame *  utilizar_algoritmo_remplazo_lru              ();
 t_frame *  utilizar_algoritmo_remplazo_clock_mejorado   ();
 
-t_frame * buscar_frame_libre (t_list*);
-void      iniciar_dump_cache(int     );
-void      dampear_memoria   (        );
-uint64_t  timestamp         (void    );
+t_frame * buscar_frame_libre  (t_list* );
+void      iniciar_dump_cache  (int     );
+void      dampear_memoria     (        );
+uint64_t  timestamp           (void    );
+t_frame * buscar_victima_clock(t_list* );
 
 
 #endif /* MEMORIA_H_ */
