@@ -49,6 +49,12 @@ typedef struct{
 }tMensajeInfoRestaurante;
 
 typedef struct{
+	char* pasos;
+	char* tiempos;
+
+}tMensajeInfoReceta;
+
+typedef struct{
 	uint32_t sizeNombreRestaurante;
 	char* nombreRestaurante;
 	uint32_t sizeIdPedido;
@@ -114,6 +120,54 @@ typedef struct{
 	uint32_t sizeCantHornos;
 }tPosicionesEnArchivoRestaurante;
 
+typedef struct{
+	uint32_t sizePlatos;
+	char*platos;
+}tRespuestaConsultaPlatos;
+
+typedef struct{
+	uint32_t sizeNombreRestaurante;
+	char* nombreRestaurante;
+	uint32_t sizeIdPedido;
+	char* idPedido;
+
+}tGuardarPedido;
+
+typedef struct{
+	uint32_t sizePasos;
+	char* pasos;
+	uint32_t sizeTiempos;
+	char* tiempos;
+}tRespuestaReceta;
+
+
+typedef struct{
+	uint32_t sizeNombreRestaurante;
+	char* nombreRestaurante;
+	uint32_t idPedido;;
+
+}tSolicitudPedido;
+
+typedef struct{
+	uint32_t sizeEstadoPedido;
+	char* estadoPedido;
+	uint32_t sizeListaPlatos;
+	char* listaPlatos;
+	uint32_t sizeCantidadPlatos;
+	char* cantidadPlatos;
+	uint32_t sizeCantidadLista;
+	char* cantidadLista;
+	uint32_t precioTotal;
+}tRespuestaSolicitudPedido;
+
+typedef struct{
+	uint32_t sizeNombreRestaurante;
+	char* nombreRestaurante;
+	uint32_t idPedido;
+	uint32_t sizeNombrePlatoListo;
+	char* nombrePlatoListo;
+}tSolicitudPlatiListo;
+
 tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;
@@ -137,9 +191,9 @@ char* pathRestaurantes;
 char* pathRecetas;
 
 
-void handleConexion(int socketCliente);
+void handleConexion(int socketCliente,tInfoBloques* infoBloques);
 void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream);
-int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo, char* pathRestaurante);
+int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo, char* pathRestaurante,tInfoBloques* infoBloques);
 
 
 #endif /* SINDICATO_H_ */
