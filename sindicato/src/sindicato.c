@@ -149,12 +149,12 @@ void levantarConsola(tInfoBloques* infoBloques) {
 //COMPLETAR
 tInfoBloques* leerInfoBloques(){
 	infoBloques=malloc(sizeof(tInfoBloques));
-	char* pathArchivo=malloc(strlen(pathMetadata)+14);
+	char* pathArchivo=malloc(strlen(pathMetadata)+12+1);
 	struct stat info;
-	int map=0;
+	//int map=0;
+	char*map=malloc(sizeof(uint32_t)*2+strlen("BLOCK_SIZE=BLOCKS=MAGIC_NUMBER=")+2+1);
 	int offset=0;
-	int e=0;
-
+	int e;
 	//strcpy(pathArchivo,pathMetadata);
 	//string_append(&pathArchivo,"Metadata.bin");
 
@@ -169,9 +169,9 @@ tInfoBloques* leerInfoBloques(){
 	FILE* archInfoBloques= fopen(pathArchivo,"r+");
 	int fdArchInfoBloques=fileno(archInfoBloques);
 
-	if(archInfoBloques!=NULL){
+	if(e==0){
 		log_info(logger, "Leyendo archivo Info de Bloques");
-		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchInfoBloques, 0);
+		map = (char*)mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchInfoBloques, 0);
 
 		if (map == MAP_FAILED) {
 			close(fileno(pathArchivo));
@@ -1154,9 +1154,7 @@ int confirmarPedido(char* nombreRestaurante,char* nombrePedido,char* nombrePlato
 
 }
 
-char* buscarPlatosRestaurante(char* nombreRestaurante){
 
-}
 
 int obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint32_t sizePedido){
 	int bloqueInicial=0;
@@ -1572,9 +1570,15 @@ t_solicitud_info_restaurante* deserializarSolicitudInfoRestaurante (void* payloa
 
 	return info;
 }
-void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
+//void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
+void handleConexion(void* arguments) {
 	log_info(logger, "Handle conexion aceptada...");
 	uint32_t modulo, idProceso, nroMsg, size;
+    struct arg_struct *args = (struct arg_struct *)arguments;
+
+    int socketCliente=args->arg1;
+    tInfoBloques* infoBloques=malloc(sizeof(tInfoBloques));
+    infoBloques=args->arg2;
 
 	t_header2* headerRecibido = malloc(sizeof(t_header2));
 
@@ -2023,12 +2027,31 @@ int main(int argc, char *argv[]) {
 	log_info(logger, "Inicio Escucha de conexiones...");
 	int socketServer = crear_socket_escucha("127.0.0.1",
 			configuracion->puertoEscucha);
+	pthread_mutex_t lock;
 
+	if (pthread_mutex_init(&lock, NULL) != 0)
+	    {
+	        printf("\n mutex init failed\n");
+	        return 1;
+	    }
 	while (1) {
 		//Crear Hilo
-		int socketConectado = aceptar_conexion(socketServer);
+	    struct arg_struct args;
 
-		handleConexion(socketConectado,infoBloques);
+		pthread_t hiloConexionAceptada;
+		int socketConectado = aceptar_conexion(socketServer);
+	    args.arg1=socketConectado;
+	    args.arg2=infoBloques;
+	    pthread_mutex_lock(&lock);
+		if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
+			log_error(logger,"Error creando el hilo");
+		}
+		//handleConexion(socketConectado,infoBloques);
+	    pthread_mutex_unlock(&lock);
+
+	    pthread_join(hiloConexionAceptada, NULL);
+	    pthread_detach(hiloConexionAceptada);
+	    pthread_mutex_destroy(&lock);
 
 		break;
 
