@@ -165,8 +165,6 @@ void obtener_info_restaurante(void) {
 	log_info(logger_restaurante, "Resturante cantidad hornos: %d", respuesta_info->cantidad_hornos);
 }
 
-
-
 t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * payload) {
 	t_respuesta_info_restaurante * respuesta_info = malloc(sizeof(t_respuesta_info_restaurante));
 
@@ -204,6 +202,190 @@ t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * pa
 
 	return respuesta_info;
 
+}
+
+void consultar_platos_restaurante(void) {
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
+	t_solicitud_info_restaurante * solicitud_info = malloc(sizeof(t_solicitud_info_restaurante));
+
+	solicitud_info->nombre_restaurante = nombre_restaurante;
+	solicitud_info->size_nombre_restaurante = string_length(nombre_restaurante);
+
+	int size_buffer = sizeof(uint32_t) + solicitud_info->size_nombre_restaurante;
+	void * buffer = malloc(size_buffer);
+
+	memcpy(buffer + offset, &solicitud_info->size_nombre_restaurante, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer+offset, solicitud_info->nombre_restaurante, solicitud_info->size_nombre_restaurante);
+
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = RESTAURANTE;
+	header->nro_msg = CONSULTAR_PLATOS;
+
+	int conexion = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
+
+	if (enviar_buffer(conexion, header) == false) {
+		log_error(logger_restaurante, "No se pudo enviar el pedido de info del restaurante");
+	}
+
+	t_header * mensaje_recibido = recibir_buffer(conexion);
+
+	log_info(logger_restaurante, "Se recibio mensaje del modulo: %d", mensaje_recibido->modulo);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo con id: %d", mensaje_recibido->id_proceso);
+	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
+	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
+
+	t_respuesta_platos_restaurante * respuesta_info = deserializar_respuesta_info_restaurante(mensaje_recibido->payload);
+
+	log_info(logger_restaurante, "Resturante platos: %s", respuesta_info->platos);
+
+	char ** platos_array = string_get_string_as_array(respuesta_info ->platos);
+
+	int i = 0;
+	while (platos_array[i] != NULL) {
+		list_add(platos, platos_array[i]);
+		i++;
+	}
+}
+
+t_respuesta_platos_restaurante * deserializar_respuesta_consulta_platos(void * payload) {
+	t_respuesta_platos_restaurante * respuesta_info = malloc(sizeof(t_respuesta_platos_restaurante));
+
+	memcpy(&(respuesta_info->size_platos), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
+
+	respuesta_info->platos = malloc((respuesta_info->size_platos) + 1);
+	memcpy((respuesta_info->platos), payload, respuesta_info->size_platos);
+	payload += respuesta_info->size_platos;
+
+	return respuesta_info;
+}
+
+void crear_pedido_restaurante(pedido * pedido) {
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
+	t_creacion_pedido * creacion_pedido = malloc(sizeof(t_creacion_pedido));
+
+	creacion_pedido->id_pedido = pedido->id_pedido;
+	creacion_pedido->size_estado_pedido = string_length(pedido->estado_pedido);
+	creacion_pedido->estado_pedido = pedido->estado_pedido;
+	creacion_pedido->size_lista_platos = string_length(pedido->lista_platos);
+	creacion_pedido->lista_platos = pedido->lista_platos;
+	creacion_pedido->size_cantidad_platos = string_length(pedido->cantidad_platos);
+	creacion_pedido->cantidad_platos = pedido->cantidad_platos;
+	creacion_pedido->precio_total = pedido->precio_total;
+
+	int size_buffer = sizeof(uint32_t) * 5 + creacion_pedido->size_cantidad_platos + creacion_pedido->size_estado_pedido
+			+ creacion_pedido->size_lista_platos;
+	void * buffer = malloc(size_buffer);
+
+	memcpy(buffer + offset, &creacion_pedido->id_pedido, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, &creacion_pedido->size_estado_pedido, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, creacion_pedido->estado_pedido, creacion_pedido->size_estado_pedido);
+	offset += creacion_pedido->size_estado_pedido;
+
+	memcpy(buffer + offset, &creacion_pedido->size_lista_platos, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, creacion_pedido->lista_platos, creacion_pedido->size_lista_platos);
+	offset += creacion_pedido->size_lista_platos;
+
+	memcpy(buffer + offset, &creacion_pedido->size_cantidad_platos, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, creacion_pedido->cantidad_platos, creacion_pedido->size_cantidad_platos);
+	offset += creacion_pedido->size_cantidad_platos;
+
+	memcpy(buffer + offset, &creacion_pedido->precio_total, sizeof(uint32_t));
+
+
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = RESTAURANTE;
+	header->nro_msg = GUARDAR_PEDIDO;
+
+	int conexion = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
+
+	if (enviar_buffer(conexion, header) == false) {
+		log_error(logger_restaurante, "No se pudo enviar el pedido de info del restaurante");
+	}
+
+	t_header * mensaje_recibido = recibir_buffer(conexion);
+
+	log_info(logger_restaurante, "Se recibio mensaje del modulo: %d", mensaje_recibido->modulo);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo con id: %d", mensaje_recibido->id_proceso);
+	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
+	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
+
+	int respuesta_creacion_pedido = deserializar_respuesta_creacion_pedido(mensaje_recibido->payload);
+
+	log_info(logger_restaurante, "Respuesta creacion pedido: %d", respuesta_creacion_pedido);
+
+}
+
+int deserializar_respuesta_creacion_pedido(void * payload) {
+	int respuesta;
+
+	memcpy(&(respuesta), payload, sizeof(uint32_t));
+
+	return respuesta;
+}
+
+void aniadir_plato_restaurante(aniadir_plato * plato) {
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
+	t_guardar_plato_restaurante * creacion_pedido = malloc(sizeof(t_guardar_plato_restaurante));
+
+	creacion_pedido->id_pedido = plato->id_pedido;
+	creacion_pedido->size_nombre_plato = string_length(plato->nombre_plato);
+	creacion_pedido->nombre_plato = plato->nombre_plato;
+	creacion_pedido->cantidad_plato = plato->cantidad_plato;
+
+	int size_buffer = sizeof(uint32_t) * 3 + creacion_pedido->size_nombre_plato;
+	void * buffer = malloc(size_buffer);
+
+	memcpy(buffer + offset, &creacion_pedido->id_pedido, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, &creacion_pedido->size_nombre_plato, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, creacion_pedido->nombre_plato, creacion_pedido->size_nombre_plato);
+	offset += creacion_pedido->size_nombre_plato;
+
+	memcpy(buffer + offset, &creacion_pedido->cantidad_plato, sizeof(uint32_t));
+
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = RESTAURANTE;
+	header->nro_msg = GUARDAR_PLATO;
+
+	int conexion = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
+
+	if (enviar_buffer(conexion, header) == false) {
+		log_error(logger_restaurante, "No se pudo enviar el pedido de info del restaurante");
+	}
+
+	t_header * mensaje_recibido = recibir_buffer(conexion);
+
+	log_info(logger_restaurante, "Se recibio mensaje del modulo: %d", mensaje_recibido->modulo);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo con id: %d", mensaje_recibido->id_proceso);
+	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
+	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
+
+	int respuesta_creacion_pedido = deserializar_respuesta_creacion_pedido(mensaje_recibido->payload);
+
+	log_info(logger_restaurante, "Respuesta aniadir plato: %d", respuesta_creacion_pedido);
 }
 
 
