@@ -12,7 +12,8 @@
 #define PATH_BLOQUES_ASIGNADOS_A_RECETAS 	  "./bloquesAsignadosARecetas.bin"
 #define PATH_BLOQUES_ASIGNADOS_A_PEDIDOS 	  "./bloquesAsignadosAPedidos.bin"
 #define NOMBRE_INFO_RESTAURANTE "Info.AFIP"
-
+#define SIZE 5
+#define INITIAL_BLOCK 13
 
 int crearDirectorioFiles(){
 
@@ -372,6 +373,10 @@ void cargarBloquesAsigandosAPedidos(){
 
 }
 
+int cargarBitMap(){
+
+}
+
 int montarFS(tInfoBloques* infoBloques){
 
 		int e;
@@ -392,6 +397,7 @@ int montarFS(tInfoBloques* infoBloques){
 				cargarBloquesAsigandosAResto();
 				//cargarBloquesAsigandosARecetas();
 				cargarBloquesAsigandosAPedidos();
+				cargarBitMap();
 
 
 		}
@@ -992,18 +998,17 @@ t_respuesta_info_restaurante* leerInfoDeResto(char* nombreResto){
 return infoResto;
 }
 
-int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nombrePedido,tInfoBloques* infoBloques){
+int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nombrePedido){
 	uint32_t sizePropiedadesPedido=strlen("ESTADO_PEDIDO=LISTA_PLATOS=CANTIDAD_PLATOS=CANTIDAD_LISTA=PRECIO_TOTAL")+
 									 strlen(pedidoNuevo->estadoPedido)+strlen(pedidoNuevo->listaPlatos)+strlen(pedidoNuevo->cantidadPlatos)+
-									 strlen(pedidoNuevo->cantidadLista)+sizeof(uint32_t)+6;
-	uint32_t sizeInfoPropiedades=strlen("SIZE=\nINITIAL_BLOCK=")+(sizeof(uint32_t))*2;
+									 strlen(pedidoNuevo->cantidadLista)+sizeof(uint32_t);
+	//uint32_t sizeInfoPropiedades=strlen("SIZE=\nINITIAL_BLOCK=")+(sizeof(uint32_t))*2;
 	char* propiedades = malloc(sizePropiedadesPedido+1);
-	char* infoPropiedades = malloc(sizeInfoPropiedades+1);
 	t_list* bloquesAsignadosAPedido = list_create();
 
 	FILE* archivoPedidoNuevo = fopen(pathPedido, "w");
-	int lengthPropiedades = sprintf(propiedades, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%d", "ESTADO_PEDIDO=", pedidoNuevo->estadoPedido, "LISTA_PLATOS=", "[",
-			pedidoNuevo->listaPlatos, "]","CANTIDAD_PLATO=", "[",pedidoNuevo->cantidadPlatos, "]","CANTIDAD_LISTA=", "[",pedidoNuevo->cantidadLista, "]",
+	int lengthPropiedades = sprintf(propiedades, "%s%s%s%s%s%s%s%s%s%d", "ESTADO_PEDIDO=", pedidoNuevo->estadoPedido, "LISTA_PLATOS=",
+			pedidoNuevo->listaPlatos,"CANTIDAD_PLATO=",pedidoNuevo->cantidadPlatos,"CANTIDAD_LISTA=",pedidoNuevo->cantidadLista,
 			"PRECIO_TOTAL=",pedidoNuevo->precioTotal);
 
 	propiedades[sizePropiedadesPedido]='\0';
@@ -1013,18 +1018,22 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 
 	/*int lengthInfoPropiedades = sprintf(infoPropiedades, "%s%d%s%s%d", "SIZE=",
 			lengthPropiedades, "\n", "INITIAL_BLOCK=", bloquelibre);*/
-	int lengthInfoPropiedades=strlen("SIZE=")+sizeof(uint32_t)+strlen("INITIAL_BLOCK")+sizeof(int);
-	memcpy(infoPropiedades,"SIZE=",5);
+	int lengthInfoPropiedades=strlen("SIZE=")+strlen("INITIAL_BLOCK=")+(sizeof(int)*2)+1;
+	char* infoPropiedades = malloc(lengthInfoPropiedades+1);
+
+	/*memcpy(infoPropiedades,"SIZE=",SIZE);
 	memcpy(infoPropiedades+5,string_itoa(lengthPropiedades),strlen(string_itoa(lengthPropiedades)));
 	//infoPropiedades[strlen(infoPropiedades)+5+sizeof(uint32_t)]='\n';
 	memcpy(infoPropiedades+5+strlen(string_itoa(lengthPropiedades)),"\n",1);
-	memcpy(infoPropiedades+strlen(string_itoa(lengthPropiedades))+1,"INITIAL_BLOCK",13);
-	memcpy(infoPropiedades+strlen(string_itoa(lengthPropiedades))+13,string_itoa(bloquelibre),strlen(string_itoa(bloquelibre)));
+	memcpy(infoPropiedades+strlen(string_itoa(lengthPropiedades))+1,"INITIAL_BLOCK",INITIAL_BLOCK);
+	memcpy(infoPropiedades+strlen(string_itoa(lengthPropiedades))+13,string_itoa(bloquelibre),strlen(string_itoa(bloquelibre)));*/
+
+	int sizeInfoPropiedades=sprintf(infoPropiedades,"%s%d%s%s%d","SIZE=",lengthPropiedades,"\n",
+															"INITIAL_BLOCK=",bloquelibre);
 
 	infoPropiedades[sizeInfoPropiedades]='\0';
 
-	if (fwrite(infoPropiedades, lengthInfoPropiedades, 1, archivoPedidoNuevo)
-			== 0) {
+	if (fwrite(infoPropiedades, sizeInfoPropiedades, 1, archivoPedidoNuevo)== 0) {
 		log_error(logger, "Error al escribir en el archivo info de receta");
 		resultadoOperacion=0;
 	}

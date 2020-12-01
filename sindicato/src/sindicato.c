@@ -323,7 +323,7 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 			if(eActual==0){
 				FILE* archivoBloqueActual = fopen(pathBloqueActual, "r+");
 
-				char* map = mmap(0, info.st_size-sizeof(int), PROT_READ | PROT_WRITE,MAP_SHARED, fileno(archivoBloqueActual), 0);
+				char* map = mmap(0, info.st_size, PROT_READ | PROT_WRITE,MAP_SHARED, fileno(archivoBloqueActual), 0);
 
 				if (map == MAP_FAILED) {
 					close(fileno(archivoBloqueActual));
@@ -331,7 +331,7 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 					exit(EXIT_FAILURE);
 
 				}
-				map[info.st_size-sizeof(int)]='\0';
+				map[info.st_size]='\0';
 
 				if(i==cantBloquesALeer-1){ //leo el ultimo bloque
 					string_append(&stringInfo,map);
@@ -340,10 +340,13 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 					//uint32_t bloqueSiguiente=atoi(list_get(bloquesAsigandosAResto,i+1));
 					char* bloqueSiguiente=string_substring(map,strlen(map)-sizeof(uint32_t),strlen(map));
 					(*bloqueSiguiente)="";
-					char* newMap=malloc(strlen(map)-strlen(string_itoa(bloqueSiguiente)));
+					char* newMap=malloc(strlen(map)-sizeof(uint32_t));
 					(*newMap)="";
 					newMap=removerBloqueSiguienteDeString(map,bloqueSiguiente);
+					//memcpy(newMap,map,strlen(map)-strlen(sizeof(uint32_t));
 					string_append(&stringInfo,newMap);
+					//string_append(&stringInfo,map);
+
 				}
 
 				if (munmap(map,info.st_size) == -1) {
@@ -372,7 +375,7 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 
 //MENSAJE 6: OBTENER RESTAURANTE
 tMensajeInfoRestaurante *obtenerInfoRestaurante(char* nombreResto){
-	char* pathArchivoInfoActual=malloc(strlen(pathRestaurantes)+strlen(nombreResto)+30);
+	char* pathArchivoInfoActual=malloc(strlen(pathRestaurantes)+strlen(nombreResto)+9+1+1);
 	tMensajeInfoRestaurante* infoResto=malloc(sizeof(tMensajeInfoRestaurante));
 	strcpy(pathArchivoInfoActual,pathRestaurantes);
 	//string_append_with_format(&pathArchivoInfoActual,"%s%s","/",nombreResto);
@@ -562,15 +565,15 @@ void hardcodearPedido(tCreacionPedido* pedido){
 	pedido->estadoPedido[9]='\0';
 
 	pedido->listaPlatos=malloc(28);
-	memcpy(pedido->listaPlatos,"Milanesa,Empanadas,Ensalada",27);
+	memcpy(pedido->listaPlatos,"[Milanesa,Empanadas,Ensalada]",27);
 	pedido->listaPlatos[27]='\0';
 
 	pedido->cantidadPlatos=malloc(7);
-	memcpy(pedido->cantidadPlatos,"2,12,1",6);
+	memcpy(pedido->cantidadPlatos,"[2,12,1]",6);
 	pedido->cantidadPlatos[6]='\0';
 
 	pedido->cantidadLista=malloc(6);
-	memcpy(pedido->cantidadLista,"1,6,0",5);
+	memcpy(pedido->cantidadLista,"[1,6,0]",5);
 	pedido->cantidadLista[5]='\0';
 
 	pedido->precioTotal=1150;
@@ -578,7 +581,7 @@ void hardcodearPedido(tCreacionPedido* pedido){
 
 
 //MENSAJE 2: CREAR PEDIDO
-int crearPedido(tCreacionPedido* pedidoNuevo,char* nombreRestaurante,char* nombrePedido,tInfoBloques* infoBloques){
+int crearPedido(tCreacionPedido* pedidoNuevo,char* nombreRestaurante,char* nombrePedido,tInfoBloques* infoBloques,t_bitarray* bitMap){
 	char* pathRestaurante= malloc(strlen(pathRestaurantes)+strlen(nombreRestaurante)+1+1);
 	memcpy(pathRestaurante,pathRestaurantes,strlen(pathRestaurantes));
 	memcpy(pathRestaurante+strlen(pathRestaurantes),nombreRestaurante,strlen(nombreRestaurante));
@@ -1554,6 +1557,21 @@ t_header* serializarRespuestaPlatoListo(int resultadoOperacion){
 
 	return header;
 }
+t_solicitud_info_restaurante* deserializarSolicitudInfoRestaurante (void* payload){
+	t_solicitud_info_restaurante* info = malloc(sizeof(t_solicitud_info_restaurante));
+	uint32_t offset = 0;
+
+	memcpy(&info->size_nombre_restaurante, payload, sizeof(uint32_t));
+	offset += sizeof(sizeof(uint32_t));
+	info->nombre_restaurante=malloc(info->size_nombre_restaurante+1);
+	memcpy(info->nombre_restaurante, payload + offset,
+			info->size_nombre_restaurante);
+	offset += info->size_nombre_restaurante;
+
+	info->nombre_restaurante[info->size_nombre_restaurante]='\0';
+
+	return info;
+}
 void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
 	log_info(logger, "Handle conexion aceptada...");
 	uint32_t modulo, idProceso, nroMsg, size;
@@ -1571,16 +1589,13 @@ void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
 	headerRecibido->size = size;
 	headerRecibido->payload = malloc(headerRecibido->size);
 
-	printf("Size payload antes recv: %d\n", strlen(headerRecibido->payload));
 
 	if (size > 0) {
 		headerRecibido->payload = malloc(size);
 		recv(socketCliente, headerRecibido->payload, size, MSG_WAITALL);
 
 	}
-	printf("Size payload despues recv: %d\n", strlen(headerRecibido->payload));
-	string_trim(&headerRecibido->payload);
-	printf("Nombre Restaurante Recibido: %s\n", headerRecibido->payload);
+	//string_trim(&headerRecibido->payload);
 
 	switch(headerRecibido->nro_msg){
 
@@ -1632,7 +1647,7 @@ void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
 
 		int resultadoOperacion=0;
 
-		resultadoOperacion=crearPedido(infoPedido,pedido->nombre_restaurante,string_itoa(pedido->id_pedido),infoBloques);
+		resultadoOperacion=crearPedido(infoPedido,pedido->nombre_restaurante,string_itoa(pedido->id_pedido),infoBloques,bitMap);
 
 		t_header* header=malloc(sizeof(t_header));
 
@@ -1679,8 +1694,9 @@ void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
 
 		tMensajeInfoRestaurante* infoRestauranteAEnviar=malloc(sizeof(tMensajeInfoRestaurante));
 		t_respuesta_info_restaurante* respuestaArchivoInfoResto= malloc(sizeof(t_respuesta_info_restaurante));
-
-		infoRestauranteAEnviar=obtenerInfoRestaurante(headerRecibido->payload);
+		t_solicitud_info_restaurante* solicitudInfoResto=malloc(sizeof(t_solicitud_info_restaurante));
+		solicitudInfoResto=deserializarSolicitudInfoRestaurante(headerRecibido->payload);
+		infoRestauranteAEnviar=obtenerInfoRestaurante(solicitudInfoResto->nombre_restaurante);
 		mapearInfoRestauranteARespuesta(infoRestauranteAEnviar,respuestaArchivoInfoResto);
 
 		t_header * header = malloc(sizeof(t_header));
@@ -1989,16 +2005,16 @@ int main(int argc, char *argv[]) {
 	tMensajeInfoRestaurante* info=malloc(sizeof(tMensajeInfoRestaurante));
 	//info=obtenerInfoRestaurante("Resto1");
 
+	tCreacionPedido* pedido=malloc(sizeof(tCreacionPedido));
+	hardcodearPedido(pedido);
 
-	//hardcodearPedido(pedidoCreado);
+	//crearPedido(pedido,"Resto","Mila1",infoBloques,bitMap);
 
-	//crearPedido(pedidoCreado,"Resto2","Mila1");
-
-	char* nombreResto=malloc(30);
-	strcpy(nombreResto,"Resto1");
+	//char* nombreResto=malloc(30);
+	//strcpy(nombreResto,"Resto1");
 	//agregarPlatoAPedido(nombreResto,"Mila1","Milanesa",2);
 
-	levantarConsola(infoBloques);
+	//levantarConsola(infoBloques);
 
 	//mensajeConsultasPlatosPrueba("LaParri");
 
@@ -2009,7 +2025,9 @@ int main(int argc, char *argv[]) {
 			configuracion->puertoEscucha);
 
 	while (1) {
+		//Crear Hilo
 		int socketConectado = aceptar_conexion(socketServer);
+
 		handleConexion(socketConectado,infoBloques);
 
 		break;
