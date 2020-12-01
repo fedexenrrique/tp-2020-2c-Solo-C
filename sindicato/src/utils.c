@@ -5,6 +5,7 @@
  *      Author: utnso
  */
 #include "utils.h"
+#define NOMBRE_INFO_RESTAURANTE "Info.AFIP"
 
 char *strremove(char *str, const char *sub) {
     size_t len = strlen(sub);

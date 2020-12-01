@@ -107,20 +107,33 @@ void levantarConsola(tInfoBloques* infoBloques) {
 
 			tCreacionReceta* receta= malloc(sizeof(tCreacionReceta));
 
+			int sizeNombreReceta=strlen(substrings[1]);
+			receta->nombreReceta=malloc(sizeNombreReceta+1);
 			receta->nombreReceta=substrings[1];
+			receta->nombreReceta[sizeNombreReceta]='\0';
+
+			int sizeNombrePasos=strlen(substrings[2]);
+			receta->pasos=malloc(sizeNombrePasos+1);
 			receta->pasos=substrings[2];
+			receta->pasos[sizeNombrePasos]='\0';
+
+			int sizeNombreTiempos=strlen(substrings[3]);
+			receta->tiemposPasos=malloc(sizeNombrePasos+1);
 			receta->tiemposPasos=substrings[3];
+			receta->tiemposPasos[sizeNombreTiempos]='\0';
 
 			log_info(logger,"Creando receta...\n");
 			log_info(logger,receta->nombreReceta);
-			printf(logger,receta->pasos);
 
 			int archivoGrabado=grabarArchivoReceta(receta,infoBloques);
 
-				if(archivoGrabado==0){
+			if(archivoGrabado==0){
 						log_error(logger,"Archivo no grabado");
 
-				}
+			}
+			free(receta->nombreReceta);
+			free(receta->pasos);
+			free(receta->tiemposPasos);
 			free(receta);
 
 		} else

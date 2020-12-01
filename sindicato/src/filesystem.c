@@ -11,6 +11,7 @@
 #define PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES "./bloquesAsignadosARestos.bin"
 #define PATH_BLOQUES_ASIGNADOS_A_RECETAS 	  "./bloquesAsignadosARecetas.bin"
 #define PATH_BLOQUES_ASIGNADOS_A_PEDIDOS 	  "./bloquesAsignadosAPedidos.bin"
+#define NOMBRE_INFO_RESTAURANTE "Info.AFIP"
 
 
 int crearDirectorioFiles(){
@@ -445,13 +446,12 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 	e=stat(pathBloques,&info);
 	if (e == 0) {
 		FILE* archivoBloquesAsignados = fopen(
-				pathBloques, "rwb+");
+				pathBloques, "rw+");
 		int fdArchivo = fileno(archivoBloquesAsignados);
 		char* map = malloc(info.st_size + 1);
 		int offsetActualizacion = info.st_size;
 
-		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,
-				fdArchivo, 0);
+
 
 		if (info.st_size == 0) {
 			if (fwrite(lineaArchivoBloquesAsignados,
@@ -462,6 +462,7 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 				resultado = -3;
 			}
 		} else {
+			map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchivo, 0);
 			map[offsetActualizacion] = '\n';
 			offsetActualizacion++;
 			memcpy(map + offsetActualizacion, lineaArchivoBloquesAsignados,
@@ -480,6 +481,8 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 				resultado=-1;
 				//exit(EXIT_FAILURE);
 			}
+			//free(map);
+
 		}
 		fclose(archivoBloquesAsignados);
 
@@ -559,21 +562,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 				bytesAEscribir=string_substring(propiedades,offsetEscritura,infoBloques->tamBloques-sizeof(uint32_t));
 
-				/*char* stringCeros=malloc(sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente))+1);
-				int offsetCeros=0;
-				offsetCeros=strlen(bytesAEscribir);
-				strcpy(stringCeros,"");
-				stringCeros=string_repeat('0',sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente)));
-				stringCeros[strlen(stringCeros)]='\0';
-				//string_append_with_format(&bytesAEscribir,"%s%d",,bloqueSiguiente);
-				memcpy(bytesAEscribir+offsetCeros,stringCeros,strlen(stringCeros));
-				offsetCeros=offsetCeros+strlen(stringCeros);
-				memcpy(bytesAEscribir+offsetCeros,string_itoa(bloqueSiguiente),strlen(string_itoa(bloqueSiguiente)));
-				offsetCeros=offsetCeros+strlen(string_itoa(bloqueSiguiente));
-				bytesAEscribir[offsetCeros]='\0';
-				//string_append_with_format(&propiedades,"%d",bloqueSiguiente); //ESCRIBO EL SIZE DE PROPIEDADES+SIZE BLOQUE SIGUIENTE
-				//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
-				*/
+
 				string_append_with_format(&bytesAEscribir,"%s%d",string_repeat('0',sizeof(uint32_t)-strlen(string_itoa(bloqueSiguiente))),bloqueSiguiente);
 								//string_append_with_format(&propiedades,"%d",bloqueSiguiente); //ESCRIBO EL SIZE DE PROPIEDADES+SIZE BLOQUE SIGUIENTE
 				//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
@@ -705,12 +694,13 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 	char* propiedades = malloc(sizePropiedades+1);
 
 	int sizePathArchivoInfo=strlen(pathRestoNuevo);
-	char* pathArchivoInfo=malloc(sizePathArchivoInfo+1);
-	//strcpy(pathArchivoInfo,pathRestoNuevo);
-	memcpy(pathArchivoInfo,pathRestoNuevo,sizePathArchivoInfo);
-	memcpy(pathArchivoInfo+sizePathArchivoInfo,"Info.AFIP",9);
+	char* pathArchivoInfo=malloc(strlen(pathRestoNuevo)+sizePathArchivoInfo+1);
+	//strcpy(pathArchivoInfo,pathRestoNuevo);+
+	//int sizeNombreArchivoInfo=malloc(strlen(NOMBRE_INFO_RESTAURANTE)+1);
+	memcpy(pathArchivoInfo,pathRestoNuevo,strlen(pathRestoNuevo));
+	memcpy(pathArchivoInfo+strlen(pathRestoNuevo),NOMBRE_INFO_RESTAURANTE,sizePathArchivoInfo);
 	//string_append(&pathArchivoInfo,"Info.AFIP");
-	pathArchivoInfo[sizePathArchivoInfo+9]='\0';
+	pathArchivoInfo[strlen(pathRestoNuevo)+sizePathArchivoInfo]='\0';
 	t_list* bloquesAsignadosAResto=list_create();
 	int resultadoEscritura=1;
 
