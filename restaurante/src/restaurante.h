@@ -43,6 +43,8 @@ void 								aniadir_plato_restaurante								(aniadir_plato *);
 t_creacion_pedido				*	obtener_pedido											(int);
 t_creacion_pedido				*	deserializar_respuesta_obtener_pedido_restaurante		(void *);
 void								confirmar_pedido										(int);
+t_respuesta_receta				*	obtener_receta											(char *);
+t_respuesta_receta				*	deserializar_respuesta_receta							(void *);
 void 								conectar_restaurante_a_applicacion						(void);
 
 #endif /* RESTAURANTE_H_ */

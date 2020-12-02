@@ -169,6 +169,18 @@ typedef struct{
 	uint32_t		cantidad_hornos;
 }t_respuesta_info_restaurante;
 
+typedef struct{
+	uint32_t		size_plato;
+	char		*	plato;
+}t_info_receta;
+
+typedef struct{
+	uint32_t 		size_pasos;
+	char		* 	pasos;
+	uint32_t 		size_tiempos;
+	char		* 	tiempos;
+}t_respuesta_receta;
+
 typedef struct {
 	char *   		comida;
 	uint32_t		cantTotal;

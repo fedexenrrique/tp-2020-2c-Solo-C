@@ -458,3 +458,67 @@ t_creacion_pedido * deserializar_respuesta_obtener_pedido_restaurante(void * pay
 	return respuesta_info;
 }
 
+t_respuesta_receta * obtener_receta(char * plato) {
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
+	t_info_receta * info_receta = malloc(sizeof(t_info_receta));
+
+	info_receta->size_plato = string_length(plato);
+	info_receta->plato = plato;
+
+
+	int size_buffer = sizeof(uint32_t) + info_receta->size_plato;
+	void * buffer = malloc(size_buffer);
+
+	memcpy(buffer + offset, &info_receta->size_plato, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+	memcpy(buffer + offset, info_receta->plato, info_receta->size_plato);
+	offset += info_receta->plato;
+
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = RESTAURANTE;
+	header->nro_msg = OBTENER_RECETA;
+
+	int conexion = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
+
+	if (enviar_buffer(conexion, header) == false) {
+		log_error(logger_restaurante, "No se pudo enviar el pedido de info del restaurante");
+	}
+
+	t_header * mensaje_recibido = recibir_buffer(conexion);
+
+	log_info(logger_restaurante, "Se recibio mensaje del modulo: %d", mensaje_recibido->modulo);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo con id: %d", mensaje_recibido->id_proceso);
+	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
+	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
+
+	t_respuesta_receta * respuesta_obtener_pedido = deserializar_respuesta_receta(mensaje_recibido->payload);
+
+	return respuesta_obtener_pedido;
+}
+
+t_respuesta_receta * deserializar_respuesta_receta(void * payload) {
+	t_respuesta_receta * respuesta_info = malloc(sizeof(t_respuesta_receta));
+
+	memcpy(&(respuesta_info->size_pasos), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
+
+	respuesta_info->pasos = malloc((respuesta_info->size_pasos) + 1);
+	memcpy((respuesta_info->pasos), payload, respuesta_info->size_pasos);
+	payload += respuesta_info->size_pasos;
+
+	memcpy(&(respuesta_info->size_tiempos), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
+
+	respuesta_info->tiempos = malloc((respuesta_info->size_tiempos) + 1);
+	memcpy((respuesta_info->tiempos), payload, respuesta_info->size_tiempos);
+	payload += respuesta_info->size_tiempos;
+
+	return respuesta_info;
+}
+
+
+
