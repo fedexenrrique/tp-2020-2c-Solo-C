@@ -146,10 +146,10 @@ typedef struct{
 	char		* 	estado_pedido;
 	uint32_t		size_lista_platos;
 	char		* 	lista_platos;
-	uint32_t	*	size_cantidad_platos;
+	uint32_t		size_cantidad_platos;
 	char		* 	cantidad_platos;
 	uint32_t 		precio_total;
-}t_creacion_pedido;
+}t_creacion_pedido; //Lo uso tmb como respuesta al pedido de obtener pedido del restaurante al sindicato
 
 typedef struct{
 	uint32_t		size_platos;
