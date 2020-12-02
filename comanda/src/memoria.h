@@ -34,6 +34,20 @@ typedef struct {
 
 }t_pagina_comida;
 
+typedef struct {
+	bool     esta_en_memoria_principal  ;
+	t_frame* frame                      ;
+	t_frame* frame_swap    		        ;
+	void *   contenido                  ;
+	bool     modificado                 ;
+	uint64_t last_used                  ;
+	bool     bit_de_uso                 ;
+	char *   nombre_restaurante         ;
+	uint32_t nro_pedido                 ;
+	estado_pedido estado                ;
+
+}t_struct_comida_dump;
+
 
 
 //1 t_tabla_segmentos X restaurante  (contiene los t_segmneto)

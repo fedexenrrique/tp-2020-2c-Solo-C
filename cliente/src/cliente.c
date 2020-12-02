@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
 
 				conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
 				encabezado=recibir_buffer(conexion);
+				log_info(logger,"Se recibio mensaje del modulo numero: %d",encabezado->id_proceso);
 				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
 				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente el guardado del pedido");

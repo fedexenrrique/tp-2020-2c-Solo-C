@@ -10,6 +10,8 @@
 
 #include "memoria.h"
 
+int * id_modulo;
+
 
 int       iniciar_comanda();
 t_log *   iniciar_logger ();
