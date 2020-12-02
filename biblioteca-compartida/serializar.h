@@ -251,6 +251,7 @@ uint32_t  detectar_comando               ( char *   p_comando     );
 char *    nro_comando_a_texto            ( uint32_t p_comando     );
 uint32_t  detectar_modulo                ( char *   p_modulo      );
 char *    nro_modulo_a_texto             ( uint32_t p_modulo      );
+char *    nro_estado_pedido_a_texto      ( estado_pedido          );
 
 
 t_header * serializar_respuesta_info_restaurante(t_respuesta_info_restaurante * respuesta_info);

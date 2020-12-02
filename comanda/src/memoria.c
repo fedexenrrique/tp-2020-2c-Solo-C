@@ -97,7 +97,7 @@ t_restaurante * crear_tabla_segmentos_restaurante(char * nombre_restaurante  ){
 
 	list_add(lista_restarurantes,restaurante);
 
-	printf("Se creo La tabla de segmentos del nuevo restaurante. \n");
+	log_info(logger,"Se creo La tabla de segmentos del nuevo restaurante. \n");
 
 	return restaurante;
 }
@@ -113,8 +113,8 @@ bool agregar_pedido_a_tabla_segmentos(t_restaurante * restaurante, uint32_t id_p
 
 	t_pedido_seg * pedido=NULL;
 
-	printf("Se recibio el pedido nro: %d\n",id_pedido);
-	printf("Se recibio restaurant: %s\n",restaurante->nombre_restaurante);
+	//printf("Se recibio el pedido nro: %d\n",id_pedido);
+	//printf("Se recibio restaurant: %s\n",restaurante->nombre_restaurante);
 
 	pedido=list_find(restaurante->tabla_pedidos,buscar_pedido);
 
@@ -131,8 +131,8 @@ bool agregar_pedido_a_tabla_segmentos(t_restaurante * restaurante, uint32_t id_p
 
 	list_add(restaurante->tabla_pedidos,pedido);
 
-	int lista_size=list_size(restaurante->tabla_pedidos);
-	printf("El tamaño de la Lista de pedidos del restaurante es: %d\n", lista_size);
+//	int lista_size=list_size(restaurante->tabla_pedidos);
+//	printf("El tamaño de la Lista de pedidos del restaurante es: %d\n", lista_size);
 
 
 	return TRUE;
@@ -144,11 +144,17 @@ t_frame * buscar_frame_libre(t_list * tabla){
 
 	t_frame * frame_libre=NULL;
 
-	if(!list_is_empty(tabla)){
+	char * nombre=string_new();
 
+	if(!list_is_empty(tabla)){
 		frame_libre=list_remove(tabla,0);
-		log_info(logger,"Se encontro el frame libre numero: %d  con la direccion %p",frame_libre->nro_frame,frame_libre->direccion_frame);
-		log_info(logger,"La tabla de frames libres queda con un tamaño de: %d  frames",list_size(tabla));
+		if(tabla==tabla_frames_libres){
+			string_append(&nombre,"Principal");}
+		else
+			string_append(&nombre,"Swap");
+
+		log_info(logger,"Se encontro en la Memoria %s el frame libre numero: %d  con la direccion %p",nombre,frame_libre->nro_frame,frame_libre->direccion_frame);
+		log_info(logger,"Quedan en la Memoria %s  %d  frames libres",nombre, list_size(tabla));
 		return frame_libre;
 	}
 
@@ -174,7 +180,7 @@ void dampear_memoria (){
 	char * cadena=NULL;
 
 				void mostrar_comidas_en_memoria(void * elemento){
-					t_pagina_comida * adm_comida=(t_pagina_comida*)elemento;
+					t_struct_comida_dump * adm_comida=(t_struct_comida_dump*)elemento;
 					t_comida * comida=malloc(sizeof(t_comida));
 					int offset=0;
 
@@ -187,15 +193,15 @@ void dampear_memoria (){
 
 					memcpy(comida->nombre_comida,adm_comida->frame->direccion_frame+offset, SIZE_VECTOR_NOMBRE_PLATO);
 
-					cadena=string_from_format("\n El plato: %24s - frame n°: %3d - timestamp:  %d  -  ",comida->nombre_comida,adm_comida->frame_swap->nro_frame,adm_comida->last_used);
-					string_append_with_format(&cadena, " bit uso: %1d - bit modificado: %1d ",adm_comida->bit_de_uso,adm_comida->modificado);
+					cadena=string_from_format("\n El plato: %-24s-frame: %-3d - timestamp:  %-d  -",comida->nombre_comida,adm_comida->frame->nro_frame,adm_comida->last_used);
+					string_append_with_format(&cadena, " pedido: %d - restaurant: %-15s -bit uso: %-1d -bit modificado: %-1d ",adm_comida->nro_pedido,adm_comida->nombre_restaurante,adm_comida->bit_de_uso,adm_comida->modificado);
 					txt_write_in_stdout(cadena);
 					free(comida);
 				}
 
 				bool ordenar_lista_paginas_en_memoria(void * elemento1, void * elemento2){
-					t_pagina_comida * adm_comida1=(t_pagina_comida*)elemento1;
-					t_pagina_comida * adm_comida2=(t_pagina_comida*)elemento2;
+					t_struct_comida_dump * adm_comida1=(t_struct_comida_dump*)elemento1;
+					t_struct_comida_dump * adm_comida2=(t_struct_comida_dump*)elemento2;
 
 					if(adm_comida1->frame->nro_frame<adm_comida2->frame->nro_frame)
 						return TRUE;
@@ -215,8 +221,15 @@ void dampear_memoria (){
 
 												//log_info(logger,"La cantidad de paginas de comida iteradas hasta el momento es:  %d",++contador_paginas_iteradas);
 												if(adm_comida->esta_en_memoria_principal==TRUE){
-													//log_info(logger,"Cargo un en la lista de frames para elalgoritmo");
-													list_add(list_paginas_en_memoria_clock,adm_comida);
+													t_struct_comida_dump * struct_comida=malloc(sizeof(t_struct_comida_dump));
+													struct_comida->bit_de_uso=adm_comida->bit_de_uso;
+													struct_comida->estado=pedido->estado;
+													struct_comida->frame=adm_comida->frame;
+													struct_comida->last_used=adm_comida->last_used;
+													struct_comida->modificado=adm_comida->modificado;
+													struct_comida->nombre_restaurante=restaurante->nombre_restaurante;
+													struct_comida->nro_pedido=pedido->id_pedido;
+													list_add(list_paginas_en_memoria_clock,struct_comida);
 												 }
 											  }
 
@@ -233,6 +246,8 @@ void dampear_memoria (){
 	list_sort(list_paginas_en_memoria_clock,ordenar_lista_paginas_en_memoria);
 
 	list_iterate(list_paginas_en_memoria_clock,mostrar_comidas_en_memoria);
+
+	list_destroy(list_paginas_en_memoria_clock);
 
 	printf("\n");
 	printf("\n");
@@ -253,11 +268,11 @@ void copiar_pagina_en_memoria(void * direccion_frame, t_comida * comida){
 
 	memcpy(direccion_frame+offset,comida->nombre_comida, SIZE_VECTOR_NOMBRE_PLATO);
 
-	mem_hexdump(direccion_frame,SIZE_PAGINA);
+//	mem_hexdump(direccion_frame,SIZE_PAGINA);
 
 	//free(comida);
 
-	log_info(logger,"Se guardo la pagina en memoria");
+//	log_info(logger,"Se guardo la pagina en memoria");
 
 }
 
@@ -274,7 +289,7 @@ void leer_pagina_en_memoria(void * direccion_frame,t_comida * comida){
 
 	memcpy(comida->nombre_comida,direccion_frame+offset, SIZE_VECTOR_NOMBRE_PLATO);
 
-	mem_hexdump((void*)comida,SIZE_PAGINA);
+//	mem_hexdump((void*)comida,SIZE_PAGINA);
 
 
 }
@@ -290,7 +305,7 @@ t_pagina_comida *          cargar_pagina_a_memoria_principal(t_pagina_comida *  
 		log_info(logger,"La memoria principal se encuentra llena");
 		frame_libre=seleccionar_victima_en_memoria_principal();					//No hay frames libres, utilizo algun metodo de remplazo
 	}
-	log_info(logger,"Pruebo--La direccion del frame encontrado es: %p",frame_libre->direccion_frame);
+	//log_info(logger,"Pruebo--La direccion del frame encontrado es: %p",frame_libre->direccion_frame);
 
 	adm_comida->frame->nro_frame=frame_libre->nro_frame;
 	adm_comida->frame->direccion_frame=frame_libre->direccion_frame;
@@ -307,6 +322,7 @@ t_pagina_comida *          cargar_pagina_a_memoria_principal(t_pagina_comida *  
 	adm_comida->bit_de_uso=TRUE;
 	adm_comida->last_used=timestamp();
 
+	log_error(logger,"Se carga la pagina en la memoria principal en el frame N°: %d y la direccion: %p",adm_comida->frame->nro_frame,adm_comida->frame->direccion_frame);
 	log_info(logger,"Se carga el timestamp con el valor: %d", adm_comida->last_used);
 	log_info(logger,"El bit de uso queda con el valor: %d", adm_comida->bit_de_uso);
 
@@ -370,16 +386,18 @@ t_frame *  utilizar_algoritmo_remplazo_lru              (){
 
 	list_iterate(lista_restarurantes,_search_oldest_pagina);
 
-	log_info(logger,"Se selecciono el frame: %d", aux_pagina->frame->nro_frame);
-	log_info(logger,"tiene el bit de uso en %d y el bit de modificado en %d",aux_pagina->bit_de_uso,aux_pagina->modificado);
+	log_error(logger,"Se selecciono de la Memoria Principal como victima el frame: %d con la direccion de memoria: %p", aux_pagina->frame->nro_frame,aux_pagina->frame->direccion_frame);
+//	log_info(logger,"tiene el bit de uso en %d y el bit de modificado en %d",aux_pagina->bit_de_uso,aux_pagina->modificado);
 	if(aux_pagina->modificado==TRUE){
 		//Tengo que actualizar la memoria SWAP
 		t_comida * comida=malloc(sizeof(t_comida));
+		log_info(logger,"La pagina que se quiere remplazar se encuentra modificada");
+		log_info(logger,"Se hace un acceso a disco para actualizar el contenido de la pagina");
 
 		leer_pagina_en_memoria(aux_pagina->frame->direccion_frame,comida);
 		copiar_pagina_en_memoria(aux_pagina->frame_swap->direccion_frame,comida);
 		aux_pagina->modificado=FALSE;
-		log_info(logger,"Se actualiza la pagina guardada en SWAP");
+//		log_info(logger,"Se actualiza la pagina guardada en SWAP");
 		free(comida);
 	}
 
@@ -387,9 +405,9 @@ t_frame *  utilizar_algoritmo_remplazo_lru              (){
 	aux_pagina->frame=NULL;
 	aux_pagina->esta_en_memoria_principal=FALSE;
 
-	log_info(logger,"Se encontro la pagina con mas tiempo sin usar. Se paso a SWAP y se libero el FRAME");
+//	log_info(logger,"Se encontro la pagina con mas tiempo sin usar. Se paso a SWAP y se libero el FRAME");
 
-	log_error(logger,"La pagina victima seleccionado para el remplazo es la ubicada en el frame N°: %d",frame->nro_frame);
+	log_error(logger,"Se libero el frame N°: %d de la Memoria Principal",frame->nro_frame);
 
 	return frame;
 
@@ -437,13 +455,13 @@ t_frame *  utilizar_algoritmo_remplazo_clock_mejorado   (){
 
 	list_iterate(lista_restarurantes,_search_oldest_pagina);
 
-	log_info(logger,"El tamaño de la lista que contiene los frames ordenado de la memoria principal es: %d", list_size(list_paginas_en_memoria_clock));
+//	log_info(logger,"El tamaño de la lista que contiene los frames ordenado de la memoria principal es: %d", list_size(list_paginas_en_memoria_clock));
 
 	list_sort(list_paginas_en_memoria_clock,ordenar_lista_paginas_en_memoria);
 
 	frame=buscar_victima_clock(list_paginas_en_memoria_clock);
 
-	log_error(logger,"La pagina victima seleccionado para el remplazo es la ubicada en el frame N°: %d",frame->nro_frame);
+	log_error(logger,"Se libero el frame N°: %d de la Memoria Principal",frame->nro_frame);
 
 	list_destroy(list_paginas_en_memoria_clock);
 
@@ -457,16 +475,16 @@ t_frame * buscar_victima_clock(t_list * list_paginas_en_memoria_clock){ //Verifi
 	t_frame * frame=NULL;
 	t_comida * comida=malloc(sizeof(t_comida));
 
-	log_info(logger,"EL puntero apunta al frame: %d", puntero_clock);
+//	log_info(logger,"EL puntero apunta al frame: %d", puntero_clock);
 
 	for(int vuelta=0;vuelta<2;vuelta++){
 //---------1° paso, busco m=0 y u=0
-			log_info(logger, "Arranco la vuelta 1, primera parte");
+//			log_info(logger, "Arranco la vuelta 1, primera parte");
 			for(;puntero_clock<cantidad_frames_memoria_principal;puntero_clock++){//Busco m=0 y u=0
 				adm_comida=list_get(list_paginas_en_memoria_clock,puntero_clock);
-				log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+//				log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 				if(adm_comida->modificado==FALSE && adm_comida->bit_de_uso==FALSE){
-					log_info(logger,"Se encontro el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+					log_info(logger,"Se selecciono el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 					frame=adm_comida->frame;
 					adm_comida->frame=NULL;
 					adm_comida->esta_en_memoria_principal=FALSE;
@@ -474,38 +492,39 @@ t_frame * buscar_victima_clock(t_list * list_paginas_en_memoria_clock){ //Verifi
 						puntero_clock=0;
 					else
 						puntero_clock++;
-					log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
+//					log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
 					return frame;
 				}
 			}
 			puntero_clock=0;
 			if(limite_for!=0){
-				log_info(logger, "Arranco la vuelta 1, segunda parte");
+//				log_info(logger, "Arranco la vuelta 1, segunda parte");
 				for(puntero_clock=0;puntero_clock<limite_for;puntero_clock++){//Busco m=0 y u=0
 					adm_comida=list_get(list_paginas_en_memoria_clock,puntero_clock);
-					log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+//					log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 					if(adm_comida->modificado==FALSE && adm_comida->bit_de_uso==FALSE){
-						log_info(logger,"Se encontro el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+						log_info(logger,"Se Selecciono el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 						frame=adm_comida->frame;
 						adm_comida->frame=NULL;
 						adm_comida->esta_en_memoria_principal=FALSE;
 						puntero_clock++;
-						log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
+//						log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
 						return frame;				}
 				}
 			}
 		//---------2° paso busco m=1 y u=0 y pongo u en 0 en caso contrario
-			log_info(logger, "Arranco la vuelta 2, primera parte");
+//			log_info(logger, "Arranco la vuelta 2, primera parte");
 			for(;puntero_clock<cantidad_frames_memoria_principal;puntero_clock++){//Busco m=1 y u=0
 				adm_comida=list_get(list_paginas_en_memoria_clock,puntero_clock);
-				log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+//				log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 				if(adm_comida->modificado==TRUE && adm_comida->bit_de_uso==FALSE){
-					log_info(logger,"Se encontro el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+					log_info(logger,"Se Selecciono el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 					frame=adm_comida->frame;
 					leer_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 					copiar_pagina_en_memoria(adm_comida->frame_swap->direccion_frame,comida);
 					adm_comida->modificado=FALSE;
-					log_info(logger,"Se actualiza la pagina guardada en SWAP");
+					log_info(logger,"La pagina que se quiere remplazar se encuentra modificada");
+					log_info(logger,"Se hace un acceso a disco para actualizar el contenido de la pagina");
 					adm_comida->frame=NULL;
 					adm_comida->esta_en_memoria_principal=FALSE;
 					free(comida);
@@ -513,35 +532,36 @@ t_frame * buscar_victima_clock(t_list * list_paginas_en_memoria_clock){ //Verifi
 						puntero_clock=0;
 					else
 						puntero_clock++;
-					log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
+//					log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
 					return frame;
 				}else{
 					adm_comida->bit_de_uso=FALSE;
-					log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
+//					log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
 				}
 			}
 			puntero_clock=0;
 			if(limite_for!=0){
-				log_info(logger, "Arranco la vuelta 2, segunda parte");
+//				log_info(logger, "Arranco la vuelta 2, segunda parte");
 				for(puntero_clock=0;puntero_clock<limite_for;puntero_clock++){//Busco m=1 y u=0
 					adm_comida=list_get(list_paginas_en_memoria_clock,puntero_clock);
-					log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+//					log_info(logger,"Se analiza el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 					if(adm_comida->modificado==TRUE && adm_comida->bit_de_uso==FALSE){
-						log_info(logger,"Se encontro el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
+						log_info(logger,"Se Selecciono el frame %d  con el bit de uso en %d y el bit de modificado en %d",adm_comida->frame->nro_frame,adm_comida->bit_de_uso,adm_comida->modificado);
 						frame=adm_comida->frame;
 						leer_pagina_en_memoria(adm_comida->frame->direccion_frame,comida);
 						copiar_pagina_en_memoria(adm_comida->frame_swap->direccion_frame,comida);
 						adm_comida->modificado=FALSE;
-						log_info(logger,"Se actualiza la pagina guardada en SWAP");
+						log_info(logger,"La pagina que se quiere remplazar se encuentra modificada");
+						log_info(logger,"Se hace un acceso a disco para actualizar el contenido de la pagina");
 						adm_comida->frame=NULL;
 						adm_comida->esta_en_memoria_principal=FALSE;
 						free(comida);
 						puntero_clock++;
-						log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
+//						log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
 						return frame;
 					}else{
 						adm_comida->bit_de_uso=FALSE;
-						log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
+//						log_info(logger,"El puntero del clock, queda ahora apuntando al frame numero %d", puntero_clock);
 					}
 				}
 			}

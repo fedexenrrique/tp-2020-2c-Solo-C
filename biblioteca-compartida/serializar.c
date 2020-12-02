@@ -350,6 +350,17 @@ char * nro_modulo_a_texto( uint32_t p_modulo ) {
 
 }
 
+char * nro_estado_pedido_a_texto( estado_pedido estado ) {
+
+	switch ( estado ) {
+		case PENDIENTE:       return "PENDIENTE" ;break;
+		case CONFIRMADO: 	  return "CONFIRMADO";break;
+		case TERMINADO:		  return "TERMINADO" ;break;
+		default:          return NULL            ;break;
+	}
+
+}
+
 bool enviar_buffer ( uint32_t p_conexion, t_header * p_header ) {
 
 	int    stream_size = sizeof( uint32_t ) * 4 + p_header->size;
@@ -389,7 +400,7 @@ bool enviar_buffer ( uint32_t p_conexion, t_header * p_header ) {
 
 	bool resultado = true;
 
-	mem_hexdump(stream, stream_size);
+//	mem_hexdump(stream, stream_size);
 
 	if ( p_conexion != -1 ) {
 
@@ -430,7 +441,7 @@ t_header * recibir_buffer ( uint32_t socket_cliente ) {
 
 		int bytes_recibidos = recv( socket_cliente, l_header->payload, size, 0 );
 
-		mem_hexdump(l_header->payload, size);
+//		mem_hexdump(l_header->payload, size);
 
 		if ( bytes_recibidos < size )
 
@@ -1419,7 +1430,7 @@ t_pedido * recibir_pedido  (void * payload         ){
 	pedido->nombre_restaurante[pedido->size_nombre_restaurante]='\0';
 
 	log_info(logger,"Se recibio el id numero: %d",pedido->id_pedido);
-	log_info(logger,"Se recibio el size del nombre %d",pedido->size_nombre_restaurante);
+//	log_info(logger,"Se recibio el size del nombre %d",pedido->size_nombre_restaurante);
 	log_info(logger,"Se recibio el restaurante %s",pedido->nombre_restaurante);
 
 	return pedido;
@@ -1704,10 +1715,10 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 				printf("\n");
 			}
 
-	log_error(logger,"Por empezar a deserializar");
-	log_error(logger,"cantidad total de plato: %d",cantidad_total_platos);
-	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
-	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
+	log_info(logger,"Por empezar a deserializar");
+	log_info(logger,"cantidad total de plato: %d",cantidad_total_platos);
+//	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
+//	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
 
 	memcpy(&(pedido->estado),encabezado->payload+offset,sizeof(estado_pedido));
 	offset+=sizeof(estado_pedido);
@@ -1725,7 +1736,7 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 		offset+=SIZE_VECTOR_NOMBRE_PLATO;
 
 		list_add(lista_platos_del_pedido,comida);
-		log_error(logger,"El numero de iteracion es: %d",i);
+//		log_error(logger,"El numero de iteracion es: %d",i);
 	}
 
 	pedido->comidas_del_pedido=lista_platos_del_pedido;
