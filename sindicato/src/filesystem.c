@@ -497,7 +497,7 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 	return resultado;
 }
 
-int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,char* nombreRecurso,t_list* bloquesAsignadosARecurso,char* tipoRecurso,char* operacion,tInfoBloques* infoBloques){
+int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,char* nombreRecurso,t_list* bloquesAsignadosARecurso,char* tipoRecurso,char* operacion,tInfoBloques* infoBloques,char* idPedido){
 	int e=0;
 	int bloqueActual=0;
 	int bloqueSiguiente=0;
@@ -546,10 +546,34 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 		bloqueActual=bloqueInicial;
 
+		if(strcmp(tipoRecurso,"PEDIDO")==0&& strcmp(operacion,"ACTUALIZAR")==0){
+			int bloquesExtra=cantBloquesAEscribir-list_size(bloquesAsignadosARecurso);
+
+			if(bloquesExtra>0){
+				for(int i=0;i<bloquesExtra;i++){ //asigno n bloques mas
+					bloqueSiguiente=buscarBloqueLibre(infoBloques);
+					list_add(bloquesAsignadosARecurso,bloqueSiguiente);
+				}
+				//En este caso tengo que sacar bloques, en caso que se hayan eliminado elementos del string y se redujera su tamaño
+				//saco n elementos de la lista de bloques asignados y los libero para algun otro uso
+			}else if (bloquesExtra<0){
+				int bloqueActualAEliminar=atoi(list_get(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1));
+				for(int i=0;(list_size(bloquesAsignadosARecurso)-bloquesExtra);i++){ //asigno n bloques mas
+					int bloqueAEliminar=atoi(list_get(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1-i));
+					 list_remove(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1-i); //ELimino desde la ultima posicion
+					//list_add(bloquesAsignadosARecurso,bloqueSiguiente);
+				}
+				//actualizo el diccionario de bloques asignados
+				dictionary_put(diccionarioBloquesAsignadosAPedidos,idPedido,bloquesAsignadosARecurso);
+			}
+		}
+
 		for (i=0; i<cantBloquesAEscribir;i++){
 			if(i<cantBloquesAEscribir-1){
 				if(string_equals_ignore_case(operacion,"ACTUALIZAR")){
-					bloqueSiguiente=atoi(list_get(bloquesAsignadosARecurso,i+1));
+					if(i<cantBloquesAEscribir-1){
+						bloqueSiguiente=atoi(list_get(bloquesAsignadosARecurso,i+1));
+					}
 
 				}else {
 					bloqueSiguiente=buscarBloqueLibre(infoBloques);
@@ -647,7 +671,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 			}
 		}
 
-		//Actualizo el archivo de bloques asignados al recurso (receta o restaurante)
+		//Actualizo el archivo de bloques asignados al recurso (receta,restaurante o pedido)
 
 		for(j=0;j<list_size(bloquesAsignadosARecurso);j++){
 			int bloqueActual=list_get(bloquesAsignadosARecurso,j);
@@ -657,14 +681,22 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 			}
 		}
-		char* lineaArchivoBloquesAsignados=malloc(strlen(nombreRecurso)+1+strlen(stringBloquesAsignados)+1);
+		char* lineaArchivoBloquesAsignados;
+
 		char* pathArchivoBloquesAsignadosARestaurantes=malloc(strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES)+1);
 		char* pathArchivoBloquesAsignadosAPedidos=malloc(strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS)+1);
 		char* pathArchivoBloquesAsignadosARecetas=malloc(strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS)+1);
 
 
 
-		sprintf(lineaArchivoBloquesAsignados,"%s%s%s",nombreRecurso," ",stringBloquesAsignados);
+		if (string_equals_ignore_case(tipoRecurso,"PEDIDO")){
+			lineaArchivoBloquesAsignados=malloc(strlen(idPedido)+1+strlen(stringBloquesAsignados)+1);
+			sprintf(lineaArchivoBloquesAsignados,"%s%s%s",idPedido," ",stringBloquesAsignados);
+		}else {
+			lineaArchivoBloquesAsignados=malloc(strlen(nombreRecurso)+1+strlen(stringBloquesAsignados)+1);
+			sprintf(lineaArchivoBloquesAsignados,"%s%s%s",nombreRecurso," ",stringBloquesAsignados);
+		}
+
 		if(string_equals_ignore_case(tipoRecurso,"RESTO")){
 			memcpy(pathArchivoBloquesAsignadosARestaurantes,PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES,strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES));
 			pathArchivoBloquesAsignadosARestaurantes[strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES)]='\0';
@@ -758,7 +790,7 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 	list_add(bloquesAsignadosAResto,bloquelibre);
 
 	dictionary_put(diccionarioBloquesAsignadosARestos,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto);
-	resultadoEscritura=escribirBloques(propiedades,lengthPropiedades,bloquelibre,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto,"RESTO","NUEVO",infoBloques);
+	resultadoEscritura=escribirBloques(propiedades,lengthPropiedades,bloquelibre,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto,"RESTO","NUEVO",infoBloques,NULL);
 
 
 	free(propiedades);
@@ -843,7 +875,7 @@ int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva,tInfoBlo
 
 	dictionary_put(diccionarioBloquesAsignadosARecetas,recetaNueva->nombreReceta,bloquesAsignadosAReceta);
 
-	escribirBloques(propiedades, lengthPropiedades, bloquelibre,recetaNueva->nombreReceta,bloquesAsignadosAReceta,"RECETA","NUEVO",infoBloques);
+	escribirBloques(propiedades, lengthPropiedades, bloquelibre,recetaNueva->nombreReceta,bloquesAsignadosAReceta,"RECETA","NUEVO",infoBloques,NULL);
 
 	free(propiedades);
 	free(infoPropiedades);
@@ -998,8 +1030,8 @@ t_respuesta_info_restaurante* leerInfoDeResto(char* nombreResto){
 return infoResto;
 }
 
-int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nombrePedido){
-	uint32_t sizePropiedadesPedido=strlen("ESTADO_PEDIDO=LISTA_PLATOS=CANTIDAD_PLATOS=CANTIDAD_LISTA=PRECIO_TOTAL")+
+int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nombrePedido,char* idPedido){
+	uint32_t sizePropiedadesPedido=strlen("ESTADO_PEDIDO=LISTA_PLATOS=CANTIDAD_PLATOS=CANTIDAD_LISTA=PRECIO_TOTAL=")+
 									 strlen(pedidoNuevo->estadoPedido)+strlen(pedidoNuevo->listaPlatos)+strlen(pedidoNuevo->cantidadPlatos)+
 									 strlen(pedidoNuevo->cantidadLista)+sizeof(uint32_t);
 	//uint32_t sizeInfoPropiedades=strlen("SIZE=\nINITIAL_BLOCK=")+(sizeof(uint32_t))*2;
@@ -1008,7 +1040,7 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 
 	FILE* archivoPedidoNuevo = fopen(pathPedido, "w");
 	int lengthPropiedades = sprintf(propiedades, "%s%s%s%s%s%s%s%s%s%d", "ESTADO_PEDIDO=", pedidoNuevo->estadoPedido, "LISTA_PLATOS=",
-			pedidoNuevo->listaPlatos,"CANTIDAD_PLATO=",pedidoNuevo->cantidadPlatos,"CANTIDAD_LISTA=",pedidoNuevo->cantidadLista,
+			pedidoNuevo->listaPlatos,"CANTIDAD_PLATOS=",pedidoNuevo->cantidadPlatos,"CANTIDAD_LISTA=",pedidoNuevo->cantidadLista,
 			"PRECIO_TOTAL=",pedidoNuevo->precioTotal);
 
 	propiedades[sizePropiedadesPedido]='\0';
@@ -1045,7 +1077,7 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 
 	dictionary_put(diccionarioBloquesAsignadosAPedidos,nombrePedido, bloquesAsignadosAPedido);
 
-	resultadoOperacion=escribirBloques(propiedades, lengthPropiedades, bloquelibre,nombrePedido, bloquesAsignadosAPedido,"PEDIDO","NUEVO",infoBloques);
+	resultadoOperacion=escribirBloques(propiedades, lengthPropiedades, bloquelibre,nombrePedido, bloquesAsignadosAPedido,"PEDIDO","NUEVO",infoBloques,idPedido);
 
 	free(propiedades);
 	free(infoPropiedades);
