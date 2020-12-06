@@ -123,6 +123,13 @@ typedef struct {
 }t_guardar_plato;
 
 typedef struct {
+	uint32_t 		id_pedido;
+	uint32_t  		size_nombre_plato;
+	char 		*  	nombre_plato;
+    uint32_t  		cantidad_plato;
+}t_guardar_plato_restaurante;
+
+typedef struct {
 	t_pedido* pedido           ;
 	uint32_t  size_nombre_plato;
 	char *    nombre_plato     ;
@@ -132,6 +139,22 @@ typedef struct{
 	uint32_t		size_nombre_restaurante;
 	char		* 	nombre_restaurante;
 }t_solicitud_info_restaurante;
+
+typedef struct{
+	uint32_t		id_pedido;
+	uint32_t		size_estado_pedido;
+	char		* 	estado_pedido;
+	uint32_t		size_lista_platos;
+	char		* 	lista_platos;
+	uint32_t		size_cantidad_platos;
+	char		* 	cantidad_platos;
+	uint32_t 		precio_total;
+}t_creacion_pedido; //Lo uso tmb como respuesta al pedido de obtener pedido del restaurante al sindicato
+
+typedef struct{
+	uint32_t		size_platos;
+	char		*	platos;
+}t_respuesta_platos_restaurante;
 
 typedef struct{
 	uint32_t		cantidad_cocineros;
@@ -145,6 +168,18 @@ typedef struct{
 	char		*	precio_platos;
 	uint32_t		cantidad_hornos;
 }t_respuesta_info_restaurante;
+
+typedef struct{
+	uint32_t		size_plato;
+	char		*	plato;
+}t_info_receta;
+
+typedef struct{
+	uint32_t 		size_pasos;
+	char		* 	pasos;
+	uint32_t 		size_tiempos;
+	char		* 	tiempos;
+}t_respuesta_receta;
 
 typedef struct {
 	char *   		comida;
