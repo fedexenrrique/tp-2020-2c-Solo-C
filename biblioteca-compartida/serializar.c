@@ -405,6 +405,7 @@ bool enviar_buffer ( uint32_t p_conexion, t_header * p_header ) {
 	if ( p_conexion != -1 ) {
 
 		int bytes_enviados=send( p_conexion, stream, stream_size, 0);
+		printf("\n");
 		log_info(logger,"Se enviaron la cantidad de bytes: %d",bytes_enviados);
 
 		if( -1 == bytes_enviados ) resultado = false;
@@ -1716,7 +1717,7 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 			}
 
 	log_info(logger,"Por empezar a deserializar");
-	log_info(logger,"cantidad total de plato: %d",cantidad_total_platos);
+	log_info(logger,"cantidad total de los diferentes tipos de platos: %d",cantidad_total_platos);
 //	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
 //	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
 
@@ -1741,7 +1742,7 @@ void deserializar_respuesta_obtener_pedido(t_header * encabezado){
 
 	pedido->comidas_del_pedido=lista_platos_del_pedido;
 
-	log_info(logger,"El pedido se encuentra en estado: %d",pedido->estado);
+	log_info(logger,"El pedido se encuentra en estado: %s",nro_estado_pedido_a_texto(pedido->estado));
 	log_info(logger,"Los platos son los siguientes:");
 	printf("\n");
 

@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 				conexion=enviar_guardar_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
 				encabezado=recibir_buffer(conexion);
 				log_info(logger,"Se recibio mensaje del modulo numero: %d",encabezado->id_proceso);
-				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
+				log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
 				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente el guardado del pedido");
 				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
 
 				conexion=enviar_guardar_plato(g_ip_comanda, g_puerto_comanda, argv[3], (uint32_t)atoi(argv[4]), argv[5], (uint32_t)atoi(argv[6]));
 				encabezado=recibir_buffer(conexion);
-				log_info(logger,"Se recibio el mensaje numero: %d",encabezado->nro_msg);
+				log_info(logger,"Se recibio el mensaje : %s",nro_comando_a_texto(encabezado->nro_msg));
 				if(encabezado->nro_msg==OK)log_info(logger,"Se realizo correctamente el guardado del pedido");
 				if(encabezado->nro_msg==FAIL)log_info(logger,"No se puedo realizar correctamente el guardado del pedido");
 				else if(encabezado->nro_msg!=OK)log_error(logger,"La respuesta recibida no se corresponde con las esperadas OK o FAIL");
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
 				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
 				//RESPUESTA
 				encabezado=recibir_buffer(conexion);
-				log_info(logger,"Se recibio el mensaje nro: %d",encabezado->nro_msg);
+				log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
 				deserializar_respuesta_obtener_pedido(encabezado);
 				break;
 
