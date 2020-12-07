@@ -19,15 +19,14 @@ char *strremove(char *str, const char *sub) {
 }
 
 
-char* buscarSubstring(char* string, char* subString){
-	uint32_t tamSubString=strlen(subString);
-	char* p=string;
-	if(tamSubString>0){
-
-
-	}
-
-}
+//char* buscarSubstring(char* string, char* subString){
+//	uint32_t tamSubString=strlen(subString);
+//	char* p=string;
+//	if(tamSubString>0){
+//
+//	}
+//
+//}
 
 int contarPedidosEnDirectorio(char* path){
 	int contador = 0;
@@ -47,7 +46,6 @@ int contarPedidosEnDirectorio(char* path){
 char* removerBloqueSiguienteDeString(char* cadena,char* numBloque){
 	int lenCadena=strlen(cadena);
 	int lenNumBloque=strlen(numBloque);
-	char* subCadena=malloc(10);
 	cadena=string_substring(cadena,0,lenCadena-lenNumBloque);
 
 	return cadena;

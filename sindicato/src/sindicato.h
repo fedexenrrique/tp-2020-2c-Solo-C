@@ -168,13 +168,18 @@ typedef struct{
 	char* nombrePlatoListo;
 }tSolicitudPlatiListo;
 
+struct arg_struct {
+	int arg1;
+	tInfoBloques* arg2;
+};
+
 tConfiguracion * configuracion;
 t_config * fd_configuracion;
 t_log * logger;
 t_bitarray* bitMap;
 tInfoBloques* infoBloques;
 int fdArchivoBitmap;
-int mapBitArray;
+void* mapBitArray;
 t_dictionary* diccionarioBloquesAsignadosARestos;
 t_dictionary* diccionarioBloquesAsignadosARecetas;
 t_dictionary* diccionarioBloquesAsignadosAPedidos;
@@ -191,9 +196,17 @@ char* pathRestaurantes;
 char* pathRecetas;
 
 
-void handleConexion(int socketCliente,tInfoBloques* infoBloques);
+//void handleConexion(int socketCliente,tInfoBloques* infoBloques);
+int montarFS(tInfoBloques* infoBloques);
+int cargarConfiguracion();
+void* handleConexion(void* arguments);
+tInfoBloques* leerInfoBloques();
+void llenarHeaderRespuesta(t_header2* header);
 void armarPayloadRestaurante(tMensajeInfoRestaurante* info, void* stream);
 int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo, char* pathRestaurante,tInfoBloques* infoBloques);
-
-
+int grabarArchivoRestaurante(tCreacionRestaurante* restauranteNuevo,tInfoBloques* infoBloques);
+int grabarArchivoReceta(tCreacionReceta* recetaNueva,tInfoBloques*infoBloques);
+int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nombrePedido,char* idPedido);
+tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list* bloquesAsigandosAResto);
+int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,char* nombreRecurso,t_list* bloquesAsignadosARecurso,char* tipoRecurso,char* operacion,tInfoBloques* infoBloques,char* idPedido);
 #endif /* SINDICATO_H_ */
