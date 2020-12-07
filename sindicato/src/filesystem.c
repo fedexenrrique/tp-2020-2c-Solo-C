@@ -8,9 +8,7 @@
 #ifndef FILESYSTEM_C_
 #define FILESYSTEM_C_
 #include "filesystem.h"
-#define PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES "./bloquesAsignadosARestos.bin"
-#define PATH_BLOQUES_ASIGNADOS_A_RECETAS 	  "./bloquesAsignadosARecetas.bin"
-#define PATH_BLOQUES_ASIGNADOS_A_PEDIDOS 	  "./bloquesAsignadosAPedidos.bin"
+
 #define NOMBRE_INFO_RESTAURANTE "Info.AFIP"
 #define SIZE 5
 #define INITIAL_BLOCK 13
@@ -446,11 +444,13 @@ int buscarBloqueLibre(tInfoBloques* infoBloques){
 	return i;
 
 }
-int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignados){
+int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignados,char*idPedido){
 	struct stat info;
 	int e=0;
 	int resultado=1;
+	int i=0;
 	e=stat(pathBloques,&info);
+	t_dictionary* bloquesAsignados=dictionary_create();
 	if (e == 0) {
 		FILE* archivoBloquesAsignados = fopen(
 				pathBloques, "rw+");
@@ -472,6 +472,21 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 			map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchivo, 0);
 			map[offsetActualizacion] = '\n';
 			offsetActualizacion++;
+
+			char** lineasArchivo=string_split(map,"\n");
+			while(lineasArchivo[i]!=NULL){
+				char** propiedades=string_split(lineasArchivo[i]," ");
+				dictionary_put(bloquesAsignados,propiedades[0],propiedades[1]);
+				i++;
+			}
+
+			if(dictionary_has_key(bloquesAsignados,idPedido)){
+				char* listaBloquesActual=dictionary_get(bloquesAsignados,idPedido);
+				char** propiedadAActualizar=string_split(lineaArchivoBloquesAsignados," ");
+				char*listaBloquesActualizados=propiedadAActualizar[1];
+				dictionary_put(bloquesAsignados,idPedido,listaBloquesActualizados);
+			}else{
+
 			memcpy(map + offsetActualizacion, lineaArchivoBloquesAsignados,
 					strlen(lineaArchivoBloquesAsignados));
 
@@ -482,6 +497,7 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 			if(fwrite(map,strlen(map),1,archivoBloquesAsignados)==0){
 				log_error(logger,"Error al escribir en el archivo info de restaurante");
 				resultado=0;
+			}
 			}
 			if (munmap(map, info.st_size) == -1) {
 				log_error(logger, "Error al liberar memoria mapeada");
@@ -496,6 +512,48 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 	}
 
 	return resultado;
+}
+
+void actualizarArchivoInfoPedido(char* idPedido, int sizeNuevo){
+	char** restoPedido=string_split(idPedido,"-");
+
+	char* pathInfoPedido=malloc(strlen(pathRestaurantes)+strlen(restoPedido[0])+1+strlen(restoPedido[1]+5+1));
+	char* nombrePedido=malloc(strlen(restoPedido[1])+1);
+
+	int offsetPath=0;
+	memcpy(pathInfoPedido,pathRestaurantes,strlen(pathRestaurantes));
+	offsetPath+=strlen(pathRestaurantes);
+	memcpy(pathInfoPedido+offsetPath,restoPedido[0],strlen(restoPedido[0]));
+	offsetPath+=strlen(restoPedido[0]);
+	memcpy(pathInfoPedido+offsetPath,"/",1);
+	offsetPath++;
+	memcpy(pathInfoPedido+offsetPath,restoPedido[1],strlen(restoPedido[1]));
+	offsetPath+=strlen(restoPedido[1]);
+	memcpy(pathInfoPedido+offsetPath,".AFIP",strlen(".AFIP"));
+	offsetPath+=strlen(".AFIP");
+	pathInfoPedido[offsetPath]='\0';
+
+	struct stat info;
+	int e=stat(pathInfoPedido,&info);
+
+	if(e==0){
+		FILE* archivoInfoPedido=fopen(pathInfoPedido,"rw");
+		char* map=malloc(info.st_size+1);
+		map=mmap(0,info.st_size,PROT_READ | PROT_WRITE, MAP_SHARED, fileno(archivoInfoPedido), 0);
+		map[info.st_size]='\0';
+		char** lineasArchivInfo=string_split(map,"\n");
+
+		memcpy(map+5,string_itoa(sizeNuevo),strlen(string_itoa(sizeNuevo)));
+
+		msync(map, info.st_size, MS_SYNC);
+
+		munmap(map, info.st_size);
+	}
+
+	free(restoPedido);
+	free(pathInfoPedido);
+	free(nombrePedido);
+
 }
 
 int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,char* nombreRecurso,t_list* bloquesAsignadosARecurso,char* tipoRecurso,char* operacion,tInfoBloques* infoBloques,char* idPedido){
@@ -540,8 +598,15 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 	}else {
 		int sizeStringConPunteros=cantEscritura+ (((cantEscritura) / (infoBloques->tamBloques))*sizeof(uint32_t));
+		//int sizeString=strlen()
+		//char* stringNuevo=mempcy(propiedades,)
 
-		cantBloquesAEscribir= ((sizeStringConPunteros) / (infoBloques->tamBloques)) +1;
+		if(sizeStringConPunteros%infoBloques->tamBloques==0){
+			cantBloquesAEscribir= ((sizeStringConPunteros) / (infoBloques->tamBloques));
+
+		}else cantBloquesAEscribir= ((sizeStringConPunteros) / (infoBloques->tamBloques)) +1;
+
+
 
 		bloqueActual=bloqueInicial;
 
@@ -552,8 +617,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 			if(bloquesExtra>0){
 				for(int i=0;i<bloquesExtra;i++){ //asigno n bloques mas
 					bloqueSiguienteNuevo=string_itoa(buscarBloqueLibre(infoBloques));
-					list_add(bloquesAsignadosARecurso,(char*)bloqueSiguiente);
-					free(bloqueSiguienteNuevo);
+					list_add(bloquesAsignadosARecurso,(char*)bloqueSiguienteNuevo);
+					//free(bloqueSiguienteNuevo);
 				}
 				//En este caso tengo que sacar bloques, en caso que se hayan eliminado elementos del string y se redujera su tamaño
 				//saco n elementos de la lista de bloques asignados y los libero para algun otro uso
@@ -576,7 +641,14 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 				if(string_equals_ignore_case(operacion,"ACTUALIZAR")){
 					//if(i<cantBloquesAEscribir-2){
 						bloqueSiguiente=atoi(list_get(bloquesAsignadosARecurso,i+1));
-						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,5));
+//						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,5));
+//						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,4));
+//						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,3));
+//						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,2));
+//						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,1));
+//						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,0));
+//
+//
 
 					//}
 
@@ -704,16 +776,22 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		if(string_equals_ignore_case(tipoRecurso,"RESTO")){
 			memcpy(pathArchivoBloquesAsignadosARestaurantes,PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES,strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES));
 			pathArchivoBloquesAsignadosARestaurantes[strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES)]='\0';
-			actualizarArchivosBloques(pathArchivoBloquesAsignadosARestaurantes,lineaArchivoBloquesAsignados);
+			actualizarArchivosBloques(pathArchivoBloquesAsignadosARestaurantes,lineaArchivoBloquesAsignados,idPedido);
 		}else if(string_equals_ignore_case(tipoRecurso,"PEDIDO")){
 			memcpy(pathArchivoBloquesAsignadosAPedidos,PATH_BLOQUES_ASIGNADOS_A_PEDIDOS,strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS));
 			pathArchivoBloquesAsignadosAPedidos[strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS)]='\0';
-			actualizarArchivosBloques(pathArchivoBloquesAsignadosAPedidos,lineaArchivoBloquesAsignados);
+			if(string_equals_ignore_case(operacion,"ACTUALIZAR")){
+				actualizarArchivoInfoPedido(idPedido,sizeStringConPunteros);
+			}else{
+				actualizarArchivosBloques(pathArchivoBloquesAsignadosAPedidos,lineaArchivoBloquesAsignados,idPedido);
+
+			}
+
 
 		}else{
 			memcpy(pathArchivoBloquesAsignadosARecetas,PATH_BLOQUES_ASIGNADOS_A_RECETAS,strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS));
 			pathArchivoBloquesAsignadosARecetas[strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS)]='\0';
-			actualizarArchivosBloques(pathArchivoBloquesAsignadosARecetas,lineaArchivoBloquesAsignados);
+			actualizarArchivosBloques(pathArchivoBloquesAsignadosARecetas,lineaArchivoBloquesAsignados,idPedido);
 
 		}
 
@@ -1000,13 +1078,13 @@ t_respuesta_info_restaurante* leerInfoDeResto(char* nombreResto){
 	int iLineaArch=0;
 	struct stat info;
 	char* pathInfoResto=malloc(60);
-	char* map=malloc(200);
 	t_list* listaParametros=list_create();
 
 	strcpy(pathInfoResto,pathRestaurantes);
 	string_append_with_format(&pathInfoResto,"%s%s%s",nombreResto,"/","Info.AFIP");
 	stat(pathInfoResto, &info);
 	FILE* archResto=fopen(pathInfoResto,"r+");
+	char* map=malloc(info.st_size+1);
 
 	map=mmap(0,info.st_size,PROT_READ | PROT_WRITE, MAP_SHARED, fileno(archResto), 0);
 
