@@ -213,6 +213,7 @@ void  administrar_guardar_plato(t_header * encabezado,int socket_cliente){
 
 			if(adm_comida->esta_en_memoria_principal!=TRUE){
 
+				log_info(logger,"El plato que se quiere modificar, no se encuentra en Memoria Principal. Hay que cargarlo.");
 				adm_comida=cargar_pagina_a_memoria_principal(adm_comida);			//Busca frame libre y copia lo q esta en SWAP en principal
 			}
 			exito=sumar_cantidad_total_plato(adm_comida,plato);
@@ -253,6 +254,7 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 				//printf("El valor del offset es: %d \n",offset);
 
 				if (adm_comida->esta_en_memoria_principal!=TRUE){
+					log_info(logger,"El plato que se quiere leer no se encuentra en Memoria Principal. Se tiene que cargar");
 					adm_comida=cargar_pagina_a_memoria_principal(adm_comida);			//Busca frame libre y copia lo q esta en SWAP en principal
 				}
 
@@ -264,11 +266,11 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 
 				adm_comida->last_used=timestamp();
 
-				printf("Estoy iterando la lista del pedido\n");
+/*				printf("Estoy iterando la lista del pedido\n");
 				printf("Cantidad lista de comida: %d \n",comida->cantidad_lista_comida);
 				printf("Cantidad total pedida del plato: %d \n", comida->cantidad_total_comida);
 				printf("Nombre del plato: %s \n",comida->nombre_comida);
-
+*/
 			}
 
 
@@ -280,10 +282,10 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 
 
 	if(restaurante==NULL){
-		printf("No se encontro el restaurante\n");   //Se informa que no existe el restaurante
+		log_info(logger,"No se encontro el restaurante\n");   //Se informa que no existe el restaurante
 		goto envio_de_respuesta;}
 	else
-		printf("Se encontro el restaurant: %s \n",restaurante->nombre_restaurante);
+		log_info(logger,"Se encontro el restaurant: %s \n",restaurante->nombre_restaurante);
 
 	if(list_is_empty(restaurante->tabla_pedidos))						//Verifico que no este vacia la lista
 		goto envio_de_respuesta;
@@ -292,15 +294,15 @@ void administrar_obtener_pedido(t_header * encabezado,int socket_cliente){
 	pedido=buscar_el_pedido(pedido_solicitado,restaurante->tabla_pedidos);
 
 	if(pedido==NULL){
-		printf("No se encontro el pedido\n");//Se informa que no existe el pedido
+		log_info(logger,"No se encontro el pedido\n");//Se informa que no existe el pedido
 		goto envio_de_respuesta;}
 	else{
-		printf("Se encontro el pedido numero: %d\n",pedido->id_pedido);
+		log_info(logger,"Se encontro el pedido numero: %d\n",pedido->id_pedido);
 
 		int size_lista_pedido=list_size(pedido->comidas_del_pedido);
 		log_info(logger,"El tamaño de la lista del pedido es: %d",size_lista_pedido);
 		size_payload=(SIZE_PAGINA*size_lista_pedido)+sizeof(estado_pedido);
-		log_info(logger,"El size del payload es: %d",size_payload);
+//		log_info(logger,"El size del payload es: %d",size_payload);
 		buffer=malloc(size_payload);
 
 		memcpy(buffer,&(pedido->estado),sizeof(estado_pedido));				//Copio el estado del pedido
@@ -380,6 +382,8 @@ void administrar_plato_listo(t_header * encabezado,int socket_cliente){
 	else{log_info(logger,"Se encontro el plato en el pedido");
 
 		if(adm_comida->esta_en_memoria_principal!=TRUE){
+
+			log_info(logger,"El plato que se quiere modificar, no se encuentra en Memoria Principal. Hay que cargarlo.");
 
 			adm_comida=cargar_pagina_a_memoria_principal(adm_comida);			//Busca frame libre y copia lo q esta en SWAP en principal
 		}
@@ -573,7 +577,7 @@ void       armar_envio_obtener_pedido     (cod_msg tipo_msj,int socket_cliente,i
 	nuevo_encabezado->size=size_payload;
 	nuevo_encabezado->payload=buffer;
 
-	mem_hexdump(buffer, size_payload);
+//	mem_hexdump(buffer, size_payload);
 
 	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
 
@@ -675,7 +679,8 @@ void verificar_pedido_completo(t_pedido_seg * pedido){
 					t_comida * comida=malloc(sizeof(t_comida));
 
 					if(adm_comida->esta_en_memoria_principal!=TRUE){
-
+						printf("\n");
+						log_info(logger,"El plato que se quiere leer no se encuentra en Memoria Principal. Hay que cargarlo.");
 						adm_comida=cargar_pagina_a_memoria_principal(adm_comida);			//Busca frame libre y copia lo q esta en SWAP en principal
 					}
 
@@ -693,9 +698,10 @@ void verificar_pedido_completo(t_pedido_seg * pedido){
 	log_info(logger,"Se verifica que el pedido este completo, el cual esta compuesto por %d  comidas ", list_size(pedido->comidas_del_pedido));
 	comida_pedido=list_find(pedido->comidas_del_pedido,verificar_pedido_terminado);
 
+	printf("\n");
 	if(comida_pedido==NULL){
 		pedido->estado=TERMINADO;
-		log_info(logger,"Se finalizo el pedido. Se encuentra con todos sus platos terminados");
+		log_info(logger,"Se FINALIZO el pedido. Se encuentra con todos sus platos terminados");
 		}
 	else{
 		log_info(logger,"Todavia no se encuentra completo el pedido");
@@ -710,7 +716,7 @@ bool sumar_plato_listo(t_pagina_comida * adm_comida){
 
 	if(comida->cantidad_lista_comida<comida->cantidad_total_comida){
 			comida->cantidad_lista_comida++;
-
+			log_info(logger,"Se va a proceder a sumar el plato listo correspondiente");
 			if(comida->cantidad_lista_comida!=comida->cantidad_total_comida)				//Verifico si se completo la cantidad total del plato
 				log_info(logger,"Ahora la cantidad lista del plato es: %d  con un total para hacer de: %d",comida->cantidad_lista_comida,comida->cantidad_total_comida);
 			else
