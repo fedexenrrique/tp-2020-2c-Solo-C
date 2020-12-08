@@ -1146,7 +1146,7 @@ bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, 
 
 			uint32_t estado = 0;
 
-			memcpy( &estado, header_restaurantes->payload + despla, sizeof(uint32_t) );
+			memcpy( &estado, header_restaurantes->payload + despla, sizeof(uint32_t) );//ERROR, PUEDE PORQ NO ENCONTRO EL PEDIDO
 
 			despla += sizeof(uint32_t);
 
@@ -1513,7 +1513,7 @@ bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
 
 	memcpy( l_payload + despla, p_nom_plato, size_nombre_plato );
 
-	despla += size_nombre_resto;
+	despla += size_nombre_plato;
 
 	memcpy( l_payload + despla, &p_cant_plato, sizeof(uint32_t) );
 

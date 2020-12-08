@@ -798,7 +798,10 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
 		printf("Se encontró asociación.");
 
-		return NULL; // DEBE RETORNAR LA LISTA DE PLATOS
+		if(string_equals_ignore_case(asociacion->nombre_resto,"default"))
+			return g_platos_default;
+
+		return NULL; // DEBE RETORNAR LA LISTA DE PLATOS DE LOS RESTAURANTS QUE NO SON DEFAULT ¿--- Tiene q mandar msj a restaurant o comanda
 
 	} else {
 
@@ -880,7 +883,7 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 
 	despla += sizeof(uint32_t);
 
-	char * nombre_plato = malloc(size_nombre_plato + 1);
+	char * nombre_plato = malloc(size_nombre_plato+1);
 
 	memcpy( nombre_plato, header_recibido->payload + despla, size_nombre_plato );
 

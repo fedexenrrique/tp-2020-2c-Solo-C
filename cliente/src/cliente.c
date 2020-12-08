@@ -52,8 +52,16 @@ int main(int argc, char **argv) {
 				case CONSULTAR_PLATOS:
     		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
 
+							void mostrar_platos(void * elemento){
+								char * plato=(char *)elemento;
+								printf("%s \n",plato);
+							}
     		    	t_list * platos = enviar_04_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
 
+//    		    	if(platos==NULL)log_error(logger,"Me esta llegando la lista de platos nulas");
+
+//    		    	log_info(logger,"La lista de los platos esta: %d",list_is_empty(platos));
+//    		    	list_iterate(platos,mostrar_platos);
     		    	list_destroy_and_destroy_elements( platos, _string_destroyer );
 
 		    		break;
@@ -66,7 +74,7 @@ int main(int argc, char **argv) {
     		    	if ( id_pedido == -1 )
     		    		printf("No se pudo crear el pedido.\n");
     		    	else
-    		    		log_error(logger, "Se creó el pedido con ID '%d'.\n", id_pedido );
+    		    		log_info(logger, "Se creó el pedido con ID '%d'.\n", id_pedido );
 
     		    	break;
     		    
