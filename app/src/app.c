@@ -240,6 +240,9 @@ void manejar_restaurante_conectado( t_header * header_recibido, uint32_t p_socke
 
 void bucle_resto_conectado ( uint32_t sock_aceptado ) {
 
+
+	//Habria que agregar a la lista de los restaurantes
+
 }
 
 void long_term_scheduler( void ) {
@@ -703,19 +706,22 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 	char * l_restaurante_seleccionado = NULL;
 
-	bool _detecta_restaurante_en_lista(void * p_elem) { // detecta si el restaurante está disponible en la APP
+			bool _detecta_restaurante_en_lista(void * p_elem) { // detecta si el restaurante está disponible en la APP
 
-		return string_equals_ignore_case( ((t_info_restarante*)p_elem)->resto_nombre , l_restaurante_seleccionado );
+				return string_equals_ignore_case( ((t_info_restarante*)p_elem)->resto_nombre , l_restaurante_seleccionado );
 
-	}
+			}
 
-	bool _detecta_asociacion_previa_de_id ( void * p_elem ) {
+			bool _detecta_asociacion_previa_de_id ( void * p_elem ) {
 
-		return ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ;
+				return ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ;
 
-	}
+			}
+
+
 
 	list_remove_by_condition( lista_clientes, _detecta_asociacion_previa_de_id ); // Elimina asociación previa
+
 
 	if ( header_recibido->size != 0 && header_recibido->payload != NULL ) { // Restaurante con nombre
 
@@ -776,7 +782,7 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 	} else { // falta payload
 
-		printf( "Cliente Nro.: '%d' no se puede asociar a restaurante predeterminado.\n", header_recibido->id_proceso );
+		printf( "Cliente Nro.: '%d' no se puede asociar a restaurante. Seleccionar un nombre.\n", header_recibido->id_proceso );
 
 		return false;
 
@@ -831,7 +837,7 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 		asociacion->id_pedido = 0;
 
-	}
+	    }
 
 	uint32_t id_pedido_generado = random_id_generator();
 
