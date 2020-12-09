@@ -8,12 +8,10 @@
 #ifndef APP_H_
 #define APP_H_
 
-#include <serializar.h>
 
-#include <commons/log.h>
-#include <commons/config.h>
-#include <commons/memory.h>
-#include "commons/collections/list.h"
+#include "utils.h"
+
+
 
 t_log    * logger;
 t_config * config;
@@ -57,14 +55,6 @@ typedef enum {
 	FINAL             = 7,
 
 } enum_estado;
-
-typedef struct {
-	uint32_t    resto_x;
-	uint32_t    resto_y;
-	char*       resto_nombre;
-	uint32_t    socket_conectado;
-	char**      list_platos;
-} t_info_restarante;
 
 t_list * lista_clientes; // t_cliente_resto
 
@@ -118,6 +108,11 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	sem_t       bloq;
 
 } t_pcb_repartidor;
+
+typedef struct{
+	char *   nombre_resto;
+	uint32_t conexion    ;
+}t_conexion_resto;
 
 t_queue * g_cola_nuevos;
 t_queue * g_cola_listos;

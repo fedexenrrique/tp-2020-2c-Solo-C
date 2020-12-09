@@ -85,7 +85,7 @@ t_config * leer_config(void) {
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_X"     ) ) g_posicion_rest_default_x     = config_get_int_value(config, "POSICION_REST_DEFAULT_X");
 	if ( config_has_property( config, "POSICION_REST_DEFAULT_Y"     ) ) g_posicion_rest_default_y     = config_get_int_value(config, "POSICION_REST_DEFAULT_Y");
 
-	t_info_restarante * resto_default = malloc( sizeof(t_info_restarante) );
+	t_info_restaurante * resto_default = malloc( sizeof(t_info_restaurante) );
 
 	resto_default->resto_x = g_posicion_rest_default_x;
 	resto_default->resto_y = g_posicion_rest_default_y;
@@ -111,7 +111,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 	void * _aux_nombres_restos ( void * p_elem ) {
 
-		return ((t_info_restarante *) p_elem)->resto_nombre;
+		return ((t_info_restaurante *) p_elem)->resto_nombre;
 
 	}
 
@@ -184,6 +184,15 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 		enviar_buffer( socket_aceptado, &aux_head );
 
+		//deserializo la informacion del resto y lo agrego a la lista
+
+		t_info_restaurante * info_resto=malloc(sizeof(t_info_restaurante));
+
+		info_resto=deserializar_info_resto(header_recibido->payload,header_recibido->size);
+
+		list_add(lista_resto_conectados,info_resto);//Agrego el nuevo resto a la lista
+
+		//Esto estaba de antes, tengo q ver que hago
 		while ( recv( socket_aceptado, NULL, 0, MSG_PEEK | MSG_DONTWAIT ) != 0 ) {
 
 			bucle_resto_conectado( socket_aceptado );
@@ -350,43 +359,43 @@ void _aux_long_term_scheduler() {
 
 void short_term_scheduler( void ) {
 
-	t_pcb_repartidor * _sjf_repartidor( void ) {
+			t_pcb_repartidor * _sjf_repartidor( void ) {
 
-		uint32_t distancia_aux = 9999;
+				uint32_t distancia_aux = 9999;
 
-		t_pcb_repartidor * pcb_aux = NULL;
+				t_pcb_repartidor * pcb_aux = NULL;
 
-		bool _aux_sjf_remove_condition( void * p_elem ) {
+				bool _aux_sjf_remove_condition( void * p_elem ) {
 
-			return p_elem == ((void*) pcb_aux);
+					return p_elem == ((void*) pcb_aux);
 
-		}
+				}
 
-		void _aux_sjf ( void * p_elem ) {
+				void _aux_sjf ( void * p_elem ) {
 
-			t_pcb_repartidor * elem = (t_pcb_repartidor *) p_elem;
+					t_pcb_repartidor * elem = (t_pcb_repartidor *) p_elem;
 
-			uint32_t distancia = abs(elem->cliente_x - elem->resto_x) + abs(elem->cliente_y - elem->resto_y)
-					+ ( elem->yendo_a == RESTO ) ?
-							abs(elem->resto_x   - elem->repa_x ) + abs(elem->resto_y   - elem->repa_y) : 0;
+					uint32_t distancia = abs(elem->cliente_x - elem->resto_x) + abs(elem->cliente_y - elem->resto_y)
+							+ ( elem->yendo_a == RESTO ) ?
+									abs(elem->resto_x   - elem->repa_x ) + abs(elem->resto_y   - elem->repa_y) : 0;
 
-			if ( distancia < distancia_aux ) {
+					if ( distancia < distancia_aux ) {
 
-				distancia_aux = distancia;
+						distancia_aux = distancia;
 
-				pcb_aux = elem;
+						pcb_aux = elem;
 
-			}
+					}
 
-		}
+				}
 
-		list_iterate( g_lista_listos, _aux_sjf );
+				list_iterate( g_lista_listos, _aux_sjf );
 
-		list_remove_by_condition( g_lista_listos, _aux_sjf_remove_condition );
+				list_remove_by_condition( g_lista_listos, _aux_sjf_remove_condition );
 
-		return pcb_aux;
+				return pcb_aux;
 
-	}
+			 }
 
 	uint32_t size_cola_listos = 0;
 
@@ -708,7 +717,7 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 			bool _detecta_restaurante_en_lista(void * p_elem) { // detecta si el restaurante está disponible en la APP
 
-				return string_equals_ignore_case( ((t_info_restarante*)p_elem)->resto_nombre , l_restaurante_seleccionado );
+				return string_equals_ignore_case( ((t_info_restaurante*)p_elem)->resto_nombre , l_restaurante_seleccionado );
 
 			}
 
@@ -756,7 +765,7 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
 
 			t_cliente_a_resto * l_confirmar = malloc( sizeof(t_cliente_a_resto) );
 
-			t_info_restarante * resto = list_find ( lista_resto_conectados, _detecta_restaurante_en_lista );
+			t_info_restaurante * resto = list_find ( lista_resto_conectados, _detecta_restaurante_en_lista );
 
 			if ( resto == NULL ) return false;
 
@@ -960,6 +969,8 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 	despla += size_nombre_resto;
 
 	nombre_resto[size_nombre_resto] = '\0';
+
+//aca tendria q mandar msj a restaurant, y confirmar pedido
 
 	printf("\n%s\n", nombre_resto);
 
