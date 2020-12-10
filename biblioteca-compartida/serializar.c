@@ -1287,6 +1287,7 @@ int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto, char * nombre_restaur
 	return conexion;
 }
 
+
 bool enviar_13_finalizar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido){
 
 	bool _recibir_confirmacion_13_finalizar_pedido( uint32_t p_conexion ) {

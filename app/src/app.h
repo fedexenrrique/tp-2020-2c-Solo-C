@@ -42,7 +42,19 @@ pthread_t  g_thread_long_term_scheduler;
 pthread_t  g_thread_medium_term_scheduler;
 pthread_t  g_thread_short_term_scheduler;
 
+t_list * lista_clientes; // t_cliente_resto
+t_queue * queue_confirmados_cliente_resto; // t_cliente_a_resto  los pedido q ya fueron confirmados
+t_list * lista_resto_conectados; // t_info_restarante
+t_queue * g_cola_nuevos; //Es las cola de los repartidores nuevos  t_pcb_repartidor*
+t_queue * g_cola_listos;//Guarda los repartidores(dependiendo FIFO o SJF) t_pcb_repartidor*
+t_list  * g_lista_listos;//
+t_queue * g_cola_bloqueados;
+
+sem_t    sem_nuevos;
+sem_t    sem_listos;
+sem_t    sem_bloq;// Seria un semaforo para que se bloquee el repartidor
 sem_t g_nro_cpus ;
+
 
 typedef enum {
 
@@ -56,11 +68,6 @@ typedef enum {
 
 } enum_estado;
 
-t_list * lista_clientes; // t_cliente_resto
-
-t_queue * queue_confirmados_cliente_resto; // t_cliente_a_resto
-
-t_list * lista_resto_conectados; // t_info_restarante
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t            id_cliente;
@@ -114,14 +121,6 @@ typedef struct{
 	uint32_t conexion    ;
 }t_conexion_resto;
 
-t_queue * g_cola_nuevos;
-t_queue * g_cola_listos;
-t_list  * g_lista_listos;
-t_queue * g_cola_bloqueados;
-
-sem_t    sem_nuevos;
-sem_t    sem_listos;
-sem_t    sem_bloq;// Seria un semaforo para que se bloquee el repartidor
 
 // FUNCIONES
 

@@ -51,3 +51,32 @@ t_info_restaurante * deserializar_info_resto(void * payload,uint32_t size){
 	return info_resto;
 
 }
+
+bool  enviar_confirmar_pedido_a_resto(t_info_restaurante * info_resto,uint32_t id_pedido){
+
+	uint32_t nro_msg=CONFIRMAR_PEDIDO;
+	char * nombre_restaurante=NULL;
+
+
+	//Le mando el nombre en null, para reutilizar la funcion
+	t_header * encabezado=serializar_pedido(nro_msg, nombre_restaurante,id_pedido);
+
+	//int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(info_resto->socket_conectado,encabezado)==FALSE){
+		log_error(logger,"No se pudo enviar el guardado del pedido");
+	    return FALSE;}
+
+	encabezado=recibir_buffer(info_resto->socket_conectado);
+
+	log_info(logger,"Se recibio mensaje del modulo numero: %d",encabezado->id_proceso);
+	log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
+	if(encabezado->nro_msg==OK)return TRUE;
+	return FALSE;
+
+
+}
+
+
+
+

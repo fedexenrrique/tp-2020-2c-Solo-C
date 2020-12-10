@@ -853,7 +853,7 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	uint32_t id_pedido_generado = random_id_generator();
 
-	asociacion->id_pedido = id_pedido_generado;
+	asociacion->id_pedido = id_pedido_generado;//-------Aca tengo q pedirle el id a REATAURANTE
 
 	// "GUARDAR_PEDIDO" Hacia Comanda.
 
@@ -952,8 +952,25 @@ void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, cha
 bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	uint32_t despla = 0;
-
 	uint32_t id_pedido = 0;
+	bool confirmacion=FALSE;
+	char * nombre_resto;
+
+				bool _control_existe_pedido ( void * p_elem ) {//Aca le agregue la comprobacion si  del nombre del resto tambien
+
+					return ((t_cliente_a_resto*)p_elem)->id_pedido == id_pedido && string_equals_ignore_case(((t_cliente_a_resto*)p_elem)->nombre_resto ,nombre_resto) ;
+
+					}
+
+
+				bool buscar_resto(void * elemento){
+
+					t_info_restaurante * resto=(t_info_restaurante*)elemento;
+
+					if(string_equals_ignore_case(resto->resto_nombre,nombre_resto))
+						return TRUE;
+					return FALSE;
+				}
 
 	memcpy( &id_pedido, header_recibido->payload + despla, sizeof(uint32_t) );
 
@@ -965,7 +982,7 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	despla += sizeof(uint32_t);
 
-	char * nombre_resto = malloc(size_nombre_resto + 1);
+	nombre_resto = malloc(size_nombre_resto + 1);
 
 	memcpy( nombre_resto, header_recibido->payload + despla, size_nombre_resto );
 
@@ -973,25 +990,31 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	nombre_resto[size_nombre_resto] = '\0';
 
-//aca tendria q mandar msj a restaurant, y confirmar pedido
-
 	printf("\n%s\n", nombre_resto);
 
-	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido );
+	//aca tendria q mandar msj a restaurant, y confirmar pedido
+
+	t_info_restaurante * resto=list_find(lista_resto_conectados,buscar_resto);
+
+	confirmacion=enviar_confirmar_pedido_a_resto(resto,id_pedido);
+	if(confirmacion==FALSE){
+		printf( "No se pudo confirmar el pedido.\n" );
+		return confirmacion;
+	}
+
+
+
+	confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido );
 
 	if (confirmacion) {
 
 		printf( "Se confirmó el pedido.\n" );
 
-	   } else printf( "No se pudo confirmar el pedido.\n" );
+	   } else{ printf( "No se pudo confirmar el pedido.\n" );
+	   	   	   	return confirmacion;   }
 
-	confirmacion = TRUE;
+	//confirmacion = TRUE;
 
-				bool _control_existe_pedido ( void * p_elem ) {
-
-					return ((t_cliente_a_resto*)p_elem)->id_pedido == id_pedido ;
-
-					}
 
 	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_pedido );
 
@@ -999,15 +1022,15 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 		printf("Se requiere asociar un restaurante y crear un pedido previamente a solicitar un plato.");
 
-		return false;
+		return FALSE;
 
 	   } else {
 
-		agregar_pedid_a_planificacion (asociacion);
+		agregar_pedid_a_planificacion (asociacion);  //Agrego pedido a la cola de confirmados cliente_resto
 
 	   }
 
-	return confirmacion;
+	return TRUE;
 
 }
 

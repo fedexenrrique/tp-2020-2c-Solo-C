@@ -209,7 +209,7 @@ int        enviar_guardar_pedido   (char* p_ip,char* p_puerto,char * nombre_rest
 
 int        enviar_obtener_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante,uint32_t id_pedido);//                 ""
 
-bool  enviar_09_confirmar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
+bool  enviar_09_confirmar_pedido     (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
 
 bool enviar_09_confirmar_pedido_modulos ( char* p_ip, char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido );
 
