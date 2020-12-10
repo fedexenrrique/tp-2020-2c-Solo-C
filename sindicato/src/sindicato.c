@@ -313,7 +313,8 @@ tMensajeInfoRestaurante *leerBloquesResto(int bloqueInicial,int sizeResto,t_list
 		log_info(logger,"Leyendo bloques");
 
 		for (i=0; i<cantBloquesALeer;i++){
-			bloqueActual=atoi(list_get(bloquesAsigandosAResto,i));
+			//bloqueActual=atoi(list_get(bloquesAsigandosAResto,i));
+			bloqueActual=list_get(bloquesAsigandosAResto,i);
 			char* pathBloqueActual=malloc(strlen(pathBloques)+30);
 			strcpy(pathBloqueActual,pathBloques);
 			string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
@@ -410,7 +411,8 @@ tMensajeInfoRestaurante *obtenerInfoRestaurante(char* nombreResto){
 
 		sizeResto= atoi(string_substring_from(lineasArchivo[0], 5));
 		//bloqueInicial = atoi(string_substring_from(lineasArchivo[1], 14));
-		bloqueInicial=atoi(list_get(bloquesAsigandosAResto,0));
+		//bloqueInicial=atoi(list_get(bloquesAsigandosAResto,0));
+		bloqueInicial=list_get(bloquesAsigandosAResto,0);
 
 		infoResto=leerBloquesResto(bloqueInicial,sizeResto,bloquesAsigandosAResto);
 
@@ -667,7 +669,8 @@ tMensajeInfoPedido *leerBloquesPedido(int bloqueInicial,int sizePedido,t_list* b
 	if(e==0){
 		log_info(logger,"Leyendo bloques");
 		for (i=0; i<cantBloquesALeer;i++){
-			bloqueActual=atoi(list_get(bloquesAsigandosAPedido,i));
+			//bloqueActual=atoi(list_get(bloquesAsigandosAPedido,i));
+			bloqueActual=list_get(bloquesAsigandosAPedido,i);
 			char* pathBloqueActual=malloc(strlen(pathBloques)+strlen(string_itoa(bloqueActual))+4+1);
 			int offsetPathBloque=0;
 			//strcpy(pathBloqueActual,pathBloques);
@@ -703,7 +706,8 @@ tMensajeInfoPedido *leerBloquesPedido(int bloqueInicial,int sizePedido,t_list* b
 					//stringInfo[offset]='\0';
 
 				}else {
-					int bloqueSiguiente=atoi(list_get(bloquesAsigandosAPedido,i+1));
+					//int bloqueSiguiente=atoi(list_get(bloquesAsigandosAPedido,i+1));
+					int bloqueSiguiente=list_get(bloquesAsigandosAPedido,i+1);
 					char* newMap=malloc(strlen(map)-strlen(string_itoa(bloqueSiguiente))+1);
 					int offsetMap=0;
 					int offsetStringInfo=0;
@@ -787,7 +791,7 @@ tMensajeInfoPedido *obtenerInfoPedido(char* nombreResto,char* nombrePedido,int r
 	idPedido[offset]='\0';
 
 	bloquesAsigandosAPedido=dictionary_get(diccionarioBloquesAsignadosAPedidos,idPedido);
-
+//	log_warning(logger,"%s",list_get(bloquesAsigandosAPedido,0));
 
 	e=stat(pathArchivoInfoActual,&infoPathPedido);
 	e1=stat(pathRestaurante,&infoPathRestaurante);
@@ -1003,8 +1007,9 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 
 		while (arrayPlatos[i] != NULL) {
 			if (strcmp(arrayPlatos[i], nombrePlato) == 0) {
-				char* cantidadNueva = string_itoa(
-						atoi(arrayCantidadesListas[i]) + cantidad);
+				//char* cantidadNueva = string_itoa(atoi(arrayCantidadesListas[i]) + cantidad);
+				char* cantidadNueva = string_itoa(atoi(arrayCantidadesListas[i]) + 1);
+
 				arrayCantidadesListas[i] = cantidadNueva;
 			}
 			i++;
@@ -1043,8 +1048,43 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 		infoActualizada->precioTotal = info->precioTotal + (precioPlatoActual * cantidad);
 
 	 }else if(strcmp(operacion,"CONFIRMAR_PEDIDO")==0){
+		infoActualizada->estadoPedido = malloc(strlen("confirmado") + 1);
+		memcpy(infoActualizada->estadoPedido, "confirmado",strlen("confirmado"));
+		infoActualizada->estadoPedido[strlen("confirmado")] = '\0';
 
-	 }else{
+		infoActualizada->listaPlatos = malloc(strlen(info->listaPlatos) + 1);
+		memcpy(infoActualizada->listaPlatos, info->listaPlatos,strlen(info->listaPlatos));
+		infoActualizada->listaPlatos[strlen(info->listaPlatos)] = '\0';
+
+		infoActualizada->cantidadPlatos = malloc(strlen(info->cantidadPlatos) + 1);
+		memcpy(infoActualizada->cantidadPlatos, info->cantidadPlatos,strlen(info->cantidadPlatos));
+		infoActualizada->cantidadPlatos[strlen(info->cantidadPlatos)] = '\0';
+
+		infoActualizada->cantidadLista = malloc(strlen(info->cantidadLista) + 1);
+		memcpy(infoActualizada->cantidadLista, info->cantidadLista,strlen(info->cantidadLista));
+		infoActualizada->cantidadLista[strlen(info->cantidadLista)] = '\0';
+
+		infoActualizada->precioTotal=info->precioTotal;
+
+
+	 }else{//TERMINAR PEDIDO
+		infoActualizada->estadoPedido = malloc(strlen("terminado") + 1);
+		memcpy(infoActualizada->estadoPedido, "terminado",strlen("terminado"));
+		infoActualizada->estadoPedido[strlen("terminado")] = '\0';
+
+		infoActualizada->listaPlatos = malloc(strlen(info->listaPlatos) + 1);
+		memcpy(infoActualizada->listaPlatos, info->listaPlatos,strlen(info->listaPlatos));
+		infoActualizada->listaPlatos[strlen(info->listaPlatos)] = '\0';
+
+		infoActualizada->cantidadPlatos = malloc(strlen(info->cantidadPlatos) + 1);
+		memcpy(infoActualizada->cantidadPlatos, info->cantidadPlatos,strlen(info->cantidadPlatos));
+		infoActualizada->cantidadPlatos[strlen(info->cantidadPlatos)] = '\0';
+
+		infoActualizada->cantidadLista = malloc(strlen(info->cantidadLista) + 1);
+		memcpy(infoActualizada->cantidadLista, info->cantidadLista,strlen(info->cantidadLista));
+		infoActualizada->cantidadLista[strlen(info->cantidadLista)] = '\0';
+
+		infoActualizada->precioTotal = info->precioTotal;
 
 	 }
 
@@ -1169,8 +1209,11 @@ int grabarNuevoPedidoActualizado(char* stringAGrabar,char* nombreRestaurante,cha
 	nombreRestoPedido[offset]='\0';
 
 	t_list* bloquesAsigandosAPedido=dictionary_get(diccionarioBloquesAsignadosAPedidos,nombreRestoPedido);
+	log_info(logger,"%d",list_get(bloquesAsigandosAPedido,0));
 	//int cantPunterosSiguientes=strlen(stringAGrabar)/infoBloques->tamBloques;
-	int resultadoEscritura=escribirBloques(stringAGrabar,strlen(stringAGrabar), atoi(list_get(bloquesAsigandosAPedido,0)),nombrePedido,bloquesAsigandosAPedido,"PEDIDO","ACTUALIZAR",infoBloques, nombreRestoPedido);
+	//int bloqueInicial=atoi(list_get(bloquesAsigandosAPedido,0));
+	int bloqueInicial=list_get(bloquesAsigandosAPedido,0);
+	int resultadoEscritura=escribirBloques(stringAGrabar,strlen(stringAGrabar),bloqueInicial ,nombrePedido,bloquesAsigandosAPedido,"PEDIDO","ACTUALIZAR",infoBloques, nombreRestoPedido);
 
 /*
 	if((strlen(stringAGrabar)%infoBloques->tamBloques)==0){ //Caso1: la cantidad bytes a escribir es multiplo del tamaño de los bloques
@@ -1251,9 +1294,26 @@ int confirmarPedido(char* nombreRestaurante,char* nombrePedido,char* nombrePlato
 
 	if(resultado>0){
 		if(string_equals_ignore_case(info->estadoPedido,"pendiente")){
-			char* stringAGrabar=armarStringNuevoAGrabar(info,nombrePlato,cantidad,nombreRestaurante,"AGREGAR_PLATO");
+			char* stringAGrabar=armarStringNuevoAGrabar(info,nombrePlato,cantidad,nombreRestaurante,"CONFIRMAR_PEDIDO");
 			resultado=grabarNuevoPedidoActualizado(stringAGrabar,nombreRestaurante,nombrePedido);
-		}
+		}else resultado=-1;
+	}
+	return resultado;
+
+}
+
+int finalizarPedido(char* nombreRestaurante,char* nombrePedido,char* nombrePlato, int cantidad ){
+	tMensajeInfoPedido* info=malloc(sizeof(tMensajeInfoPedido));
+	int resultado=1;
+
+	//char* cadenaInfoPedido=malloc((14*5)*5)
+	info=obtenerInfoPedido(nombreRestaurante,nombrePedido,resultado);
+
+	if(resultado>0){
+		if(string_equals_ignore_case(info->estadoPedido,"confirmado")){
+			char* stringAGrabar=armarStringNuevoAGrabar(info,nombrePlato,cantidad,nombreRestaurante,"FINALIZAR_PEDIDO");
+			resultado=grabarNuevoPedidoActualizado(stringAGrabar,nombreRestaurante,nombrePedido);
+		}else resultado=-1;
 	}
 	return resultado;
 
@@ -1276,7 +1336,7 @@ int obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint3
 
 				if(e==0){
 
-					FILE* archivoInfoPedido=fopen(pathRecurso,"r");
+					FILE* archivoInfoPedido=fopen(pathRecurso,"r+");
 
 					char* map=malloc(info.st_size+1);
 					map=mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archivoInfoPedido), 0);
@@ -1286,8 +1346,8 @@ int obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint3
 					map[info.st_size]='\0';
 
 					char** propiedades=string_n_split(map,2,"\n");
-					bloqueInicial=atoi(propiedades[1]);
-					sizePedido=atoi(propiedades[0]);
+					bloqueInicial=atoi(propiedades[1]+14);
+					sizePedido=atoi(propiedades[0]+5);
 
 					if (munmap(map,info.st_size) == -1) {
 								log_error(logger,"Error al liberar memoria mapeada");
@@ -1303,11 +1363,12 @@ int obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint3
 
 }
 
-int aumentarCantidadPlatiListo(char* nombreRestaurante, uint32_t idPedido,char* nombrePlato){
+int aumentarCantidadPlatoListo(char* nombreRestaurante, uint32_t idPedido,char* nombrePlato){
 	char* pathRestaurante= malloc(strlen(pathRestaurantes)+strlen(nombreRestaurante)+1);
 	struct stat infoResto;
 	int eResto=0;
 	uint32_t sizePedido=0;
+	tInfoArchivo* infoArchivo=malloc(sizeof(tInfoArchivo));
 	char* idPedidoYNombreResto=malloc(strlen(nombreRestaurante)+strlen(string_itoa(idPedido))+1+1);
 	memcpy(idPedidoYNombreResto,nombreRestaurante,strlen(nombreRestaurante));
 	memcpy(idPedidoYNombreResto+strlen(nombreRestaurante),"-",1);
@@ -1315,15 +1376,20 @@ int aumentarCantidadPlatiListo(char* nombreRestaurante, uint32_t idPedido,char* 
 	idPedidoYNombreResto[strlen(nombreRestaurante)+1+strlen(string_itoa(idPedido))]='\0';
 	t_list* bloquesAsigandosAPedido=dictionary_get(diccionarioBloquesAsignadosAPedidos,idPedidoYNombreResto);
 
+	int offset=0;
 	memcpy(pathRestaurante,pathRestaurantes,strlen(pathRestaurantes));
-	memcpy(pathRestaurante+strlen(pathRestaurantes), nombreRestaurante,strlen(nombreRestaurante));
+	offset+=strlen(pathRestaurantes);
+	memcpy(pathRestaurante+offset, nombreRestaurante,strlen(nombreRestaurante));
+	offset+=strlen(nombreRestaurante);
+	memcpy(pathRestaurante+offset,"/",1);
+	offset++;
+	pathRestaurante[offset]='\0';
 
 	eResto=stat(pathRestaurante,&infoResto);
 
 	if(eResto==0){
 		struct stat infoPathPedido;
 		int ePedido=0;
-		memcpy(pathRestaurante+strlen(nombreRestaurante),"/",1);
 		char* pathInfoPedido=malloc(strlen(pathRestaurante)+strlen(string_itoa(idPedido))+5+1);
 		int offsetArchivoPedido=0;
 		memcpy(pathInfoPedido+offsetArchivoPedido,pathRestaurante,strlen(pathRestaurante));
@@ -1336,7 +1402,7 @@ int aumentarCantidadPlatiListo(char* nombreRestaurante, uint32_t idPedido,char* 
 
 		ePedido=stat(pathInfoPedido,&infoPathPedido);
 
-		if(ePedido){
+		if(ePedido==0){
 			int bloqueInicial=obtenerBloqueInicial("PEDIDO",string_itoa(idPedido),pathInfoPedido,sizePedido);
 
 			tMensajeInfoPedido* infoPedido=malloc(sizeof(tMensajeInfoPedido));
@@ -1350,7 +1416,7 @@ int aumentarCantidadPlatiListo(char* nombreRestaurante, uint32_t idPedido,char* 
 
 
 		}else{
-			log_error(logger,"El pedido no exciste dentro del restaurante solicitado");
+			log_error(logger,"El pedido no existe dentro del restaurante solicitado");
 			return -2;
 		}
 
@@ -1544,6 +1610,9 @@ void deserializarPayloadPedido(char* payload,tSolicitudPedido* solicitudPedido){
 	offset += sizeof(sizeof(uint32_t));
 	memcpy(solicitudPedido->nombreRestaurante, payload + offset,solicitudPedido->sizeNombreRestaurante);
 	offset += solicitudPedido->sizeNombreRestaurante;
+	memcpy(&solicitudPedido->idPedido, payload + offset,sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
 
 
 }
@@ -1864,7 +1933,7 @@ void* handleConexion(void* arguments) {
 			deserializarPayloadPlatoListo(headerRecibido->payload,solicitudPlatoListo);
 			int resultadoOperacion=1;
 
-			resultadoOperacion=aumentarCantidadPlatiListo(solicitudPlatoListo->nombreRestaurante,solicitudPlatoListo->idPedido,solicitudPlatoListo->nombrePlatoListo);
+			resultadoOperacion=aumentarCantidadPlatoListo(solicitudPlatoListo->nombreRestaurante,solicitudPlatoListo->idPedido,solicitudPlatoListo->nombrePlatoListo);
 
 			t_header* header=serializarRespuestaPlatoListo(resultadoOperacion);
 			if (enviar_buffer(socketCliente, header) == false) {
@@ -1906,6 +1975,23 @@ void* handleConexion(void* arguments) {
 			break;
 		}
 
+		case FINALIZAR_PEDIDO:{
+		tSolicitudPedido* solicitudPedido = malloc(sizeof(tSolicitudPedido));
+
+		deserializarPayloadPedido(headerRecibido->payload, solicitudPedido);
+
+		int resultado = finalizarPedido(solicitudPedido->nombreRestaurante,string_itoa(solicitudPedido->idPedido), NULL, 0);
+		t_header* header = malloc(sizeof(t_header));
+
+		header = serializarRespuestaOperacionPlatoNuevo(resultado);
+
+		if (enviar_buffer(socketCliente, header) == false) {log_error(logger,
+			"No se pudo enviar la respuesta al pedido de info del restaurante");
+		}
+
+
+			break;
+		}
 
 
 
@@ -2078,11 +2164,30 @@ int main(int argc, char *argv[]) {
 	hardcodearPedido(pedido);
 
 
-	//crearPedido(pedido,"LaParri","Mila1",infoBloques,bitMap);
+	//crearPedido(pedido,"LaParri","1",infoBloques,bitMap);
 
 	//char* nombreResto=malloc(30);
 	//strcpy(nombreResto,"Resto1");
-	//agregarPlatoAPedido("LaParri","Mila1","Ensalada3",2);
+	//agregarPlatoAPedido("LaParri","1","MilaPizzaConPapas",2);
+
+	//PRUEBA MENSAJES:
+	//CONSULTA PLATOS: OK
+
+/*	tMensajeInfoRestaurante *infoRestaurante=malloc(sizeof(tMensajeInfoRestaurante));
+	tRespuestaConsultaPlatos* respuestaConsultaPlatos=malloc(sizeof(tRespuestaConsultaPlatos));
+	infoRestaurante=obtenerInfoRestaurante("LaParri");
+	log_warning(logger,"%s",infoRestaurante->platos);*/
+
+	//COMNFIRMAR PEDIDO: OK
+	//TODO://AGREGAR VALIDACION DE QUE SI YA SE ENCUENTRA CONFIRMADO
+	/*tSolicitudPedido* solicitudPedido=malloc(sizeof(tSolicitudPedido));
+	//deserializarPayloadPedido(headerRecibido->payload,solicitudPedido);
+	int resultado=confirmarPedido("LaParri",string_itoa(1),NULL,0);*/
+	//PLATO LISTO
+	tSolicitudPlatiListo* solicitudPlatoListo=malloc(sizeof(tSolicitudPlatiListo));
+	int resultadoOperacion=1;
+	resultadoOperacion=aumentarCantidadPlatoListo("LaParri",1,"Empanadas");
+
 
 	levantarConsola(infoBloques);
 

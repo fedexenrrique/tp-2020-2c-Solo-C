@@ -11,8 +11,15 @@
 //#include "serializar.h"
 
 #include "utils.h"
+#define PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES "./bloquesAsignadosARestos.bin"
+#define PATH_BLOQUES_ASIGNADOS_A_RECETAS 	  "./bloquesAsignadosARecetas.bin"
+#define PATH_BLOQUES_ASIGNADOS_A_PEDIDOS 	  "./bloquesAsignadosAPedidos.bin"
 
+typedef struct{
+	uint32_t size;
+	uint32_t bloqueInicial;
 
+}tInfoArchivo;
 typedef struct{
 
 	int idPedido;

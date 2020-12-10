@@ -273,8 +273,8 @@ void cargarBloquesAsigandosAResto(){
 	struct stat info;
 	int e=0;
 	char* pathArchivoBloquesAsignados= malloc(100);
-	strcpy(pathArchivoBloquesAsignados,"/home/utnso/tp-2020-2c-Solo-C/sindicato/");
-	string_append(&pathArchivoBloquesAsignados,"bloquesAsignadosARestos.bin");
+	strcpy(pathArchivoBloquesAsignados,PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES);
+	//string_append(&pathArchivoBloquesAsignados,"bloquesAsignadosARestos.bin");
 
 	e=stat(pathArchivoBloquesAsignados, &info);
 	int i=0; //Para recorrer los restaurantes
@@ -297,9 +297,10 @@ void cargarBloquesAsigandosAResto(){
 			char** bloquesResto= string_split(propiedadesResto[1],","); //lista de bloques separados por coma
 
 			while(bloquesResto[j]!=NULL){
-				list_add(bloquesAsignadosAResto,bloquesResto[j]);
+				list_add(bloquesAsignadosAResto,atoi(bloquesResto[j]));
 				j++;
 			}
+			//log_warning(logger,"%d",atoi(list_get(bloquesAsignadosAResto,0)));
 			dictionary_put(diccionarioBloquesAsignadosARestos,propiedadesResto[0],bloquesAsignadosAResto);
 			i++;
 			j=0;
@@ -327,8 +328,8 @@ void cargarBloquesAsigandosAPedidos(){
 	struct stat info;
 	int e=0;
 	char* pathArchivoBloquesAsignados= malloc(100);
-	strcpy(pathArchivoBloquesAsignados,"/home/utnso/tp-2020-2c-Solo-C/sindicato/");
-	string_append(&pathArchivoBloquesAsignados,"bloquesAsignadosAPedidos.bin");
+	strcpy(pathArchivoBloquesAsignados,PATH_BLOQUES_ASIGNADOS_A_PEDIDOS);
+	//string_append(&pathArchivoBloquesAsignados,"bloquesAsignadosAPedidos.bin");
 
 	e=stat(pathArchivoBloquesAsignados, &info);
 	int i=0; //Para recorrer los restaurantes
@@ -345,13 +346,14 @@ void cargarBloquesAsigandosAPedidos(){
 		while(pedidos[i]!=NULL){
 			t_list* bloquesAsignadosAPedido=list_create();
 
-			char** propiedadesPedido= string_split(pedidos[i]," "); //propiedades= Nombre + bloques
+			char** propiedadesPedido= string_n_split(pedidos[i],2," "); //propiedades= Nombre + bloques
 			char** bloquesPedido= string_split(propiedadesPedido[1],","); //lista de bloques separados por coma
 
 			while(bloquesPedido[j]!=NULL){
-				list_add(bloquesAsignadosAPedido,bloquesPedido[j]);
+				list_add(bloquesAsignadosAPedido,atoi(bloquesPedido[j]));
 				j++;
 			}
+			//log_warning(logger,"%d",atoi(list_get(bloquesAsignadosAPedido,0)));
 			dictionary_put(diccionarioBloquesAsignadosAPedidos,propiedadesPedido[0],bloquesAsignadosAPedido);
 			i++;
 			j=0;
@@ -444,23 +446,22 @@ int buscarBloqueLibre(tInfoBloques* infoBloques){
 	return i;
 
 }
-int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignados,char*idPedido){
+int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignados,char*idPedido,char* tipoRecurso, char*nombreRecurso){
 	struct stat info;
 	int e=0;
 	int resultado=1;
 	int i=0;
 	e=stat(pathBloques,&info);
-	t_dictionary* bloquesAsignados=dictionary_create();
+	int registroEncontrado=0;
 	if (e == 0) {
-		FILE* archivoBloquesAsignados = fopen(
-				pathBloques, "rw+");
-		int fdArchivo = fileno(archivoBloquesAsignados);
-		char* map = malloc(info.st_size + 1);
-		int offsetActualizacion = info.st_size;
+	FILE* archivoBloquesAsignados = fopen(pathBloques, "rw+");
+	int fdArchivo = fileno(archivoBloquesAsignados);
+	char* map = malloc(info.st_size + 1);
+	int offsetFinArchivo = info.st_size;
 
 
 
-		if (info.st_size == 0) {
+		if (info.st_size == 0) {//EL ARCHIVO ESTA VACIO, SE GRABA DIRECTAMENTE
 			if (fwrite(lineaArchivoBloquesAsignados,
 					strlen(lineaArchivoBloquesAsignados), 1,
 					archivoBloquesAsignados) == 0) {
@@ -468,47 +469,91 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 						"Error al escribir en el archivo info de restaurante");
 				resultado = -3;
 			}
-		} else {
+		} else {//ACA DEBERIA ENTRAR PARA LOS PEDIDOS Y RESTAURANTES,ACTUALIZA SUS BLOQUES ASIGNADOS. SE AGREGA AL MAP LOS NUEVOS BLOQUES ASIGNADOS
 			map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchivo, 0);
-			map[offsetActualizacion] = '\n';
-			offsetActualizacion++;
-
+			map[offsetFinArchivo] = '\n';
+			offsetFinArchivo++;
 			char** lineasArchivo=string_split(map,"\n");
 			while(lineasArchivo[i]!=NULL){
+				int offsetActualizacion=0;
+
 				char** propiedades=string_split(lineasArchivo[i]," ");
-				dictionary_put(bloquesAsignados,propiedades[0],propiedades[1]);
+				//dictionary_put(bloquesAsignados,propiedades[0],propiedades[1]);
+				if(idPedido!=NULL){/// PARA LOS PEDIDOS
+					if(strcmp(propiedades[0],idPedido)==0){
+						registroEncontrado=1;
+										//offsetActualizacion=strlen(propiedades[0])+1;
+						memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
+						//msync(map, info.st_size, MS_SYNC);
+						if(-1==ftruncate(fileno(archivoBloquesAsignados),info.st_size)){
+							log_error(logger,"Error al truncar el archivo");
+
+						}
+						if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
+								log_error(logger,"Error al escribir en el archivo info de restaurante");
+								resultado = 0;
+							}
+						break;
+
+					}
+
+				}else{ //ACA PARA LOS RESTAURANTES
+					if(strcmp(propiedades[0],nombreRecurso)==0){
+						//offsetActualizacion=strlen(propiedades[0])+1;
+						registroEncontrado=1;
+						memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
+						//msync(map, info.st_size, MS_SYNC);
+						if(-1==ftruncate(fileno(archivoBloquesAsignados),info.st_size)){
+																log_error(logger,"Error al truncar el archivo");
+
+						}
+						if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
+								log_error(logger,"Error al escribir en el archivo info de restaurante");
+						resultado = 0;
+						}
+						break;
+					}
+				}
+				offsetActualizacion=offsetActualizacion+strlen(lineasArchivo[i]);
 				i++;
 			}
 
-			if(dictionary_has_key(bloquesAsignados,idPedido)){
+			if(lineasArchivo[i]==NULL && registroEncontrado==0){ //EL archivo no estaba vacio pero tampoco se encontro el recurso. Se agrega al final
+
+							memcpy(map + offsetFinArchivo, lineaArchivoBloquesAsignados,
+									strlen(lineaArchivoBloquesAsignados));
+
+							/*if (msync(map, info.st_size, MS_SYNC) == -1) {
+							 log_error(logger, "Error al actualizar archivo mapeado...");
+							 resultado=-1;
+							 }*/
+							if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
+								log_error(logger,
+										"Error al escribir en el archivo info de restaurante");
+								resultado = 0;
+							}
+
+							if (munmap(map, info.st_size) == -1) {
+								log_error(logger, "Error al liberar memoria mapeada");
+								resultado = -1;
+								//exit(EXIT_FAILURE);
+							}
+							//free(map);
+
+					}
+
+
+			/*if(dictionary_has_key(bloquesAsignados,idPedido)){
 				char* listaBloquesActual=dictionary_get(bloquesAsignados,idPedido);
 				char** propiedadAActualizar=string_split(lineaArchivoBloquesAsignados," ");
 				char*listaBloquesActualizados=propiedadAActualizar[1];
 				dictionary_put(bloquesAsignados,idPedido,listaBloquesActualizados);
-			}else{
+				msync(map, info.st_size, MS_SYNC);*/
 
-			memcpy(map + offsetActualizacion, lineaArchivoBloquesAsignados,
-					strlen(lineaArchivoBloquesAsignados));
 
-			/*if (msync(map, info.st_size, MS_SYNC) == -1) {
-				log_error(logger, "Error al actualizar archivo mapeado...");
-				resultado=-1;
-			}*/
-			if(fwrite(map,strlen(map),1,archivoBloquesAsignados)==0){
-				log_error(logger,"Error al escribir en el archivo info de restaurante");
-				resultado=0;
-			}
-			}
-			if (munmap(map, info.st_size) == -1) {
-				log_error(logger, "Error al liberar memoria mapeada");
-				resultado=-1;
-				//exit(EXIT_FAILURE);
-			}
-			//free(map);
-
-		}
 		fclose(archivoBloquesAsignados);
 
+	}
 	}
 
 	return resultado;
@@ -516,19 +561,24 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 
 void actualizarArchivoInfoPedido(char* idPedido, int sizeNuevo){
 	char** restoPedido=string_split(idPedido,"-");
-
-	char* pathInfoPedido=malloc(strlen(pathRestaurantes)+strlen(restoPedido[0])+1+strlen(restoPedido[1]+5+1));
+	char* nombreResto=malloc(strlen(restoPedido[0])+1);
 	char* nombrePedido=malloc(strlen(restoPedido[1])+1);
+
+	memcpy(nombreResto,restoPedido[0],strlen(restoPedido[0]));
+	memcpy(nombrePedido,restoPedido[1],strlen(restoPedido[1]));
+
+
+	char* pathInfoPedido=malloc(strlen(pathRestaurantes)+strlen(nombreResto)+1+strlen(nombrePedido)+5+1);
 
 	int offsetPath=0;
 	memcpy(pathInfoPedido,pathRestaurantes,strlen(pathRestaurantes));
 	offsetPath+=strlen(pathRestaurantes);
-	memcpy(pathInfoPedido+offsetPath,restoPedido[0],strlen(restoPedido[0]));
-	offsetPath+=strlen(restoPedido[0]);
+	memcpy(pathInfoPedido+offsetPath,restoPedido[0],strlen(nombreResto));
+	offsetPath+=strlen(nombreResto);
 	memcpy(pathInfoPedido+offsetPath,"/",1);
 	offsetPath++;
-	memcpy(pathInfoPedido+offsetPath,restoPedido[1],strlen(restoPedido[1]));
-	offsetPath+=strlen(restoPedido[1]);
+	memcpy(pathInfoPedido+offsetPath,restoPedido[1],strlen(nombrePedido));
+	offsetPath+=strlen(nombrePedido);
 	memcpy(pathInfoPedido+offsetPath,".AFIP",strlen(".AFIP"));
 	offsetPath+=strlen(".AFIP");
 	pathInfoPedido[offsetPath]='\0';
@@ -537,12 +587,20 @@ void actualizarArchivoInfoPedido(char* idPedido, int sizeNuevo){
 	int e=stat(pathInfoPedido,&info);
 
 	if(e==0){
-		FILE* archivoInfoPedido=fopen(pathInfoPedido,"rw");
-		char* map=malloc(info.st_size+1);
-		map=mmap(0,info.st_size,PROT_READ | PROT_WRITE, MAP_SHARED, fileno(archivoInfoPedido), 0);
-		map[info.st_size]='\0';
-		char** lineasArchivInfo=string_split(map,"\n");
+		FILE* archivoInfoPedido=fopen(pathInfoPedido,"rw+");
+		char* map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archivoInfoPedido), 0);
 
+
+//		FILE* archivoInfoPedido=fopen(archivoInfoPedido,"r+");
+
+		if (map == MAP_FAILED) {
+			close(fileno(archivoInfoPedido));
+			perror("Error mapeando el archivo");
+			exit(EXIT_FAILURE);
+
+		}
+		map[info.st_size]='\0';
+		//char** lineasArchivInfo=string_split(map,"\n");
 		memcpy(map+5,string_itoa(sizeNuevo),strlen(string_itoa(sizeNuevo)));
 
 		msync(map, info.st_size, MS_SYNC);
@@ -552,6 +610,7 @@ void actualizarArchivoInfoPedido(char* idPedido, int sizeNuevo){
 
 	free(restoPedido);
 	free(pathInfoPedido);
+	free(nombreResto);
 	free(nombrePedido);
 
 }
@@ -563,12 +622,15 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 	int i;
 	int j;
 	int resultado=1;
-	char* bloqueSiguienteNuevo=malloc(sizeof(uint32_t));
+	int tamanioNuevoTotal=0;
+	int bloqueSiguienteNuevo=0;
 
-
+	log_info(logger,"%d",list_get(bloquesAsignadosARecurso,0));
 	uint32_t cantBloquesAEscribir=0;
 
-	char* stringBloquesAsignados=string_new();
+	char* stringBloquesAsignados=malloc((list_size(bloquesAsignadosARecurso)*sizeof(uint32_t))+(list_size(bloquesAsignadosARecurso)-1)+1);
+	//char* stringBloquesAsignados=string_new();
+	//char* stringBloquesAsignados=malloc(50*sizeof(char));
 	strcpy(stringBloquesAsignados,"");
 
 	//AGREGAR VERIFICACION DE BLOQUES LIBRES EN LAS SIGUINTES CONDICIONES
@@ -616,8 +678,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 			if(bloquesExtra>0){
 				for(int i=0;i<bloquesExtra;i++){ //asigno n bloques mas
-					bloqueSiguienteNuevo=string_itoa(buscarBloqueLibre(infoBloques));
-					list_add(bloquesAsignadosARecurso,(char*)bloqueSiguienteNuevo);
+					bloqueSiguienteNuevo=buscarBloqueLibre(infoBloques);
+					list_add(bloquesAsignadosARecurso,bloqueSiguienteNuevo);
 					//free(bloqueSiguienteNuevo);
 				}
 				//En este caso tengo que sacar bloques, en caso que se hayan eliminado elementos del string y se redujera su tamaño
@@ -625,7 +687,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 			}else if (bloquesExtra<0){
 				//int bloqueActualAEliminar=atoi(list_get(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1));
 				for(int i=0;(list_size(bloquesAsignadosARecurso)-bloquesExtra);i++){ //asigno n bloques mas
-					int bloqueAEliminar=atoi(list_get(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1-i));
+					int bloqueAEliminar=list_get(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1-i);
 					 list_remove(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1-i); //ELimino desde la ultima posicion
 					 bitarray_clean_bit(bitMap,bloqueAEliminar);
 					 //
@@ -640,7 +702,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 			if(i<cantBloquesAEscribir-1){
 				if(string_equals_ignore_case(operacion,"ACTUALIZAR")){
 					//if(i<cantBloquesAEscribir-2){
-						bloqueSiguiente=atoi(list_get(bloquesAsignadosARecurso,i+1));
+						//bloqueSiguiente=atoi(list_get(bloquesAsignadosARecurso,i+1));
+						bloqueSiguiente=list_get(bloquesAsignadosARecurso,i+1);
 //						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,5));
 //						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,4));
 //						log_warning(logger,"%s",(char*)list_get(bloquesAsignadosARecurso,3));
@@ -654,16 +717,16 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 				}else {
 					bloqueSiguiente=buscarBloqueLibre(infoBloques);
-					list_add(bloquesAsignadosARecurso,(char*)bloqueSiguiente);
+					list_add(bloquesAsignadosARecurso,bloqueSiguiente);
 
 				}
-
+/*
 				if(string_equals_ignore_case(tipoRecurso,"RESTO")){
 					dictionary_put(diccionarioBloquesAsignadosARestos,nombreRecurso,bloquesAsignadosARecurso);
 				}else if(string_equals_ignore_case(tipoRecurso,"RECETA")){
 					dictionary_put(diccionarioBloquesAsignadosARecetas,nombreRecurso,bloquesAsignadosARecurso);
 
-				}else dictionary_put(diccionarioBloquesAsignadosAPedidos,nombreRecurso,bloquesAsignadosARecurso);
+				}else dictionary_put(diccionarioBloquesAsignadosAPedidos,nombreRecurso,bloquesAsignadosARecurso);*/
 
 				char* bytesAEscribir=malloc(infoBloques->tamBloques-sizeof(uint32_t)+1);
 
@@ -691,6 +754,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 							log_error(logger,"Error al truncar el archivo");
 							resultado=-3;
 				}
+				tamanioNuevoTotal=tamanioNuevoTotal+strlen(bytesAEscribir);
 
 				if(fwrite(bytesAEscribir,strlen(bytesAEscribir),1,archivoBloqueActual)==0){
 												log_error(logger,"Error al escribir en el archivo info de restaurante");
@@ -733,6 +797,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 										log_error(logger,"Error al truncar el archivo");
 
 				}
+				tamanioNuevoTotal=tamanioNuevoTotal+strlen(bytesAEscribir);
 
 				if(fwrite(bytesAEscribir,strlen(bytesAEscribir),1,archivoBloqueActual)==0){
 					log_error(logger,"Error al escribir en el archivo info de restaurante");
@@ -748,15 +813,40 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		}
 
 		//Actualizo el archivo de bloques asignados al recurso (receta,restaurante o pedido)
+		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,0));
+		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,1));
+		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,2));
+		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,3));
+		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,4));
+		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,5));
 
+		if(string_equals_ignore_case(tipoRecurso,"RESTO")){
+			dictionary_put(diccionarioBloquesAsignadosARestos,nombreRecurso,bloquesAsignadosARecurso);
+			}else if(string_equals_ignore_case(tipoRecurso,"RECETA")){
+				dictionary_put(diccionarioBloquesAsignadosARecetas,nombreRecurso,bloquesAsignadosARecurso);
+
+			}else dictionary_put(diccionarioBloquesAsignadosAPedidos,nombreRecurso,bloquesAsignadosARecurso);
+
+		int offset=0;
 		for(j=0;j<list_size(bloquesAsignadosARecurso);j++){
-			int bloqueActual=(int)list_get(bloquesAsignadosARecurso,j);
-			string_append_with_format(&stringBloquesAsignados,"%d",bloqueActual);
+			//int bloqueActual=atoi(list_get(bloquesAsignadosARecurso,j));
+			//string_append(&stringBloquesAsignados,atoi(list_get(bloquesAsignadosARecurso,j)));
+
+			/*int bloque=0;
+			if(strcmp(tipoRecurso,"PEDIDO")==0 && strcmp(operacion,"ACTUALIZAR")==0){
+				bloque=atoi(list_get(bloquesAsignadosARecurso,j));
+			}else bloque=list_get(bloquesAsignadosARecurso,j);*/
+			int bloque=0;
+			bloque=list_get(bloquesAsignadosARecurso,j);
+			string_append_with_format(&stringBloquesAsignados,"%d",bloque);
+			offset=offset+strlen(string_itoa(bloque));
+			//memcpy(stringBloquesAsignados+offset,bloqueActual,strlen(bloqueActual));
 			if(j<list_size(bloquesAsignadosARecurso)-1){
 				string_append(&stringBloquesAsignados,",");
-
+				offset++;
 			}
 		}
+		stringBloquesAsignados[offset]='\0';
 		char* lineaArchivoBloquesAsignados;
 
 		char* pathArchivoBloquesAsignadosARestaurantes=malloc(strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES)+1);
@@ -776,14 +866,16 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		if(string_equals_ignore_case(tipoRecurso,"RESTO")){
 			memcpy(pathArchivoBloquesAsignadosARestaurantes,PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES,strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES));
 			pathArchivoBloquesAsignadosARestaurantes[strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES)]='\0';
-			actualizarArchivosBloques(pathArchivoBloquesAsignadosARestaurantes,lineaArchivoBloquesAsignados,idPedido);
+			actualizarArchivosBloques(pathArchivoBloquesAsignadosARestaurantes,lineaArchivoBloquesAsignados,NULL,tipoRecurso,nombreRecurso);
 		}else if(string_equals_ignore_case(tipoRecurso,"PEDIDO")){
 			memcpy(pathArchivoBloquesAsignadosAPedidos,PATH_BLOQUES_ASIGNADOS_A_PEDIDOS,strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS));
 			pathArchivoBloquesAsignadosAPedidos[strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS)]='\0';
 			if(string_equals_ignore_case(operacion,"ACTUALIZAR")){
-				actualizarArchivoInfoPedido(idPedido,sizeStringConPunteros);
+				actualizarArchivoInfoPedido(idPedido,tamanioNuevoTotal);
+				actualizarArchivosBloques(pathArchivoBloquesAsignadosAPedidos,lineaArchivoBloquesAsignados,idPedido,tipoRecurso,NULL);
+
 			}else{
-				actualizarArchivosBloques(pathArchivoBloquesAsignadosAPedidos,lineaArchivoBloquesAsignados,idPedido);
+				actualizarArchivosBloques(pathArchivoBloquesAsignadosAPedidos,lineaArchivoBloquesAsignados,idPedido,tipoRecurso,NULL);
 
 			}
 
@@ -791,7 +883,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		}else{
 			memcpy(pathArchivoBloquesAsignadosARecetas,PATH_BLOQUES_ASIGNADOS_A_RECETAS,strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS));
 			pathArchivoBloquesAsignadosARecetas[strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS)]='\0';
-			actualizarArchivosBloques(pathArchivoBloquesAsignadosARecetas,lineaArchivoBloquesAsignados,idPedido);
+			actualizarArchivosBloques(pathArchivoBloquesAsignadosARecetas,lineaArchivoBloquesAsignados,NULL,tipoRecurso,nombreRecurso);
 
 		}
 
@@ -872,7 +964,7 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 	//ESCRIBO LOS DATOS EN LOS BLOQUES:
 	//TODO: ASIGNAR CON ANTICIPACION LOS BLOQUES, Y VALIDAR QUE EN CASO QUE ESTE LLENO EL FS LA OPERACION NO SE PODRA HACER
 
-	list_add(bloquesAsignadosAResto,(char*)bloquelibre);
+	list_add(bloquesAsignadosAResto,bloquelibre);
 
 	dictionary_put(diccionarioBloquesAsignadosARestos,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto);
 	resultadoEscritura=escribirBloques(propiedades,lengthPropiedades,bloquelibre,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto,"RESTO","NUEVO",infoBloques,NULL);
@@ -961,7 +1053,7 @@ int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva,tInfoBlo
 
 		//ESCRIBO LOS DATOS EN LOS BLOQUES
 
-	list_add(bloquesAsignadosAReceta,(char*)bloquelibre);
+	list_add(bloquesAsignadosAReceta,bloquelibre);
 
 	dictionary_put(diccionarioBloquesAsignadosARecetas,recetaNueva->nombreReceta,bloquesAsignadosAReceta);
 
@@ -1163,7 +1255,7 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 	//ESCRIBO LOS DATOS EN LOS BLOQUES
 	//TODO: ASIGNAR ANTICIPADAMENTE LOS BLOQUES, CONTEMPLANDO EL CASO QUE EL FS ESTE LLENO
 
-	list_add(bloquesAsignadosAPedido, (char*)bloquelibre);
+	list_add(bloquesAsignadosAPedido, bloquelibre);
 
 	dictionary_put(diccionarioBloquesAsignadosAPedidos,nombrePedido, bloquesAsignadosAPedido);
 
