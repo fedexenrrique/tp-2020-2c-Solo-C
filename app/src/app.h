@@ -95,7 +95,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    tiempo_de_descanso;
 	uint32_t    cansancio;
 	sem_t       semaforo;
-	sem_t       sem_bloq;
+	sem_t       sem_bloq; //Esto podria ser un semaforo general para poder sacar un elemento de la cola de bloqueados
 	enum_estado estado;
 	uint32_t    id_cliente;
 	uint32_t    cliente_x;
@@ -105,7 +105,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    resto_x;
 	uint32_t    resto_y;
 	sem_t       cpu;
-	sem_t       bloq;
+	sem_t       bloq; // Seria un semaforo para que se bloquee el repartidor
 
 } t_pcb_repartidor;
 
@@ -121,7 +121,7 @@ t_queue * g_cola_bloqueados;
 
 sem_t    sem_nuevos;
 sem_t    sem_listos;
-sem_t    sem_bloq;
+sem_t    sem_bloq;// Seria un semaforo para que se bloquee el repartidor
 
 // FUNCIONES
 
