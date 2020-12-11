@@ -4,20 +4,19 @@
 int main(void) {
 
 	cargar_config();
+	obtener_info_restaurante();
 
-	g_sockets_abiertos = list_create();
+	//g_sockets_abiertos = list_create();
 
-	g_tiempo_reconexion = 3;
+	//g_tiempo_reconexion = 3;
 
-	signal(SIGINT, sigint);
-
-	// obtener_info_restaurante();
+	//signal(SIGINT, sigint);
 
 	// pthread_t  receptor_modulo_cliente_h;
 
 	// pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
 
-	conectar_restaurante_a_applicacion();
+	//conectar_restaurante_a_applicacion();
 
 	return 1;
 
@@ -163,6 +162,44 @@ void obtener_info_restaurante(void) {
 	log_info(logger_restaurante, "Resturante platos: %s", respuesta_info->platos);
 	log_info(logger_restaurante, "Resturante precio platos: %s", respuesta_info->precio_platos);
 	log_info(logger_restaurante, "Resturante cantidad hornos: %d", respuesta_info->cantidad_hornos);
+
+	cargar_variables(respuesta_info);
+}
+
+void iniciar_planificacion() {
+	colas_ready = list_create();
+	cargar_colas_ready();
+
+	cola_io = queue_create();
+
+	cola_bloqueados = queue_create();
+
+}
+
+void cargar_colas_ready() {
+	int cola_creada;
+	for(int i = 0; i < list_size(cocineros); ++i) {
+		char * cocinero = list_get(cocineros, i);
+		if (cocinero != "OTRO") {
+			t_queue * cola_ready = queue_create();
+			t_dictionary * cola_ready_afinidad = dictionary_create();
+			dictionary_put(cola_ready_afinidad, cocinero, cola_ready);
+			list_add(colas_ready, cola_ready_afinidad);
+		}
+		else {
+			if (cola_creada == 0) {
+				cola_creada = 1;
+				t_queue * cola_ready = queue_create();
+				t_dictionary * cola_ready_afinidad = dictionary_create();
+				dictionary_put(cola_ready_afinidad, cocinero, cola_ready);
+				list_add(colas_ready, cola_ready_afinidad);
+			}
+		}
+	}
+}
+
+void planificador_io() {
+
 }
 
 t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * payload) {
@@ -242,11 +279,35 @@ void consultar_platos_restaurante(void) {
 
 	log_info(logger_restaurante, "Resturante platos: %s", respuesta_info->platos);
 
-	char ** platos_array = string_get_string_as_array(respuesta_info ->platos);
 
+}
+
+void cargar_variables(t_respuesta_info_restaurante * respuesta) {
+	char ** platos_array = string_get_string_as_array(respuesta->platos);
 	int i = 0;
 	while (platos_array[i] != NULL) {
 		list_add(platos, platos_array[i]);
+		i++;
+	}
+
+	char ** cocineros_array = string_get_string_as_array(respuesta->afinidad_cocineros);
+	for(i = 0; i < respuesta->cantidad_cocineros; ++i) {
+		if(cocineros_array[i] == NULL) {
+			list_add(cocineros, cocineros_array[i]);
+		}
+		else {
+			list_add(cocineros, "OTRO");
+		}
+	}
+
+	posicion_x = respuesta->posicion_x;
+	posicion_y = respuesta->posicion_y;
+	cantidad_hornos = respuesta->cantidad_hornos;
+
+	char ** precios_array = string_get_string_as_array(respuesta->platos);
+	i = 0;
+	while (precios_array[i] != NULL) {
+		dictionary_put(platos_precios, list_get(platos, i), precios_array[i]);
 		i++;
 	}
 }
@@ -474,7 +535,7 @@ t_respuesta_receta * obtener_receta(char * plato) {
 	offset += sizeof(uint32_t);
 
 	memcpy(buffer + offset, info_receta->plato, info_receta->size_plato);
-	offset += info_receta->plato;
+	offset += info_receta->size_plato;
 
 	header->payload = buffer;
 	header->size = size_buffer;

@@ -12,8 +12,17 @@
 
 // AMBIENTE
 
-int			id_pedido_restaurante;
-t_list	*	platos;
+int					id_pedido_restaurante;
+t_list			*	platos;
+t_list			*	cocineros;
+uint32_t			posicion_x;
+uint32_t			posicion_y;
+uint32_t			cantidad_hornos;
+t_dictionary	*	platos_precios;
+
+t_list			* 	colas_ready;
+t_queue			*	cola_io;
+t_queue			* 	cola_bloqueados;
 
 typedef struct{
 	uint32_t		id_pedido;
@@ -34,6 +43,8 @@ typedef struct {
 
 int									main													(void);
 void 								obtener_info_restaurante								(void);
+void								iniciar_planificacion									(void);
+void								cargar_variables										(t_respuesta_info_restaurante *);
 t_respuesta_info_restaurante 	* 	deserializar_respuesta_info_restaurante					(void *);
 void								consultar_platos_restaurante							(void);
 t_respuesta_platos_restaurante 	* 	deserializar_respuesta_consulta_platos					(void *);
