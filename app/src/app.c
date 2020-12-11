@@ -608,7 +608,8 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 				} else if ( p_pcb->repa_x == p_pcb->resto_x && p_pcb->repa_y == p_pcb->resto_y && p_pcb->yendo_a == RESTO ) { // ESTOY en RESTAURANTE
 
-					enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, p_pcb->nombre_resto, p_pcb->id_pedido );
+					enviar_obtener_pedido( g_ip_comanda, g_puerto_comanda, p_pcb->nombre_resto, p_pcb->id_pedido);
+					//enviar_12_obtener_pedido( g_ip_comanda, g_puerto_comanda, p_pcb->nombre_resto, p_pcb->id_pedido );
 
 					if ( p_pcb->yendo_a == RESTO ){
 
