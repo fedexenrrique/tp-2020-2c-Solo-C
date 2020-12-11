@@ -270,20 +270,26 @@ tInfoBloques* importarInfoBloques(){
 
 void cargarBloquesAsigandosAResto(){
 
+
 	struct stat info;
+
+
 	int e=0;
-	char* pathArchivoBloquesAsignados= malloc(100);
-	strcpy(pathArchivoBloquesAsignados,PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES);
+	//char* pathArchivoBloquesAsignados= malloc(100);
+
+	//strcpy(pathArchivoBloquesAsignados,PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES);
 	//string_append(&pathArchivoBloquesAsignados,"bloquesAsignadosARestos.bin");
 
-	e=stat(pathArchivoBloquesAsignados, &info);
+	e=stat(pathAbsolutoBloquesAsignadosARestos, &info);
+
+
 	int i=0; //Para recorrer los restaurantes
 	int j=0; //para recorrer los bloques asignados
 
 	if(e==0){
 
 		if(info.st_size!=0){
-		FILE* archivoInfoBloques = fopen(pathArchivoBloquesAsignados, "r+");
+		FILE* archivoInfoBloques = fopen(pathAbsolutoBloquesAsignadosARestos, "r+");
 		char* map=malloc(info.st_size);
 		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archivoInfoBloques), 0);
 		map[info.st_size]='\0';
@@ -318,7 +324,7 @@ void cargarBloquesAsigandosAResto(){
 
 
 	}
-	free(pathArchivoBloquesAsignados);
+	//free(pathArchivoBloquesAsignados);
 
 
 }
@@ -327,23 +333,33 @@ void cargarBloquesAsigandosAPedidos(){
 
 	struct stat info;
 	int e=0;
-	char* pathArchivoBloquesAsignados= malloc(100);
-	strcpy(pathArchivoBloquesAsignados,PATH_BLOQUES_ASIGNADOS_A_PEDIDOS);
+	//char* pathArchivoBloquesAsignados= malloc(100);
+	//strcpy(pathArchivoBloquesAsignados,PATH_BLOQUES_ASIGNADOS_A_PEDIDOS);
 	//string_append(&pathArchivoBloquesAsignados,"bloquesAsignadosAPedidos.bin");
+	log_warning(logger,"Leyendo archivo de bloques asignados a pedidos");
 
-	e=stat(pathArchivoBloquesAsignados, &info);
+	e=stat(pathAbsolutoBloquesAsignadosAPedidos, &info);
+	//e1=stat(pathArchivoBloquesAsignados, &infoPathRelativo);
+
 	int i=0; //Para recorrer los restaurantes
 	int j=0; //para recorrer los bloques asignados
 
+
+
 	if(e==0){
+		log_warning(logger,"Archivo de bloques de pedidos encontrado");
+
 		if(info.st_size!=0){
-		FILE* archivoInfoBloques = fopen(pathArchivoBloquesAsignados, "r+");
+		FILE* archivoInfoBloques = fopen(pathAbsolutoBloquesAsignadosAPedidos, "r+");
 		char* map=malloc(info.st_size);
 		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archivoInfoBloques), 0);
+		map[info.st_size]='\0';
 
 		char** pedidos = string_split(map, "/n");
 
 		while(pedidos[i]!=NULL){
+			log_warning(logger,"ID Pedido encontrado");
+
 			t_list* bloquesAsignadosAPedido=list_create();
 
 			char** propiedadesPedido= string_n_split(pedidos[i],2," "); //propiedades= Nombre + bloques
@@ -355,6 +371,7 @@ void cargarBloquesAsigandosAPedidos(){
 			}
 			//log_warning(logger,"%d",atoi(list_get(bloquesAsignadosAPedido,0)));
 			dictionary_put(diccionarioBloquesAsignadosAPedidos,propiedadesPedido[0],bloquesAsignadosAPedido);
+			log_warning(logger,"%d",list_get(bloquesAsignadosAPedido,0));
 			i++;
 			j=0;
 		}
@@ -370,7 +387,7 @@ void cargarBloquesAsigandosAPedidos(){
 		}
 
 	}
-	free(pathArchivoBloquesAsignados);
+	//free(pathAbsolutoBloquesAsignadosAPedidos);
 
 }
 
@@ -560,25 +577,29 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 }
 
 void actualizarArchivoInfoPedido(char* idPedido, int sizeNuevo){
-	char** restoPedido=string_split(idPedido,"-");
-	char* nombreResto=malloc(strlen(restoPedido[0])+1);
-	char* nombrePedido=malloc(strlen(restoPedido[1])+1);
 
-	memcpy(nombreResto,restoPedido[0],strlen(restoPedido[0]));
-	memcpy(nombrePedido,restoPedido[1],strlen(restoPedido[1]));
+	char** restoPedido=string_n_split(idPedido,2,"-");
+	int sizeNombreResto=strlen(restoPedido[0]);
+	int sizeNombrePedido=strlen(restoPedido[1]);
+	char* nombreResto=malloc(sizeNombreResto+1);
+	char* nombrePedido=malloc(sizeNombrePedido+1);
 
 
-	char* pathInfoPedido=malloc(strlen(pathRestaurantes)+strlen(nombreResto)+1+strlen(nombrePedido)+5+1);
+	memcpy(nombreResto,restoPedido[0],sizeNombreResto);
+	memcpy(nombrePedido,restoPedido[1],sizeNombrePedido);
+
+
+	char* pathInfoPedido=malloc(strlen(pathRestaurantes)+sizeNombreResto+1+sizeNombrePedido+5+1);
 
 	int offsetPath=0;
 	memcpy(pathInfoPedido,pathRestaurantes,strlen(pathRestaurantes));
 	offsetPath+=strlen(pathRestaurantes);
-	memcpy(pathInfoPedido+offsetPath,restoPedido[0],strlen(nombreResto));
-	offsetPath+=strlen(nombreResto);
+	memcpy(pathInfoPedido+offsetPath,nombreResto,sizeNombreResto);
+	offsetPath+=sizeNombreResto;
 	memcpy(pathInfoPedido+offsetPath,"/",1);
 	offsetPath++;
-	memcpy(pathInfoPedido+offsetPath,restoPedido[1],strlen(nombrePedido));
-	offsetPath+=strlen(nombrePedido);
+	memcpy(pathInfoPedido+offsetPath,nombrePedido,sizeNombrePedido);
+	offsetPath+=sizeNombrePedido;
 	memcpy(pathInfoPedido+offsetPath,".AFIP",strlen(".AFIP"));
 	offsetPath+=strlen(".AFIP");
 	pathInfoPedido[offsetPath]='\0';
@@ -849,9 +870,9 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		stringBloquesAsignados[offset]='\0';
 		char* lineaArchivoBloquesAsignados;
 
-		char* pathArchivoBloquesAsignadosARestaurantes=malloc(strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES)+1);
-		char* pathArchivoBloquesAsignadosAPedidos=malloc(strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS)+1);
-		char* pathArchivoBloquesAsignadosARecetas=malloc(strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS)+1);
+		char* pathArchivoBloquesAsignadosARestaurantes=malloc(strlen(pathAbsolutoBloquesAsignadosARestos)+1);
+		char* pathArchivoBloquesAsignadosAPedidos=malloc(strlen(pathAbsolutoBloquesAsignadosAPedidos)+1);
+		char* pathArchivoBloquesAsignadosARecetas=malloc(strlen(pathAbsolutoBloquesAsignadosARecetas)+1);
 
 
 
@@ -864,12 +885,12 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		}
 
 		if(string_equals_ignore_case(tipoRecurso,"RESTO")){
-			memcpy(pathArchivoBloquesAsignadosARestaurantes,PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES,strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES));
-			pathArchivoBloquesAsignadosARestaurantes[strlen(PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES)]='\0';
+			memcpy(pathArchivoBloquesAsignadosARestaurantes,pathAbsolutoBloquesAsignadosARestos,strlen(pathAbsolutoBloquesAsignadosARestos));
+			pathArchivoBloquesAsignadosARestaurantes[strlen(pathAbsolutoBloquesAsignadosARestos)]='\0';
 			actualizarArchivosBloques(pathArchivoBloquesAsignadosARestaurantes,lineaArchivoBloquesAsignados,NULL,tipoRecurso,nombreRecurso);
 		}else if(string_equals_ignore_case(tipoRecurso,"PEDIDO")){
-			memcpy(pathArchivoBloquesAsignadosAPedidos,PATH_BLOQUES_ASIGNADOS_A_PEDIDOS,strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS));
-			pathArchivoBloquesAsignadosAPedidos[strlen(PATH_BLOQUES_ASIGNADOS_A_PEDIDOS)]='\0';
+			memcpy(pathArchivoBloquesAsignadosAPedidos,pathAbsolutoBloquesAsignadosAPedidos,strlen(pathAbsolutoBloquesAsignadosAPedidos));
+			pathArchivoBloquesAsignadosAPedidos[strlen(pathAbsolutoBloquesAsignadosAPedidos)]='\0';
 			if(string_equals_ignore_case(operacion,"ACTUALIZAR")){
 				actualizarArchivoInfoPedido(idPedido,tamanioNuevoTotal);
 				actualizarArchivosBloques(pathArchivoBloquesAsignadosAPedidos,lineaArchivoBloquesAsignados,idPedido,tipoRecurso,NULL);
@@ -881,8 +902,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 
 		}else{
-			memcpy(pathArchivoBloquesAsignadosARecetas,PATH_BLOQUES_ASIGNADOS_A_RECETAS,strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS));
-			pathArchivoBloquesAsignadosARecetas[strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS)]='\0';
+			memcpy(pathArchivoBloquesAsignadosARecetas,pathAbsolutoBloquesAsignadosARecetas,strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS));
+			pathArchivoBloquesAsignadosARecetas[strlen(pathAbsolutoBloquesAsignadosARecetas)]='\0';
 			actualizarArchivosBloques(pathArchivoBloquesAsignadosARecetas,lineaArchivoBloquesAsignados,NULL,tipoRecurso,nombreRecurso);
 
 		}

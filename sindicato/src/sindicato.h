@@ -201,6 +201,11 @@ char* pathMetadata;
 char* pathBloques;
 char* pathRestaurantes;
 char* pathRecetas;
+char* pathAbsolutoBloquesAsignadosARestos;
+char* pathAbsolutoBloquesAsignadosAPedidos;
+char* pathAbsolutoBloquesAsignadosARecetas;
+
+
 
 
 //void handleConexion(int socketCliente,tInfoBloques* infoBloques);

@@ -654,6 +654,7 @@ tMensajeInfoPedido *leerBloquesPedido(int bloqueInicial,int sizePedido,t_list* b
 	pathBloqueInicial[offsetPath]='\0';
 	//strcpy(pathBloqueInicial,pathBloques);
 	//string_append_with_format(&pathBloqueInicial,"%d%s",bloqueInicial,".bin");
+	log_warning(logger,"%d",list_get(bloquesAsigandosAPedido,0));
 	uint32_t cantBloquesALeer=list_size(bloquesAsigandosAPedido);
 	int i;
 	tMensajeInfoPedido* infoPedido=malloc(sizeof(tMensajeInfoPedido));
@@ -791,7 +792,7 @@ tMensajeInfoPedido *obtenerInfoPedido(char* nombreResto,char* nombrePedido,int r
 	idPedido[offset]='\0';
 
 	bloquesAsigandosAPedido=dictionary_get(diccionarioBloquesAsignadosAPedidos,idPedido);
-//	log_warning(logger,"%s",list_get(bloquesAsigandosAPedido,0));
+	log_warning(logger,"%d",list_get(bloquesAsigandosAPedido,0));
 
 	e=stat(pathArchivoInfoActual,&infoPathPedido);
 	e1=stat(pathRestaurante,&infoPathRestaurante);
@@ -1002,7 +1003,7 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 
 	 else if (strcmp(operacion,"PLATO_LISTO")==0){
 		char** arrayPlatos=string_get_string_as_array(info->listaPlatos);
-		char** arrayCantidadesListas=string_get_string_as_array(info->listaPlatos);
+		char** arrayCantidadesListas=string_get_string_as_array(info->cantidadLista);
 		int i=0;
 
 		while (arrayPlatos[i] != NULL) {
@@ -1034,7 +1035,7 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 
 		infoActualizada->cantidadPlatos=malloc(strlen(info->cantidadPlatos)+1);
 		memcpy(infoActualizada->cantidadPlatos,info->cantidadPlatos,strlen(info->cantidadPlatos));
-		infoActualizada->cantidadLista[strlen(info->cantidadLista)]='\0';
+		infoActualizada->cantidadPlatos[strlen(info->cantidadPlatos)]='\0';
 
 
 		infoActualizada->cantidadLista = malloc(strlen(stringConCantidadNueva) + 1);
@@ -1042,10 +1043,10 @@ char* armarStringNuevoAGrabar(tMensajeInfoPedido* info, char* nombrePlato,int ca
 		stringConCantidadNueva[strlen(stringConCantidadNueva)] = '\0';
 		infoActualizada->cantidadLista[strlen(stringConCantidadNueva)] = '\0';
 
-		uint32_t precioPlatoActual = buscarPrecioPlatoEnRestaurante(nombrePlato,nombreRestaurante);
-		log_info(logger,(char*)precioPlatoActual);
+		//uint32_t precioPlatoActual = buscarPrecioPlatoEnRestaurante(nombrePlato,nombreRestaurante);
+		//log_info(logger,(char*)precioPlatoActual);
 
-		infoActualizada->precioTotal = info->precioTotal + (precioPlatoActual * cantidad);
+		infoActualizada->precioTotal = info->precioTotal;
 
 	 }else if(strcmp(operacion,"CONFIRMAR_PEDIDO")==0){
 		infoActualizada->estadoPedido = malloc(strlen("confirmado") + 1);
@@ -1321,8 +1322,9 @@ int finalizarPedido(char* nombreRestaurante,char* nombrePedido,char* nombrePlato
 
 
 
-int obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint32_t sizePedido){
+tInfoArchivo* obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint32_t sizePedido){
 	int bloqueInicial=0;
+	tInfoArchivo* infoArchivo=malloc(sizeof(tInfoArchivo));
 	if(strcmp(recurso,"RESTAURANTE")==0){
 
 		}else if(strcmp(recurso,"RECETA")==0){
@@ -1346,8 +1348,8 @@ int obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint3
 					map[info.st_size]='\0';
 
 					char** propiedades=string_n_split(map,2,"\n");
-					bloqueInicial=atoi(propiedades[1]+14);
-					sizePedido=atoi(propiedades[0]+5);
+					infoArchivo->bloqueInicial=atoi(propiedades[1]+14);
+					infoArchivo->size=atoi(propiedades[0]+5);
 
 					if (munmap(map,info.st_size) == -1) {
 								log_error(logger,"Error al liberar memoria mapeada");
@@ -1359,12 +1361,12 @@ int obtenerBloqueInicial(char*recurso, char*nombreRecurso,char*pathRecurso,uint3
 				}
 
 			}
-	return bloqueInicial;
+	return infoArchivo;
 
 }
 
 int aumentarCantidadPlatoListo(char* nombreRestaurante, uint32_t idPedido,char* nombrePlato){
-	char* pathRestaurante= malloc(strlen(pathRestaurantes)+strlen(nombreRestaurante)+1);
+	char* pathRestaurante= malloc(strlen(pathRestaurantes)+strlen(nombreRestaurante)+1+1);
 	struct stat infoResto;
 	int eResto=0;
 	uint32_t sizePedido=0;
@@ -1375,7 +1377,7 @@ int aumentarCantidadPlatoListo(char* nombreRestaurante, uint32_t idPedido,char* 
 	memcpy(idPedidoYNombreResto+strlen(nombreRestaurante)+1,string_itoa(idPedido),strlen(string_itoa(idPedido)));
 	idPedidoYNombreResto[strlen(nombreRestaurante)+1+strlen(string_itoa(idPedido))]='\0';
 	t_list* bloquesAsigandosAPedido=dictionary_get(diccionarioBloquesAsignadosAPedidos,idPedidoYNombreResto);
-
+	log_warning(logger,"%d",list_get(bloquesAsigandosAPedido,0));
 	int offset=0;
 	memcpy(pathRestaurante,pathRestaurantes,strlen(pathRestaurantes));
 	offset+=strlen(pathRestaurantes);
@@ -1403,17 +1405,17 @@ int aumentarCantidadPlatoListo(char* nombreRestaurante, uint32_t idPedido,char* 
 		ePedido=stat(pathInfoPedido,&infoPathPedido);
 
 		if(ePedido==0){
-			int bloqueInicial=obtenerBloqueInicial("PEDIDO",string_itoa(idPedido),pathInfoPedido,sizePedido);
-
 			tMensajeInfoPedido* infoPedido=malloc(sizeof(tMensajeInfoPedido));
-			infoPedido=leerBloquesPedido(bloqueInicial,sizePedido,bloquesAsigandosAPedido);
+
+			infoArchivo=obtenerBloqueInicial("PEDIDO",string_itoa(idPedido),pathInfoPedido,sizePedido);
+
+			infoPedido=leerBloquesPedido(infoArchivo->bloqueInicial,infoArchivo->size,bloquesAsigandosAPedido);
 
 			if(string_equals_ignore_case(infoPedido->estadoPedido,"confirmado")){
 					char* stringAGrabar=armarStringNuevoAGrabar(infoPedido,nombrePlato,1,nombreRestaurante,"PLATO_LISTO");
 					grabarNuevoPedidoActualizado(stringAGrabar,nombreRestaurante,string_itoa(idPedido));
 
 			}
-
 
 		}else{
 			log_error(logger,"El pedido no existe dentro del restaurante solicitado");
@@ -1425,7 +1427,7 @@ int aumentarCantidadPlatoListo(char* nombreRestaurante, uint32_t idPedido,char* 
 		log_error(logger, "El restaurante no existe");
 		return -1;
 	}
-
+free(infoArchivo);
 return 1;
 
 }
@@ -2183,7 +2185,7 @@ int main(int argc, char *argv[]) {
 	/*tSolicitudPedido* solicitudPedido=malloc(sizeof(tSolicitudPedido));
 	//deserializarPayloadPedido(headerRecibido->payload,solicitudPedido);
 	int resultado=confirmarPedido("LaParri",string_itoa(1),NULL,0);*/
-	//PLATO LISTO
+	//PLATO LISTO:OK, VER POR QUE TIRA ERROR EN EL FREE
 	tSolicitudPlatiListo* solicitudPlatoListo=malloc(sizeof(tSolicitudPlatiListo));
 	int resultadoOperacion=1;
 	resultadoOperacion=aumentarCantidadPlatoListo("LaParri",1,"Empanadas");
