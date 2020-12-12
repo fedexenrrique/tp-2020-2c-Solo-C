@@ -205,7 +205,41 @@ void cargar_colas_ready() {
 }
 
 void planificador_cpu(char * afinidad) {
-
+	while (1) {
+		t_queue * cola_ready = obtener_cola_afinidad(afinidad);
+		if (queue_size(cola_ready) != 0) {
+			pcb_plato * plato = queue_pop(cola_ready);
+			t_dictionary * paso = list_get(plato->receta_faltante, 0);
+			uint32_t cantidad_cpu = dictionary_get(paso, "HORNEAR");
+			if(cantidad_cpu != NULL) {
+				for(int i = 0; i < cantidad_cpu; ++i ) {
+					log_info(logger_restaurante, "CPU -- plato: %s, realizando %d de %d", plato->nombre_plato, i, cantidad_cpu);
+				}
+			}
+			list_remove(plato->receta_faltante, 0);
+			t_dictionary * paso_nuevo = list_get(plato->receta_faltante, 0);
+			if (paso_nuevo == NULL) {
+				queue_push(cola_exit, plato);
+			}
+			else if (dictionary_has_key(paso_nuevo, "REPOSAR")) {
+				queue_push(cola_bloqueados, plato);
+			}
+			else {
+				t_queue * cola_ready;
+				int existe_cola_ready(void * p) {
+					dictionary_has_key(p, plato->nombre_plato);
+				}
+				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+				if (cola_ready == NULL) {
+					int existe_cola_otro(void *p) {
+						dictionary_has_key(p, "OTRO);
+					}
+					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
+				}
+				queue_push(cola_ready, plato);
+			}
+		}
+	}
 }
 
 void planificador_io() {
@@ -231,12 +265,12 @@ void planificador_io() {
 			else {
 				t_queue * cola_ready;
 				int existe_cola_ready(void * p) {
-					dictionary_has_key(plato->nombre_plato);
+					dictionary_has_key(p, plato->nombre_plato);
 				}
 				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
 				if (cola_ready == NULL) {
 					int existe_cola_otro(void *p) {
-						dictionary_has_key("OTRO);
+						dictionary_has_key(p, "OTRO);
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -269,12 +303,12 @@ void planificador_bloqueados() {
 			else {
 				t_queue * cola_ready;
 				int existe_cola_ready(void * p) {
-					dictionary_has_key(plato->nombre_plato);
+					dictionary_has_key(p, plato->nombre_plato);
 				}
 				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
 				if (cola_ready == NULL) {
 					int existe_cola_otro(void *p) {
-						dictionary_has_key("OTRO);
+						dictionary_has_key(p, "OTRO);
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -282,6 +316,21 @@ void planificador_bloqueados() {
 			}
 		}
 	}
+}
+
+t_queue * obtener_cola_afinidad(char * afinidad) {
+	t_queue * cola_ready;
+	int existe_cola_ready(void * p) {
+		dictionary_has_key(p, afinidad);
+	}
+	cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+	if (cola_ready == NULL) {
+		int existe_cola_otro(void *p) {
+			dictionary_has_key(p, "OTRO");
+		}
+		cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
+	}
+	return cola_ready;
 }
 
 t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * payload) {

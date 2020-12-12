@@ -58,6 +58,7 @@ void 								obtener_info_restaurante								(void);
 void								iniciar_planificacion									(void);
 void								planificador_io											(void);
 void								planificador_bloqueados									(void);
+t_queue							*	obtener_cola_afinidad									(char *);
 void								cargar_variables										(t_respuesta_info_restaurante *);
 t_respuesta_info_restaurante 	* 	deserializar_respuesta_info_restaurante					(void *);
 void								consultar_platos_restaurante							(void);
