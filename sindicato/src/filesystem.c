@@ -346,7 +346,7 @@ void cargarBloquesAsigandosAPedidos(){
 
 
 
-	if(e==0){
+	if(e==0 && info.st_size!=0){
 		log_warning(logger,"Archivo de bloques de pedidos encontrado");
 
 		if(info.st_size!=0){
@@ -355,7 +355,7 @@ void cargarBloquesAsigandosAPedidos(){
 		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archivoInfoBloques), 0);
 		map[info.st_size]='\0';
 
-		char** pedidos = string_split(map, "/n");
+		char** pedidos = string_split(map, "\n");
 
 		while(pedidos[i]!=NULL){
 			log_warning(logger,"ID Pedido encontrado");
@@ -391,10 +391,119 @@ void cargarBloquesAsigandosAPedidos(){
 
 }
 
-int cargarBitMap(){
+void cargarBloquesAsigandosARecetas(){
+
+	struct stat info;
+	int e=0;
+	//char* pathArchivoBloquesAsignados= malloc(100);
+	//strcpy(pathArchivoBloquesAsignados,PATH_BLOQUES_ASIGNADOS_A_PEDIDOS);
+	//string_append(&pathArchivoBloquesAsignados,"bloquesAsignadosAPedidos.bin");
+	log_warning(logger,"Leyendo archivo de bloques asignados a pedidos");
+
+	e=stat(pathAbsolutoBloquesAsignadosARecetas, &info);
+	//e1=stat(pathArchivoBloquesAsignados, &infoPathRelativo);
+
+	int i=0; //Para recorrer los restaurantes
+	int j=0; //para recorrer los bloques asignados
+
+
+
+	if(e==0 && info.st_size!=0){
+		log_warning(logger,"Archivo de bloques de pedidos encontrado");
+
+		if(info.st_size!=0){
+		FILE* archivoInfoBloques = fopen(pathAbsolutoBloquesAsignadosARecetas, "r+");
+		char* map=malloc(info.st_size);
+		map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fileno(archivoInfoBloques), 0);
+		map[info.st_size]='\0';
+
+		char** pedidos = string_split(map, "\n");
+
+		while(pedidos[i]!=NULL){
+			log_warning(logger,"ID Pedido encontrado");
+
+			t_list* bloquesAsignadosARecetas=list_create();
+
+			char** propiedadesPedido= string_n_split(pedidos[i],2," "); //propiedades= Nombre + bloques
+			char** bloquesPedido= string_split(propiedadesPedido[1],","); //lista de bloques separados por coma
+
+			while(bloquesPedido[j]!=NULL){
+				list_add(bloquesAsignadosARecetas,atoi(bloquesPedido[j]));
+				j++;
+			}
+			//log_warning(logger,"%d",atoi(list_get(bloquesAsignadosAPedido,0)));
+			dictionary_put(diccionarioBloquesAsignadosAPedidos,propiedadesPedido[0],bloquesAsignadosARecetas);
+			log_warning(logger,"%d",list_get(bloquesAsignadosARecetas,0));
+			i++;
+			j=0;
+		}
+
+
+		if (munmap(map, info.st_size) == -1) {
+			log_error(logger, "Error al liberar memoria mapeada");
+			exit(EXIT_FAILURE);
+
+		}
+
+
+		}
+
+	}
+	//free(pathAbsolutoBloquesAsignadosAPedidos);
 
 }
 
+int cargarBitMap(){
+
+}
+void crearArchivosBloquesAsignados(){
+	struct stat info1;
+	struct stat info2;
+	struct stat info3;
+
+	int e=stat(pathAbsolutoBloquesAsignadosARestos,&info1);
+	int e2=stat(pathAbsolutoBloquesAsignadosARecetas,&info2);
+	int e3=stat(pathAbsolutoBloquesAsignadosAPedidos,&info3);
+
+	if(e==0){
+		log_warning(logger,"archivo de bloques asignados a los restaurantes ya existe");
+	}else {
+		log_info(logger,"Se creara el archivo de bloques asignados a los restaurante");
+		FILE* archivoBloquesAsigandosRestos = fopen(pathAbsolutoBloquesAsignadosARestos, "w");
+		if(-1==ftruncate(fileno(archivoBloquesAsigandosRestos),0)){
+				log_error(logger,"Error al truncar el archivo");
+
+		}
+
+		fclose(archivoBloquesAsigandosRestos);
+
+	}
+	if(e2==0){
+		log_warning(logger,"archivo de bloques asignados a las recetas ya existe");
+	}else{
+		log_info(logger,"Se creara el archivo de bloques asignados a los restaurante");
+		FILE* archivoBloquesAsignadosRecetas = fopen(pathAbsolutoBloquesAsignadosARecetas, "w");
+		if(-1==ftruncate(fileno(archivoBloquesAsignadosRecetas),0)){
+						log_error(logger,"Error al truncar el archivo");
+
+		}
+
+		fclose(archivoBloquesAsignadosRecetas);
+	}
+
+	if(e3==0){
+		log_warning(logger,"archivo de bloques asignados a los pedidos ya existe");
+	}else{
+		log_info(logger,"Se creara el archivo de bloques asignados a los restaurante");
+		FILE* archivoBloquesAsignadosPedidos = fopen(pathAbsolutoBloquesAsignadosAPedidos, "w");
+		if(-1==ftruncate(fileno(archivoBloquesAsignadosPedidos),0)){
+						log_error(logger,"Error al truncar el archivo");
+
+		}
+		fclose(archivoBloquesAsignadosPedidos);
+	}
+
+}
 int montarFS(tInfoBloques* infoBloques){
 
 		int e;
@@ -437,6 +546,7 @@ int montarFS(tInfoBloques* infoBloques){
 					crearArchivoMetadata(infoBloques->tamBloques, infoBloques->cantBloques, infoBloques->magicNumber);
 					crearBloques(infoBloques->cantBloques);
 					crearArchivoBitmap(infoBloques);
+					crearArchivosBloquesAsignados();
 
 			}
 			else {
@@ -467,18 +577,26 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 	struct stat info;
 	int e=0;
 	int resultado=1;
-	int i=0;
+	//int i=0;
 	e=stat(pathBloques,&info);
 	int registroEncontrado=0;
 	if (e == 0) {
-	FILE* archivoBloquesAsignados = fopen(pathBloques, "rw+");
+	FILE* archivoBloquesAsignados = fopen(pathBloques, "wb+");
 	int fdArchivo = fileno(archivoBloquesAsignados);
-	char* map = malloc(info.st_size + 1);
-	int offsetFinArchivo = info.st_size;
+	//char* map = malloc(info.st_size + 1);
+	//int offsetFinArchivo = info.st_size;
+	t_dictionary* diccionarioRecurso= dictionary_create();
+
+	if(strcmp(tipoRecurso,"RESTO")==0){
+		diccionarioRecurso=diccionarioBloquesAsignadosARestos;
+	}else if(strcmp(tipoRecurso,"PEDIDO")==0){
+		diccionarioRecurso=diccionarioBloquesAsignadosAPedidos;
+
+	}else diccionarioRecurso=diccionarioBloquesAsignadosARecetas;
 
 
 
-		if (info.st_size == 0) {//EL ARCHIVO ESTA VACIO, SE GRABA DIRECTAMENTE
+		/*if (info.st_size == 0) {//EL ARCHIVO ESTA VACIO, SE GRABA DIRECTAMENTE
 			if (fwrite(lineaArchivoBloquesAsignados,
 					strlen(lineaArchivoBloquesAsignados), 1,
 					archivoBloquesAsignados) == 0) {
@@ -486,9 +604,43 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 						"Error al escribir en el archivo info de restaurante");
 				resultado = -3;
 			}
-		} else {//ACA DEBERIA ENTRAR PARA LOS PEDIDOS Y RESTAURANTES,ACTUALIZA SUS BLOQUES ASIGNADOS. SE AGREGA AL MAP LOS NUEVOS BLOQUES ASIGNADOS
+			}*///else{
+				char* lines = string_new();
+				void add_line(char* key, void* value) {
+					int offset=0;
+					int j;
+					char* stringBloquesAsignados=malloc((list_size(value)*sizeof(uint32_t))+(list_size(value)-1)+1);
+					stringBloquesAsignados=string_new();
+						for(j=0;j<list_size(value);j++){
+							int bloque=0;
+							bloque=list_get(value,j);
+							string_append_with_format(&stringBloquesAsignados,"%d",bloque);
+							offset=offset+strlen(string_itoa(bloque));
+							//memcpy(stringBloquesAsignados+offset,bloqueActual,strlen(bloqueActual));
+							if(j<list_size(value)-1){
+								string_append(&stringBloquesAsignados,",");
+								offset++;
+							}
+
+						}
+						string_append_with_format(&lines, "%s %s\n", key, stringBloquesAsignados);
+
+					}
+
+				dictionary_iterator(diccionarioRecurso, add_line);
+				int result = fwrite(lines, strlen(lines), 1, archivoBloquesAsignados);
+				fclose(archivoBloquesAsignados);
+				free(lines);
+
+			//}
+
+	}
+
+
+
+/*		} else {//ACA DEBERIA ENTRAR PARA LOS PEDIDOS Y RESTAURANTES,ACTUALIZA SUS BLOQUES ASIGNADOS. SE AGREGA AL MAP LOS NUEVOS BLOQUES ASIGNADOS
 			map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchivo, 0);
-			map[offsetFinArchivo] = '\n';
+			//map[offsetFinArchivo] = '\n';
 			offsetFinArchivo++;
 			char** lineasArchivo=string_split(map,"\n");
 			while(lineasArchivo[i]!=NULL){
@@ -500,21 +652,34 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 					if(strcmp(propiedades[0],idPedido)==0){
 						registroEncontrado=1;
 										//offsetActualizacion=strlen(propiedades[0])+1;
-						memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
-						//msync(map, info.st_size, MS_SYNC);
-						if(-1==ftruncate(fileno(archivoBloquesAsignados),info.st_size)){
+						if(lineasArchivo[i+1]!=NULL){//EN caso que tengo que actualizar una linea en el medio
+							char* mapLineasSiguientes=string_substring(map,offsetActualizacion+strlen(lineasArchivo[i])+1,info.st_size);
+							memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
+							offsetActualizacion=offsetActualizacion+strlen(lineaArchivoBloquesAsignados);
+							map[offsetActualizacion]='\n';
+							memcpy(map+offsetActualizacion+1,mapLineasSiguientes,strlen(mapLineasSiguientes));
+							log_warning(logger,"%d",strlen(map));
+							msync(map, strlen(map), MS_SYNC);
+						}else{//si es la ultima linea
+							memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
+							offsetActualizacion=offsetActualizacion+strlen(lineaArchivoBloquesAsignados);
+							//map[offsetActualizacion]='\n';
+							msync(map, strlen(map), MS_SYNC);
+						}
+
+						/*if(-1==ftruncate(fileno(archivoBloquesAsignados),info.st_size)){
 							log_error(logger,"Error al truncar el archivo");
 
 						}
 						if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
 								log_error(logger,"Error al escribir en el archivo info de restaurante");
 								resultado = 0;
-							}
-						break;
+							}*/
+				//		break;
 
-					}
+			//		}
 
-				}else{ //ACA PARA LOS RESTAURANTES
+		/*		}else{ //ACA PARA LOS RESTAURANTES
 					if(strcmp(propiedades[0],nombreRecurso)==0){
 						//offsetActualizacion=strlen(propiedades[0])+1;
 						registroEncontrado=1;
@@ -531,7 +696,7 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 						break;
 					}
 				}
-				offsetActualizacion=offsetActualizacion+strlen(lineasArchivo[i]);
+				offsetActualizacion=offsetActualizacion+strlen(lineasArchivo[i])+1;
 				i++;
 			}
 
@@ -544,7 +709,7 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 							 log_error(logger, "Error al actualizar archivo mapeado...");
 							 resultado=-1;
 							 }*/
-							if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
+		/*					if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
 								log_error(logger,
 										"Error al escribir en el archivo info de restaurante");
 								resultado = 0;
@@ -568,11 +733,9 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 				msync(map, info.st_size, MS_SYNC);*/
 
 
-		fclose(archivoBloquesAsignados);
 
-	}
-	}
-
+//	}
+//	}
 	return resultado;
 }
 
@@ -715,7 +878,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 					//list_add(bloquesAsignadosARecurso,bloqueSiguiente);
 				}
 				//actualizo el diccionario de bloques asignados
-				dictionary_put(diccionarioBloquesAsignadosAPedidos,idPedido,bloquesAsignadosARecurso);
+				//dictionary_put(diccionarioBloquesAsignadosAPedidos,idPedido,bloquesAsignadosARecurso);
 			}
 		}
 
@@ -846,7 +1009,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 			}else if(string_equals_ignore_case(tipoRecurso,"RECETA")){
 				dictionary_put(diccionarioBloquesAsignadosARecetas,nombreRecurso,bloquesAsignadosARecurso);
 
-			}else dictionary_put(diccionarioBloquesAsignadosAPedidos,nombreRecurso,bloquesAsignadosARecurso);
+			}else dictionary_put(diccionarioBloquesAsignadosAPedidos,idPedido,bloquesAsignadosARecurso);
 
 		int offset=0;
 		for(j=0;j<list_size(bloquesAsignadosARecurso);j++){
@@ -902,7 +1065,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 
 		}else{
-			memcpy(pathArchivoBloquesAsignadosARecetas,pathAbsolutoBloquesAsignadosARecetas,strlen(PATH_BLOQUES_ASIGNADOS_A_RECETAS));
+			memcpy(pathArchivoBloquesAsignadosARecetas,pathAbsolutoBloquesAsignadosARecetas,strlen(pathAbsolutoBloquesAsignadosARecetas));
 			pathArchivoBloquesAsignadosARecetas[strlen(pathAbsolutoBloquesAsignadosARecetas)]='\0';
 			actualizarArchivosBloques(pathArchivoBloquesAsignadosARecetas,lineaArchivoBloquesAsignados,NULL,tipoRecurso,nombreRecurso);
 
@@ -987,7 +1150,7 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 
 	list_add(bloquesAsignadosAResto,bloquelibre);
 
-	dictionary_put(diccionarioBloquesAsignadosARestos,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto);
+	//dictionary_put(diccionarioBloquesAsignadosARestos,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto);
 	resultadoEscritura=escribirBloques(propiedades,lengthPropiedades,bloquelibre,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto,"RESTO","NUEVO",infoBloques,NULL);
 
 
@@ -1076,7 +1239,7 @@ int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva,tInfoBlo
 
 	list_add(bloquesAsignadosAReceta,bloquelibre);
 
-	dictionary_put(diccionarioBloquesAsignadosARecetas,recetaNueva->nombreReceta,bloquesAsignadosAReceta);
+	//dictionary_put(diccionarioBloquesAsignadosARecetas,recetaNueva->nombreReceta,bloquesAsignadosAReceta);
 
 	resutado=escribirBloques(propiedades, lengthPropiedades, bloquelibre,recetaNueva->nombreReceta,bloquesAsignadosAReceta,"RECETA","NUEVO",infoBloques,NULL);
 
@@ -1278,7 +1441,7 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 
 	list_add(bloquesAsignadosAPedido, bloquelibre);
 
-	dictionary_put(diccionarioBloquesAsignadosAPedidos,nombrePedido, bloquesAsignadosAPedido);
+	//dictionary_put(diccionarioBloquesAsignadosAPedidos,nombrePedido, bloquesAsignadosAPedido);
 
 	resultadoOperacion=escribirBloques(propiedades, lengthPropiedades, bloquelibre,nombrePedido, bloquesAsignadosAPedido,"PEDIDO","NUEVO",infoBloques,idPedido);
 

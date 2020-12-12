@@ -792,7 +792,7 @@ tMensajeInfoPedido *obtenerInfoPedido(char* nombreResto,char* nombrePedido,int r
 	idPedido[offset]='\0';
 
 	bloquesAsigandosAPedido=dictionary_get(diccionarioBloquesAsignadosAPedidos,idPedido);
-	log_warning(logger,"%d",list_get(bloquesAsigandosAPedido,0));
+	log_warning(logger,"%d",list_get(bloquesAsigandosAPedido,5));
 
 	e=stat(pathArchivoInfoActual,&infoPathPedido);
 	e1=stat(pathRestaurante,&infoPathRestaurante);
@@ -1280,7 +1280,7 @@ int agregarPlatoAPedido(char* nombreRestaurante,char* nombrePedido,char* nombreP
 		char* stringAGrabar=armarStringNuevoAGrabar(info,nombrePlato,cantidad,nombreRestaurante,"AGREGAR_PLATO");
 		resultado=grabarNuevoPedidoActualizado(stringAGrabar,nombreRestaurante,nombrePedido);
 
-		}
+		}else log_error(logger,"El pedido no se encuentra en estado 'pendiente'. Saliendo...");
 	}
 	return resultado;
 
@@ -2170,7 +2170,7 @@ int main(int argc, char *argv[]) {
 
 	//char* nombreResto=malloc(30);
 	//strcpy(nombreResto,"Resto1");
-	//agregarPlatoAPedido("LaParri","1","MilaPizzaConPapas",2);
+	agregarPlatoAPedido("LaParri","1","MilaPizzaConFritas2",3);
 
 	//PRUEBA MENSAJES:
 	//CONSULTA PLATOS: OK
@@ -2185,11 +2185,17 @@ int main(int argc, char *argv[]) {
 	/*tSolicitudPedido* solicitudPedido=malloc(sizeof(tSolicitudPedido));
 	//deserializarPayloadPedido(headerRecibido->payload,solicitudPedido);
 	int resultado=confirmarPedido("LaParri",string_itoa(1),NULL,0);*/
-	//PLATO LISTO:OK, VER POR QUE TIRA ERROR EN EL FREE
-	tSolicitudPlatiListo* solicitudPlatoListo=malloc(sizeof(tSolicitudPlatiListo));
-	int resultadoOperacion=1;
-	resultadoOperacion=aumentarCantidadPlatoListo("LaParri",1,"Empanadas");
 
+
+	//PLATO LISTO:OK
+	/** solicitudPlatoListo=malloc(sizeof(tSolicitudPlatiListo));
+	int resultadoOperacion=1;
+	resultadoOperacion=aumentarCantidadPlatoListo("LaParri",1,"MilaPizzaConFritas");*/
+
+
+	//TERMINAR PEDIDO: OK
+
+	//int resultado = finalizarPedido("LaParri",string_itoa(1), NULL, 0);
 
 	levantarConsola(infoBloques);
 
