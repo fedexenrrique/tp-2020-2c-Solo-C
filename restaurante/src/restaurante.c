@@ -5,6 +5,7 @@ int main(void) {
 
 	cargar_config();
 	obtener_info_restaurante();
+	iniciar_planificador();
 
 	//g_sockets_abiertos = list_create();
 
@@ -168,11 +169,16 @@ void obtener_info_restaurante(void) {
 
 void iniciar_planificacion() {
 	colas_ready = list_create();
+	cola_io = queue_create();
+	cola_bloqueados = queue_create();
+	cola_exit = queue_create();
+
 	cargar_colas_ready();
 
-	cola_io = queue_create();
 
-	cola_bloqueados = queue_create();
+	sem_init(sem_hornos, 0, cantidad_hornos);
+
+
 
 }
 
@@ -198,8 +204,84 @@ void cargar_colas_ready() {
 	}
 }
 
-void planificador_io() {
+void planificador_cpu(char * afinidad) {
 
+}
+
+void planificador_io() {
+	while (1) {
+		if (queue_size(cola_io) != 0) {
+			sem_wait(sem_hornos);
+			pcb_plato * plato = queue_pop(cola_io);
+			t_dictionary * paso = list_get(plato->receta_faltante, 0);
+			uint32_t cantidad_io = dictionary_get(paso, "HORNEAR");
+			if(cantidad_io != NULL) {
+				for(int i = 0; i < cantidad_io; ++i ) {
+					log_info(logger_restaurante, "I/0 -- plato: %s, realizando %d de %d", plato->nombre_plato, i, cantidad_io);
+				}
+			}
+			list_remove(plato->receta_faltante, 0);
+			t_dictionary * paso_nuevo = list_get(plato->receta_faltante, 0);
+			if (paso_nuevo == NULL) {
+				queue_push(cola_exit, plato);
+			}
+			else if (dictionary_has_key(paso_nuevo, "REPOSAR")) {
+				queue_push(cola_bloqueados, plato);
+			}
+			else {
+				t_queue * cola_ready;
+				int existe_cola_ready(void * p) {
+					dictionary_has_key(plato->nombre_plato);
+				}
+				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+				if (cola_ready == NULL) {
+					int existe_cola_otro(void *p) {
+						dictionary_has_key("OTRO);
+					}
+					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
+				}
+				queue_push(cola_ready, plato);
+			}
+			sem_post(sem_hornos);
+		}
+	}
+}
+
+void planificador_bloqueados() {
+	while (1) {
+		if (queue_size(cola_bloqueados) != 0) {
+			pcb_plato * plato = queue_pop(cola_bloqueados);
+			t_dictionary * paso = list_get(plato->receta_faltante, 0);
+			uint32_t cantidad_reposar = dictionary_get(paso, "REPOSAR");
+			if(cantidad_reposar != NULL) {
+				for(int i = 0; i < cantidad_reposar; ++i ) {
+					log_info(logger_restaurante, "REPOSAR -- plato: %s, realizando %d de %d", plato->nombre_plato, i, cantidad_reposar);
+				}
+			}
+			list_remove(plato->receta_faltante, 0);
+			t_dictionary * paso_nuevo = list_get(plato->receta_faltante, 0);
+			if (paso_nuevo == NULL) {
+				queue_push(cola_exit, plato);
+			}
+			else if (dictionary_has_key(paso, "REPOSAR")) {
+				queue_push(cola_bloqueados, plato);
+			}
+			else {
+				t_queue * cola_ready;
+				int existe_cola_ready(void * p) {
+					dictionary_has_key(plato->nombre_plato);
+				}
+				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+				if (cola_ready == NULL) {
+					int existe_cola_otro(void *p) {
+						dictionary_has_key("OTRO);
+					}
+					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
+				}
+				queue_push(cola_ready, plato);
+			}
+		}
+	}
 }
 
 t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * payload) {

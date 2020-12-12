@@ -9,6 +9,7 @@
 #define RESTAURANTE_H_
 
 #include "config_restaurante.h"
+#include <semaphore.h>
 
 // AMBIENTE
 
@@ -23,6 +24,9 @@ t_dictionary	*	platos_precios;
 t_list			* 	colas_ready;
 t_queue			*	cola_io;
 t_queue			* 	cola_bloqueados;
+t_queue			* 	cola_exit;
+
+sem_t			*	sem_hornos;
 
 typedef struct{
 	uint32_t		id_pedido;
@@ -39,11 +43,21 @@ typedef struct {
     uint32_t  		cantidad_plato;
 }aniadir_plato;
 
+typedef struct {
+	uint32_t		id_pedido;
+	char		*	nombre_plato;
+	char		*	estado;
+	t_list		*	receta;
+	t_list		*	receta_faltante;
+}pcb_plato;
+
 // FUNCIONES
 
 int									main													(void);
 void 								obtener_info_restaurante								(void);
 void								iniciar_planificacion									(void);
+void								planificador_io											(void);
+void								planificador_bloqueados									(void);
 void								cargar_variables										(t_respuesta_info_restaurante *);
 t_respuesta_info_restaurante 	* 	deserializar_respuesta_info_restaurante					(void *);
 void								consultar_platos_restaurante							(void);
