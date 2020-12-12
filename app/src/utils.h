@@ -29,5 +29,6 @@ typedef struct {
 
 t_info_restaurante * deserializar_info_resto(void * ,uint32_t );
 bool  enviar_confirmar_pedido_a_resto(t_info_restaurante *,uint32_t);
+t_info_restaurante * buscar_info_de_restaurante(char *);
 
 #endif /* UTILS_H_ */

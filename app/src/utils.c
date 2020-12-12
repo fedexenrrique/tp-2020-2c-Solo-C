@@ -29,7 +29,7 @@ t_info_restaurante * deserializar_info_resto(void * payload,uint32_t size){
 	memcpy(info_resto->resto_nombre,payload+offset,size_nombre);
 	offset+=size_nombre;
 
-	memcpy(&cantidad_platos,payload+offset,sizeof(uint32_t));
+/*	memcpy(&cantidad_platos,payload+offset,sizeof(uint32_t));
 	offset+=sizeof(uint32_t);
 
 	for(int i=0;i<cantidad_platos;i++){
@@ -47,7 +47,7 @@ t_info_restaurante * deserializar_info_resto(void * payload,uint32_t size){
 		info_resto->list_platos[i]=nombre_plato;
 
 	}
-
+*/
 	return info_resto;
 
 }
@@ -78,5 +78,21 @@ bool  enviar_confirmar_pedido_a_resto(t_info_restaurante * info_resto,uint32_t i
 }
 
 
+t_info_restaurante * buscar_info_de_restaurante(char * nombre_resto){
 
+	bool  buscar_resto_conectado(void * elemento){
+
+		t_info_restaurante * info_resto=(t_info_restaurante *)elemento;
+
+		if(string_equals_ignore_case(info_resto->resto_nombre,nombre_resto))
+			return TRUE;
+		return FALSE;
+
+	}
+
+	t_info_restaurante * info_resto=list_find(lista_resto_conectados,buscar_resto_conectado);
+
+	return info_resto;
+
+}
 

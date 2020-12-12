@@ -165,6 +165,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		break;
 
 	case PLATO_LISTO:
+		//Me envia el restaurante el plato listo y yo informo a la comanda
 		break;
 	case CONSULTAR_PEDIDO:
 		break;
@@ -716,7 +717,7 @@ void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
 }
 
-bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {
+bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {//Me envian el nombre de resto y la posicion del cliente
 
 	char * l_restaurante_seleccionado = NULL;
 
@@ -821,6 +822,8 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 		if(string_equals_ignore_case(asociacion->nombre_resto,"default"))
 			return g_platos_default;
 
+		t_info_restaurante * info_resto=buscar_info_de_restaurante(asociacion->nombre_resto);
+		enviar_04_consultar_platos_app_a_resto(info_resto->socket_conectado);
 		return NULL; // DEBE RETORNAR LA LISTA DE PLATOS DE LOS RESTAURANTS QUE NO SON DEFAULT ¿--- Tiene q mandar msj a restaurant o comanda
 
 	} else {

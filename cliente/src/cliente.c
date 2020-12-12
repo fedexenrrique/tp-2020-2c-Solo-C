@@ -93,7 +93,8 @@ int main(int argc, char **argv) {
 
     		    		printf("Debe ingresar mas parámetros.\n");
 
-    		    		enviar_09_confirmar_pedido_hack ( g_ip_app, g_puerto_app );
+    		    		enviar_09_confirmar_pedido( g_ip_app, g_puerto_app,argv[3],argv[4]);
+    		    		//enviar_09_confirmar_pedido_hack ( g_ip_app, g_puerto_app );
 
     		    		break;
 

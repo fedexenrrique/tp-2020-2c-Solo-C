@@ -1920,5 +1920,22 @@ void _string_destroyer( void * p_elem ) {
 	if ( p_elem != NULL ) free(p_elem);
 
 }
+//  ACA TENGO Q TERMINAR
+char ** enviar_04_consultar_platos_app_a_resto(uint32_t socket_conectado){
 
+	t_header header_response;
 
+	header_response.modulo     = APP;
+	header_response.id_proceso = 0;
+	header_response.nro_msg    = CONSULTAR_PLATOS;
+	header_response.size       = 0;
+	header_response.payload    = NULL;
+
+	enviar_buffer( socket_conectado, &header_response);
+
+	t_header * encabezado=recibir_buffer(socket_conectado);
+	______
+
+	//Tengo q deserializar y cargarlo en un vector y retornarlo
+
+}
