@@ -45,13 +45,13 @@ pthread_t  g_thread_short_term_scheduler;
 t_list * lista_clientes; // t_cliente_resto
 t_queue * queue_confirmados_cliente_resto; // t_cliente_a_resto  los pedido q ya fueron confirmados
 t_list * lista_resto_conectados; // t_info_restarante
-t_queue * g_cola_nuevos; //Es las cola de los repartidores nuevos  t_pcb_repartidor*
+t_queue * g_cola_nuevos; //Es las cola de los REPARTIDORES nuevos  t_pcb_repartidor*
 t_queue * g_cola_listos;//Guarda los repartidores(dependiendo FIFO o SJF) t_pcb_repartidor*
 t_list  * g_lista_listos;//
 t_queue * g_cola_bloqueados;
 
 sem_t    sem_nuevos;
-sem_t    sem_listos;
+sem_t    sem_listos;//Podria ser semaforo q se habilita cuando agrego un repartidor a la cola de listos  g_cola_listos  t_pcb_repartidor
 sem_t    sem_bloq;// Seria un semaforo para que se bloquee el repartidor
 sem_t g_nro_cpus ;
 

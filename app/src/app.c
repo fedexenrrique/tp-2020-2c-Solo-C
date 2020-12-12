@@ -22,7 +22,7 @@ int main(void) {
 	signal(SIGINT, sigint);
 
 	logger = log_create("app.log","APP",1,LOG_LEVEL_INFO);
-	config = leer_config();
+	config = leer_config();  // Carga tambien el resto default a la cola de lista_resto_conectados
 
 	g_cola_nuevos = queue_create();
 
@@ -256,7 +256,7 @@ void bucle_resto_conectado ( uint32_t sock_aceptado ) {
 
 void long_term_scheduler( void ) {//Agrego los pcb de los repartidores a la cola de listos
 
-	_aux_long_term_scheduler(); // Cargo los reaprtidores que tengo por archivo
+	_aux_long_term_scheduler(); // Cargo los reaprtidores que tengo por archivo e inicio dos hilos, de descanso y ejecucuion
 
 	while (1) {
 
@@ -264,7 +264,7 @@ void long_term_scheduler( void ) {//Agrego los pcb de los repartidores a la cola
 
 			t_pcb_repartidor * l_repartidor = queue_pop(g_cola_nuevos);
 
-			t_cliente_a_resto * l_confirmado = queue_pop(queue_confirmados_cliente_resto);
+			t_cliente_a_resto * l_confirmado = queue_pop(queue_confirmados_cliente_resto); //Saco de la cola de confirmados un pedido. No lo usaria mas calculo
 
 			printf("Estoy por planificar el repartidor %d hasta con el pedido %d.\n", l_repartidor->id_repartidor, l_confirmado->id_pedido);
 
@@ -482,7 +482,7 @@ void descanso_repartidor ( t_pcb_repartidor * p_pcb ) { while (1) {
 
 		sleep( g_retardo_ciclo_cpu );
 
-	}
+	    }
 
 	p_pcb->cansancio = 0;
 
@@ -502,7 +502,8 @@ void descanso_repartidor ( t_pcb_repartidor * p_pcb ) { while (1) {
 
 	sem_post( &p_pcb->bloq );
 
-}}
+  }
+}
 
 void ejecucion_repartidor ( t_pcb_repartidor * p_pcb ) {
 
@@ -950,6 +951,7 @@ void auxiliar_aniadir_plato ( t_list * p_list_platos, uint32_t p_cant_plato, cha
 
 }
 
+//pido a resto y a comanda la confirmacion del pedido. SI es correcta, agrego el pedido a la queue_confirmados_cliente_resto para q se empiece a planificar
 bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	uint32_t despla = 0;
@@ -957,7 +959,7 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 	bool confirmacion=FALSE;
 	char * nombre_resto;
 
-				bool _control_existe_pedido ( void * p_elem ) {//Aca le agregue la comprobacion si  del nombre del resto tambien
+				bool _control_existe_pedido ( void * p_elem ) {//Aca le agregue la comprobacion del nombre del resto tambien. "COmprueba sii existe pedido para tal resto"
 
 					return ((t_cliente_a_resto*)p_elem)->id_pedido == id_pedido && string_equals_ignore_case(((t_cliente_a_resto*)p_elem)->nombre_resto ,nombre_resto) ;
 
@@ -1027,7 +1029,7 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	   } else {
 
-		agregar_pedid_a_planificacion (asociacion);  //Agrego pedido a la cola de confirmados cliente_resto
+		agregar_pedid_a_planificacion (asociacion);  //Agrego pedido a la cola de confirmados cliente_resto  queue_confirmados_cliente_resto
 
 	   }
 
