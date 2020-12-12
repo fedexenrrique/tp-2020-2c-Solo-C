@@ -38,6 +38,8 @@ typedef struct{
 
 typedef struct {
 	uint32_t 		id_pedido;
+	uint32_t		size_nombre_restaurante;
+	char		*	nombre_restaurante;
 	uint32_t  		size_nombre_plato;
 	char 		*	nombre_plato;
     uint32_t  		cantidad_plato;

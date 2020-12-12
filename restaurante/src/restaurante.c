@@ -86,19 +86,22 @@ void conectar_restaurante_a_applicacion(void) {
 
 	switch ( header_recibido->nro_msg ) {
 	case CONSULTAR_PLATOS:
-		// responder_consultar_platos( sock_conectado, g_platos_default );
+		// consulto al sindicato y lo que me devuelve el sindicato lo respondo a la app
 		break;
 	case CREAR_PEDIDO:
+		// primero le mando al sindicato si el sindicato responde OK, le tengo que devolver un id a la app
 		break;
 	case ANIADIR_PLATO:
+		// primero le mando al sindicato si el sindicato responde Ok, le tengo que devolver un OK o fail a la app
 		break;
 	case CONFIRMAR_PEDIDO:
-		break;
-	case PLATO_LISTO:
+		// La app me manda el id yo lo confirmo le mando al sindicato, el responde OK o fail y lo informo a la app
 		break;
 	case CONSULTAR_PEDIDO:
+		// La app me manda la consulta y yo se reenvio al sindicato. Cuando este responde se lo devuelvo a la app
 		break;
 	case CONECTAR:
+		// responde la app para avisar que se conecto todo OK
 		break;
 	default:
 		printf("Mensaje no compatible con módulo RESTAURANTE.\n");
