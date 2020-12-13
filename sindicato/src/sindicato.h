@@ -193,8 +193,9 @@ t_dictionary* diccionarioBloquesAsignadosAPedidos;
 
 t_dictionary* diccionarioPosPropiedadesEnArchivo;
 
-int bloquesLibres;
 
+
+int bloquesLibres;
 
 char* pathFiles;
 char* pathMetadata;
@@ -204,9 +205,26 @@ char* pathRecetas;
 char* pathAbsolutoBloquesAsignadosARestos;
 char* pathAbsolutoBloquesAsignadosAPedidos;
 char* pathAbsolutoBloquesAsignadosARecetas;
-
-
-
+pthread_mutex_t mutexDiccionarioRestos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexDiccionarioRecetas;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexDiccionarioPedidos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexArchivoBloquesAsignadosRestos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexArchivoBloquesAsignadosRecetas;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexArchivoBloquesAsignadosPedidos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexBloques;//PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexBitMap;//PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexEscrituraBloques;
+pthread_mutex_t mutexLecturaInfoResto;
+pthread_mutex_t mutexLecturaInfoRecetas;
+pthread_mutex_t mutexCreacionPedido;
+pthread_mutex_t mutexLecturaPedido;
+pthread_mutex_t mutexAgregarPlato;
+pthread_mutex_t mutexConfirmarPedido;
+pthread_mutex_t mutexFinalizarPedido;
+pthread_mutex_t mutexArchivoInfoPedido;
+pthread_mutex_t mutexLecturaBloquesPedido;
+pthread_mutex_t mutexArchivoBloquePedido;
+pthread_mutex_t mutexAumentarCantidadPlatoListo;
 
 //void handleConexion(int socketCliente,tInfoBloques* infoBloques);
 int montarFS(tInfoBloques* infoBloques);

@@ -371,7 +371,6 @@ void cargarBloquesAsigandosAPedidos(){
 			}
 			//log_warning(logger,"%d",atoi(list_get(bloquesAsignadosAPedido,0)));
 			dictionary_put(diccionarioBloquesAsignadosAPedidos,propiedadesPedido[0],bloquesAsignadosAPedido);
-			log_warning(logger,"%d",list_get(bloquesAsignadosAPedido,0));
 			i++;
 			j=0;
 		}
@@ -453,9 +452,7 @@ void cargarBloquesAsigandosARecetas(){
 
 }
 
-int cargarBitMap(){
 
-}
 void crearArchivosBloquesAsignados(){
 	struct stat info1;
 	struct stat info2;
@@ -524,7 +521,6 @@ int montarFS(tInfoBloques* infoBloques){
 				cargarBloquesAsigandosAResto();
 				//cargarBloquesAsigandosARecetas();
 				cargarBloquesAsigandosAPedidos();
-				cargarBitMap();
 
 
 		}
@@ -577,34 +573,27 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 	struct stat info;
 	int e=0;
 	int resultado=1;
-	//int i=0;
 	e=stat(pathBloques,&info);
-	int registroEncontrado=0;
-	if (e == 0) {
-	FILE* archivoBloquesAsignados = fopen(pathBloques, "wb+");
-	int fdArchivo = fileno(archivoBloquesAsignados);
-	//char* map = malloc(info.st_size + 1);
-	//int offsetFinArchivo = info.st_size;
-	t_dictionary* diccionarioRecurso= dictionary_create();
+		if (e == 0) {
+			FILE* archivoBloquesAsignados = fopen(pathBloques, "wb+");
+			int fdArchivo = fileno(archivoBloquesAsignados);
+			t_dictionary* diccionarioRecurso= dictionary_create();
 
-	if(strcmp(tipoRecurso,"RESTO")==0){
-		diccionarioRecurso=diccionarioBloquesAsignadosARestos;
-	}else if(strcmp(tipoRecurso,"PEDIDO")==0){
-		diccionarioRecurso=diccionarioBloquesAsignadosAPedidos;
+			if(strcmp(tipoRecurso,"RESTO")==0){
+				diccionarioRecurso=diccionarioBloquesAsignadosARestos;
+				pthread_mutex_unlock(&mutexDiccionarioRestos);
 
-	}else diccionarioRecurso=diccionarioBloquesAsignadosARecetas;
+			}else if(strcmp(tipoRecurso,"PEDIDO")==0){
+				diccionarioRecurso=diccionarioBloquesAsignadosAPedidos;
 
+			}else {
+				diccionarioRecurso=diccionarioBloquesAsignadosARecetas;
 
-
-		/*if (info.st_size == 0) {//EL ARCHIVO ESTA VACIO, SE GRABA DIRECTAMENTE
-			if (fwrite(lineaArchivoBloquesAsignados,
-					strlen(lineaArchivoBloquesAsignados), 1,
-					archivoBloquesAsignados) == 0) {
-				log_error(logger,
-						"Error al escribir en el archivo info de restaurante");
-				resultado = -3;
 			}
-			}*///else{
+
+
+
+
 				char* lines = string_new();
 				void add_line(char* key, void* value) {
 					int offset=0;
@@ -628,114 +617,30 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 					}
 
 				dictionary_iterator(diccionarioRecurso, add_line);
-				int result = fwrite(lines, strlen(lines), 1, archivoBloquesAsignados);
+				resultado = fwrite(lines, strlen(lines), 1, archivoBloquesAsignados);
 				fclose(archivoBloquesAsignados);
+
+				if(strcmp(tipoRecurso,"RESTO")==0){
+								pthread_mutex_unlock(&mutexArchivoBloquesAsignadosRestos);
+								pthread_mutex_unlock(&mutexDiccionarioRestos);
+							}else if(strcmp(tipoRecurso,"PEDIDO")==0){
+								pthread_mutex_unlock(&mutexArchivoBloquesAsignadosPedidos);
+								pthread_mutex_unlock(&mutexDiccionarioRestos);
+
+							}else {
+								pthread_mutex_unlock(&mutexArchivoBloquesAsignadosRecetas);
+								pthread_mutex_unlock(&mutexDiccionarioRestos);
+
+							}
 				free(lines);
 
-			//}
+
 
 	}
 
 
 
-/*		} else {//ACA DEBERIA ENTRAR PARA LOS PEDIDOS Y RESTAURANTES,ACTUALIZA SUS BLOQUES ASIGNADOS. SE AGREGA AL MAP LOS NUEVOS BLOQUES ASIGNADOS
-			map = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchivo, 0);
-			//map[offsetFinArchivo] = '\n';
-			offsetFinArchivo++;
-			char** lineasArchivo=string_split(map,"\n");
-			while(lineasArchivo[i]!=NULL){
-				int offsetActualizacion=0;
 
-				char** propiedades=string_split(lineasArchivo[i]," ");
-				//dictionary_put(bloquesAsignados,propiedades[0],propiedades[1]);
-				if(idPedido!=NULL){/// PARA LOS PEDIDOS
-					if(strcmp(propiedades[0],idPedido)==0){
-						registroEncontrado=1;
-										//offsetActualizacion=strlen(propiedades[0])+1;
-						if(lineasArchivo[i+1]!=NULL){//EN caso que tengo que actualizar una linea en el medio
-							char* mapLineasSiguientes=string_substring(map,offsetActualizacion+strlen(lineasArchivo[i])+1,info.st_size);
-							memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
-							offsetActualizacion=offsetActualizacion+strlen(lineaArchivoBloquesAsignados);
-							map[offsetActualizacion]='\n';
-							memcpy(map+offsetActualizacion+1,mapLineasSiguientes,strlen(mapLineasSiguientes));
-							log_warning(logger,"%d",strlen(map));
-							msync(map, strlen(map), MS_SYNC);
-						}else{//si es la ultima linea
-							memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
-							offsetActualizacion=offsetActualizacion+strlen(lineaArchivoBloquesAsignados);
-							//map[offsetActualizacion]='\n';
-							msync(map, strlen(map), MS_SYNC);
-						}
-
-						/*if(-1==ftruncate(fileno(archivoBloquesAsignados),info.st_size)){
-							log_error(logger,"Error al truncar el archivo");
-
-						}
-						if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
-								log_error(logger,"Error al escribir en el archivo info de restaurante");
-								resultado = 0;
-							}*/
-				//		break;
-
-			//		}
-
-		/*		}else{ //ACA PARA LOS RESTAURANTES
-					if(strcmp(propiedades[0],nombreRecurso)==0){
-						//offsetActualizacion=strlen(propiedades[0])+1;
-						registroEncontrado=1;
-						memcpy(map+offsetActualizacion,lineaArchivoBloquesAsignados,strlen(lineaArchivoBloquesAsignados));
-						//msync(map, info.st_size, MS_SYNC);
-						if(-1==ftruncate(fileno(archivoBloquesAsignados),info.st_size)){
-																log_error(logger,"Error al truncar el archivo");
-
-						}
-						if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
-								log_error(logger,"Error al escribir en el archivo info de restaurante");
-						resultado = 0;
-						}
-						break;
-					}
-				}
-				offsetActualizacion=offsetActualizacion+strlen(lineasArchivo[i])+1;
-				i++;
-			}
-
-			if(lineasArchivo[i]==NULL && registroEncontrado==0){ //EL archivo no estaba vacio pero tampoco se encontro el recurso. Se agrega al final
-
-							memcpy(map + offsetFinArchivo, lineaArchivoBloquesAsignados,
-									strlen(lineaArchivoBloquesAsignados));
-
-							/*if (msync(map, info.st_size, MS_SYNC) == -1) {
-							 log_error(logger, "Error al actualizar archivo mapeado...");
-							 resultado=-1;
-							 }*/
-		/*					if (fwrite(map, strlen(map), 1, archivoBloquesAsignados) == 0) {
-								log_error(logger,
-										"Error al escribir en el archivo info de restaurante");
-								resultado = 0;
-							}
-
-							if (munmap(map, info.st_size) == -1) {
-								log_error(logger, "Error al liberar memoria mapeada");
-								resultado = -1;
-								//exit(EXIT_FAILURE);
-							}
-							//free(map);
-
-					}
-
-
-			/*if(dictionary_has_key(bloquesAsignados,idPedido)){
-				char* listaBloquesActual=dictionary_get(bloquesAsignados,idPedido);
-				char** propiedadAActualizar=string_split(lineaArchivoBloquesAsignados," ");
-				char*listaBloquesActualizados=propiedadAActualizar[1];
-				dictionary_put(bloquesAsignados,idPedido,listaBloquesActualizados);
-				msync(map, info.st_size, MS_SYNC);*/
-
-
-
-//	}
-//	}
 	return resultado;
 }
 
@@ -824,8 +729,6 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		bloqueActual=bloqueInicial;
 		char* pathBloqueActual=malloc(strlen(pathBloques)+strlen(string_itoa(bloqueActual))+4+1);
 		memcpy(pathBloqueActual,pathBloques,strlen(pathBloques));
-		struct stat infoArchivo;
-		int e = stat(pathBloqueActual, &infoArchivo);
 		int offset=0;
 		offset=offset+strlen(pathBloques);
 		//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
@@ -835,12 +738,14 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		offset=offset+4;
 		pathBloqueActual[offset]='\0';
 
-		FILE* archivoBloqueActual=fopen(pathBloqueActual,"w");
+			pthread_mutex_lock(&mutexBloques);
+			FILE* archivoBloqueActual=fopen(pathBloqueActual,"w");
 
 			if(fwrite(propiedades,cantEscritura,1,archivoBloqueActual)==0){
 				log_error(logger,"Error al escribir en el archivo info de restaurante");
 				resultado=-3;
 			}
+			pthread_mutex_unlock(&mutexBloques);
 
 	}else {
 		int sizeStringConPunteros=cantEscritura+ (((cantEscritura) / (infoBloques->tamBloques))*sizeof(uint32_t));
@@ -862,8 +767,11 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 			if(bloquesExtra>0){
 				for(int i=0;i<bloquesExtra;i++){ //asigno n bloques mas
+					pthread_mutex_lock(&mutexBitMap);
 					bloqueSiguienteNuevo=buscarBloqueLibre(infoBloques);
 					list_add(bloquesAsignadosARecurso,bloqueSiguienteNuevo);
+					pthread_mutex_unlock(&mutexBitMap);
+
 					//free(bloqueSiguienteNuevo);
 				}
 				//En este caso tengo que sacar bloques, en caso que se hayan eliminado elementos del string y se redujera su tamaño
@@ -900,8 +808,10 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 					//}
 
 				}else {
+					pthread_mutex_lock(&mutexBitMap);
 					bloqueSiguiente=buscarBloqueLibre(infoBloques);
 					list_add(bloquesAsignadosARecurso,bloqueSiguiente);
+					pthread_mutex_unlock(&mutexBitMap);
 
 				}
 /*
@@ -930,6 +840,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 				memcpy(pathBloqueActual+offset,".bin",4);
 				offset=offset+4;
 				pathBloqueActual[offset]='\0';
+				pthread_mutex_lock(&mutexBloques);
 
 				FILE* archivoBloqueActual=fopen(pathBloqueActual,"w");
 
@@ -954,6 +865,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 				free(bytesAEscribir);
 
 				fclose(archivoBloqueActual);
+				pthread_mutex_unlock(&mutexBloques);
+
 				strcpy(pathBloqueActual,"");
 				strcpy(pathBloqueActual,pathBloques);
 
@@ -973,6 +886,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 				bytesAEscribir[(strlen(propiedades)-offsetEscritura)]='\0';
 
 				//string_append_with_format(&pathBloqueActual,"%d%s",bloqueActual,".bin");
+				pthread_mutex_lock(&mutexBloques);
 
 				FILE* archivoBloqueActual=fopen(pathBloqueActual,"wb+");
 				int sizeTruncate=infoBloques->tamBloques;
@@ -990,19 +904,28 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 					//bitarray_clean_bit(bitMap, i);
 					//msync(mapBitArray, fdArchivoBitmap, MS_SYNC);
 				}
+				pthread_mutex_unlock(&mutexBloques);
 
 				free(bytesAEscribir);
 				fclose(archivoBloqueActual);
 			}
 		}
+		//pthread_mutex_lock(&mutexArchivoBloquesAsignadosRestos);
+		//pthread_mutex_lock(&mutexDiccionarioRestos);
 
+		if(strcmp(tipoRecurso,"RESTO")==0){
+						pthread_mutex_lock(&mutexDiccionarioRestos);
+						pthread_mutex_lock(&mutexArchivoBloquesAsignadosRestos);
+
+					}else if(strcmp(tipoRecurso,"PEDIDO")==0){
+						pthread_mutex_lock(&mutexDiccionarioPedidos);
+						pthread_mutex_lock(&mutexArchivoBloquesAsignadosPedidos);
+					}else {
+						pthread_mutex_lock(&mutexDiccionarioRecetas);
+						pthread_mutex_lock(&mutexArchivoBloquesAsignadosRecetas);
+		}
 		//Actualizo el archivo de bloques asignados al recurso (receta,restaurante o pedido)
-		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,0));
-		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,1));
-		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,2));
-		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,3));
-		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,4));
-		log_warning(logger,"%d",list_get(bloquesAsignadosARecurso,5));
+
 
 		if(string_equals_ignore_case(tipoRecurso,"RESTO")){
 			dictionary_put(diccionarioBloquesAsignadosARestos,nombreRecurso,bloquesAsignadosARecurso);
@@ -1013,13 +936,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 		int offset=0;
 		for(j=0;j<list_size(bloquesAsignadosARecurso);j++){
-			//int bloqueActual=atoi(list_get(bloquesAsignadosARecurso,j));
-			//string_append(&stringBloquesAsignados,atoi(list_get(bloquesAsignadosARecurso,j)));
 
-			/*int bloque=0;
-			if(strcmp(tipoRecurso,"PEDIDO")==0 && strcmp(operacion,"ACTUALIZAR")==0){
-				bloque=atoi(list_get(bloquesAsignadosARecurso,j));
-			}else bloque=list_get(bloquesAsignadosARecurso,j);*/
 			int bloque=0;
 			bloque=list_get(bloquesAsignadosARecurso,j);
 			string_append_with_format(&stringBloquesAsignados,"%d",bloque);
@@ -1131,7 +1048,10 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 	propiedades[sizePropiedades]='\0';
 	dictionary_put(diccionarioPosPropiedadesEnArchivo,restauranteNuevo->nombreRestaurante,posEnArchivoRestaurante);
 
+	pthread_mutex_lock(&mutexBitMap);
 	int bloquelibre=buscarBloqueLibre(infoBloques);
+	pthread_mutex_unlock(&mutexBitMap);
+
 	int sizeInfoPropiedades=strlen("SIZE=INITIAL_BLOCK=")+(sizeof(int)*2)+1;
 	char* infoPropiedades = malloc(sizeInfoPropiedades+1);
 
@@ -1151,7 +1071,9 @@ int grabarInfoRestaurante(tCreacionRestaurante* restauranteNuevo,char* pathResto
 	list_add(bloquesAsignadosAResto,bloquelibre);
 
 	//dictionary_put(diccionarioBloquesAsignadosARestos,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto);
+	pthread_mutex_lock(&mutexEscrituraBloques);
 	resultadoEscritura=escribirBloques(propiedades,lengthPropiedades,bloquelibre,restauranteNuevo->nombreRestaurante,bloquesAsignadosAResto,"RESTO","NUEVO",infoBloques,NULL);
+	pthread_mutex_unlock(&mutexEscrituraBloques);
 
 
 	free(propiedades);
@@ -1220,7 +1142,10 @@ int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva,tInfoBlo
 														"TIEMPO_PASOS=",recetaNueva->tiemposPasos);
 	propiedades[strlen(propiedades)]='\0';
 
+	pthread_mutex_lock(&mutexBitMap);
 	int bloquelibre=buscarBloqueLibre(infoBloques);
+	pthread_mutex_unlock(&mutexBitMap);
+
 
 	int sizeStringConPunteros=lengthPropiedades+ (((lengthPropiedades) / (infoBloques->tamBloques))*sizeof(uint32_t));
 
@@ -1240,8 +1165,9 @@ int grabarInfoReceta(tCreacionReceta* recetaNueva,char* pathRecetaNueva,tInfoBlo
 	list_add(bloquesAsignadosAReceta,bloquelibre);
 
 	//dictionary_put(diccionarioBloquesAsignadosARecetas,recetaNueva->nombreReceta,bloquesAsignadosAReceta);
-
+	pthread_mutex_lock(&mutexEscrituraBloques);
 	resutado=escribirBloques(propiedades, lengthPropiedades, bloquelibre,recetaNueva->nombreReceta,bloquesAsignadosAReceta,"RECETA","NUEVO",infoBloques,NULL);
+	pthread_mutex_unlock(&mutexEscrituraBloques);
 
 	free(propiedades);
 	free(infoPropiedades);
@@ -1410,8 +1336,10 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 			"PRECIO_TOTAL=",pedidoNuevo->precioTotal);
 
 	propiedades[sizePropiedadesPedido]='\0';
-
+	pthread_mutex_lock(&mutexBitMap);
 	int bloquelibre = buscarBloqueLibre(infoBloques);
+	pthread_mutex_unlock(&mutexBitMap);
+
 	int sizeStringConPunteros=lengthPropiedades+ (((lengthPropiedades) / (infoBloques->tamBloques))*sizeof(uint32_t));
 
 	/*int lengthInfoPropiedades = sprintf(infoPropiedades, "%s%d%s%s%d", "SIZE=",
@@ -1443,7 +1371,9 @@ int grabarArchivoPedido(tCreacionPedido* pedidoNuevo,char* pathPedido,char* nomb
 
 	//dictionary_put(diccionarioBloquesAsignadosAPedidos,nombrePedido, bloquesAsignadosAPedido);
 
+	pthread_mutex_lock(&mutexEscrituraBloques);
 	resultadoOperacion=escribirBloques(propiedades, lengthPropiedades, bloquelibre,nombrePedido, bloquesAsignadosAPedido,"PEDIDO","NUEVO",infoBloques,idPedido);
+	pthread_mutex_unlock(&mutexEscrituraBloques);
 
 	free(propiedades);
 	free(infoPropiedades);
