@@ -1924,6 +1924,7 @@ void _string_destroyer( void * p_elem ) {
 char ** enviar_04_consultar_platos_app_a_resto(uint32_t socket_conectado){
 
 	t_header header_response;
+	char ** vector_platos=NULL;
 
 	header_response.modulo     = APP;
 	header_response.id_proceso = 0;
@@ -1934,8 +1935,26 @@ char ** enviar_04_consultar_platos_app_a_resto(uint32_t socket_conectado){
 	enviar_buffer( socket_conectado, &header_response);
 
 	t_header * encabezado=recibir_buffer(socket_conectado);
-	______
 
 	//Tengo q deserializar y cargarlo en un vector y retornarlo
 
+	vector_platos=deserializar_respuesta_consultar_platos(encabezado->payload);
+
+	return vector_platos;
+
+}
+
+char ** deserializar_respuesta_consultar_platos(void * payload){
+
+	char * platos_cadena=NULL;
+	int size_string=0;
+	char ** vector_platos=NULL;
+
+	memcpy(&size_string,payload,sizeof(uint32_t));
+	platos_cadena=malloc(size_string+1);
+	memcpy(platos_cadena,payload+sizeof(uint32_t),size_string);
+
+	vector_platos=string_split(platos_cadena,",");
+
+	return vector_platos;
 }

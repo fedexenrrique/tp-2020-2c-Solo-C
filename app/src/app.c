@@ -807,11 +807,13 @@ bool procedimiento_02_seleccionar_restaurante ( t_header * header_recibido ) {//
 
 char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
-	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+	char ** vector_platos=NULL;
 
-		return ( ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ) ? true : false ;
+				bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
-	}
+					return ( ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ) ? true : false ;
+
+				}
 
 	t_cliente_a_resto * asociacion = list_find( lista_clientes , _control_existe_asociacion_cliente_resto );
 
@@ -822,9 +824,9 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 		if(string_equals_ignore_case(asociacion->nombre_resto,"default"))
 			return g_platos_default;
 
-		t_info_restaurante * info_resto=buscar_info_de_restaurante(asociacion->nombre_resto);
-		enviar_04_consultar_platos_app_a_resto(info_resto->socket_conectado);
-		return NULL; // DEBE RETORNAR LA LISTA DE PLATOS DE LOS RESTAURANTS QUE NO SON DEFAULT ¿--- Tiene q mandar msj a restaurant o comanda
+		t_info_restaurante * info_resto=buscar_info_de_restaurante(asociacion->nombre_resto,lista_resto_conectados);
+		vector_platos=enviar_04_consultar_platos_app_a_resto(info_resto->socket_conectado);
+		return vector_platos; // DEBE RETORNAR LA LISTA DE PLATOS DE LOS RESTAURANTS QUE NO SON DEFAULT ¿--- Tiene q mandar msj a restaurant o comanda
 
 	} else {
 

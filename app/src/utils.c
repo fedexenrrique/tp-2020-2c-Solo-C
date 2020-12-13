@@ -14,7 +14,7 @@ t_info_restaurante * deserializar_info_resto(void * payload,uint32_t size){
 	t_info_restaurante * info_resto=malloc(sizeof(t_info_restaurante));
 	int offset=0;
 	int size_nombre=0;
-	int cantidad_platos=0;
+//	int cantidad_platos=0;
 
 	memcpy(&info_resto->resto_x,payload+offset,sizeof(uint32_t));
 	offset+=sizeof(uint32_t);
@@ -78,7 +78,7 @@ bool  enviar_confirmar_pedido_a_resto(t_info_restaurante * info_resto,uint32_t i
 }
 
 
-t_info_restaurante * buscar_info_de_restaurante(char * nombre_resto){
+t_info_restaurante * buscar_info_de_restaurante(char * nombre_resto,t_list * lista_resto_conectados){
 
 	bool  buscar_resto_conectado(void * elemento){
 
