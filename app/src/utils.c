@@ -96,3 +96,25 @@ t_info_restaurante * buscar_info_de_restaurante(char * nombre_resto,t_list * lis
 
 }
 
+uint32_t solicitar_id_a_restaurante(uint32_t socket){
+
+	t_header header_response;
+	uint32_t id_pedido=0;
+
+	header_response.modulo     = APP;
+	header_response.id_proceso = 0;
+	header_response.nro_msg    = CREAR_PEDIDO;
+	header_response.size       = 0;
+	header_response.payload    = NULL;
+
+	enviar_buffer( socket, &header_response);
+
+	t_header * encabezado=recibir_buffer(socket);
+
+	if(encabezado->size!=sizeof(uint32_t)){log_error(logger,"No se envio la cantidad de bytes correspondientes a un ID");return -1;}
+
+	memcpy(&id_pedido,encabezado->payload,sizeof(uint32_t));
+
+	return id_pedido;
+
+}

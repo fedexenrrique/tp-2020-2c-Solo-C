@@ -227,7 +227,7 @@ void responder_02_seleccionar_restaurante( int socket_cliente, bool seleccionado
 
 t_list * enviar_04_consultar_platos( char* p_ip, char* p_puerto, uint32_t p_id_process );
 char ** enviar_04_consultar_platos_app_a_resto(uint32_t);
-char ** deserializar_respuesta_consultar_platos(void *);
+char ** deserializar_respuesta_consultar_platos(t_header *);
 void responder_04_consultar_platos( uint32_t socket_cliente, char ** p_platos );
 
 uint32_t enviar_05_crear_pedido( char* p_ip, char* p_puerto, uint32_t p_id_process );

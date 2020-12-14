@@ -840,17 +840,17 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
 uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
-	bool _chequeo_existencia_asociacion ( void * p_elem ) {
+					bool _chequeo_existencia_asociacion ( void * p_elem ) {
 
-		return ((t_cliente_a_resto *) p_elem)->id_cliente == header_recibido->id_proceso;
+						return ((t_cliente_a_resto *) p_elem)->id_cliente == header_recibido->id_proceso;
 
-	}
+					}
 
 	t_cliente_a_resto * asociacion = (t_cliente_a_resto *) list_find( lista_clientes, _chequeo_existencia_asociacion );
 
 	if ( asociacion == NULL ) return -1;
 
-	if ( asociacion->id_pedido != 0 ) {
+	if ( asociacion->id_pedido != 0 ) {//Aca creo q elimino un pedido pre existente, y le doy por default el valor 0
 
 		log_info(logger, "Se elimina pedido '%d' pre-existente.\n", asociacion->id_pedido );
 
@@ -858,13 +858,21 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	    }
 
-	uint32_t id_pedido_generado = random_id_generator();
+	if(string_equals_ignore_case(asociacion->nombre_resto,"default")){//Si es reto default, genero un id, sino lo pido al restorant
 
-	asociacion->id_pedido = id_pedido_generado;//-------Aca tengo q pedirle el id a REATAURANTE
+		uint32_t id_pedido_generado = random_id_generator();
+		asociacion->id_pedido = id_pedido_generado;
+	}else{
+
+		t_info_restaurante * info_resto=buscar_info_de_restaurante(asociacion->nombre_resto,lista_resto_conectados);
+
+		asociacion->id_pedido = solicitar_id_a_restaurante(info_resto->socket_conectado);
+	    }
 
 	// "GUARDAR_PEDIDO" Hacia Comanda.
 
-	bool guardado = enviar_06_guardar_pedido(g_ip_comanda, g_puerto_comanda, "default", id_pedido_generado );
+
+	bool guardado = enviar_06_guardar_pedido(g_ip_comanda, g_puerto_comanda, asociacion->nombre_resto, asociacion->id_pedido );
 
 	if (guardado) {
 
@@ -872,17 +880,17 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 	} else printf("No se pudo guardar el pedido.\n");
 
-	return id_pedido_generado;
+	return asociacion->id_pedido;
 
 }
 
 bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 
-	bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+				bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
-		return ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ;
+					return ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ;
 
-	}
+				}
 
 	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_asociacion_cliente_resto );
 
@@ -895,10 +903,10 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 	}
 
 	uint32_t despla = 0;
+	uint32_t cantidad_platos=1;
+	uint32_t id_pedido = 0;
 
-	uint32_t cantidad_platos = 0;
-
-	memcpy( &cantidad_platos, header_recibido->payload + despla, sizeof(uint32_t) );
+	memcpy( &id_pedido, header_recibido->payload + despla, sizeof(uint32_t) );
 
 	despla += sizeof(uint32_t);
 
@@ -917,6 +925,8 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 	nombre_plato[size_nombre_plato] = '\0';
 
 	printf("\n%s\n", nombre_plato);
+
+	if(asociacion->id_pedido!=id_pedido)log_error(logger,"Cliente envio mal el id del pedido. Se utiliza el existente %d:",asociacion->id_pedido);
 
 	bool guardado = enviar_08_guardar_plato(  g_ip_comanda , g_puerto_comanda
 										    , asociacion->nombre_resto
@@ -1002,15 +1012,17 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	//aca tendria q mandar msj a restaurant, y confirmar pedido
 
-	t_info_restaurante * resto=list_find(lista_resto_conectados,buscar_resto);
+	if(!string_equals_ignore_case(nombre_resto,"default")){
+		t_info_restaurante * resto=list_find(lista_resto_conectados,buscar_resto);
 
-	confirmacion=enviar_confirmar_pedido_a_resto(resto,id_pedido);
-	if(confirmacion==FALSE){
-		printf( "No se pudo confirmar el pedido.\n" );
-		return confirmacion;
+		confirmacion=enviar_confirmar_pedido_a_resto(resto,id_pedido);
+
+		if(confirmacion==FALSE){
+			printf( "No se pudo confirmar el pedido.\n" );
+			return confirmacion;
+		}
+
 	}
-
-
 
 	confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido );
 
@@ -1022,7 +1034,7 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 	   	   	   	return confirmacion;   }
 
 	//confirmacion = TRUE;
-
+													//--------ESTO DEBERIA IR PRIMERO CREO
 
 	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_pedido );
 
