@@ -187,3 +187,64 @@ void recibir_desde_app_respuesta_obtener_pedido_y_responder(t_header * header_re
 
 
 }
+
+t_plato_listo * recibir_10_plato_listo_resto_app(t_header * header_recibido){
+
+	t_plato_listo * plato_listo=malloc(sizeof(plato_listo));
+	uint32_t offset=0;
+
+	plato_listo->pedido=malloc(sizeof(t_pedido));
+
+	memcpy(&plato_listo->pedido->id_pedido,header_recibido->payload+offset,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(&plato_listo->size_nombre_plato,header_recibido->payload+offset,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	plato_listo->nombre_plato=malloc(plato_listo->size_nombre_plato);
+
+	memcpy(plato_listo->nombre_plato,header_recibido->payload+offset,sizeof(uint32_t));
+
+	return plato_listo;
+
+
+}
+
+
+bool realizar_plato_listo(t_plato_listo * plato_listo,uint32_t id_proceso){//plato listo no va a tener el size de nombre resto
+
+			bool  buscar_resto_conectado(void * elemento){
+
+				t_info_restaurante * info_resto=(t_info_restaurante *)elemento;
+
+				if(info_resto->id_resto==id_proceso)
+					return TRUE;
+				return FALSE;
+
+			}
+			bool verificar_existencia_pedido_resto(void * elemento){
+				t_cliente_a_resto * asociacion=(t_cliente_a_resto*)elemento;
+
+				if(string_equals_ignore_case(plato_listo->nombre_plato==asociacion->nombre_resto)&&plato_listo->pedido->id_pedido==asociacion->id_pedido)
+					return TRUE;
+				return FALSE;
+
+			}
+
+	t_info_restaurante * info_resto=list_find(lista_resto_conectados,buscar_resto_conectado); //Busco resto por el id
+
+	t_cliente_a_resto * asociacion=list_find(lista_clientes,verificar_existencia_pedido_resto);//Busco el nombre del resto, en la cola de los pedidos confirmados
+
+
+	if(info_resto==NULL || asociacion==NULL){
+		log_info(logger,"No se encuentra el restaurante en la lista de conectados o el pedido no se encuentra confirmado");
+		return FALSE;
+	}
+	plato_listo->pedido->nombre_restaurante=asociacion->nombre_resto;
+
+	bool resultado=enviar_plato_listo(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,plato_listo->pedido->id_pedido,plato_listo->nombre_plato);
+
+	return resultado;
+
+	//Faltaria verificar si se encuentra todo el plato listo
+}

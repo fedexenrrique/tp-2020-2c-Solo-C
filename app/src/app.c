@@ -167,6 +167,9 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 	case PLATO_LISTO:
 		//Me envia el restaurante el plato listo y yo informo a la comanda
+		t_plato_listo * plato_listo=recibir_10_plato_listo_resto_app(header_recibido);
+		bool resultado=realizar_plato_listo(plato_listo,header_recibido->id_proceso);
+		(resultado)?log_info(logger,"Se realizo correctamente el plato listo"):log_info(logger,"No se pudo llevar a cabo el plato listo");
 		break;
 	case CONSULTAR_PEDIDO:
 		id_pedido=recibir_11_consultar_pedido(header_recibido->payload);
@@ -193,6 +196,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		t_info_restaurante * info_resto=malloc(sizeof(t_info_restaurante));
 
 		info_resto=deserializar_info_resto(header_recibido->payload,header_recibido->size);
+		info_resto->id_resto=header_recibido->id_proceso;
 
 		list_add(lista_resto_conectados,info_resto);//Agrego el nuevo resto a la lista
 
