@@ -73,7 +73,8 @@ typedef struct{
 }tSolicitudAniadirPlato;
 
 typedef struct{
-	char* estadoPedido;
+		uint32_t idPedido;
+		char* estadoPedido;
 		char* listaPlatos;
 		char* cantidadPlatos;
 		char* cantidadLista;
@@ -156,6 +157,7 @@ typedef struct{
 }tSolicitudPedido;
 
 typedef struct{
+	uint32_t idPedido;
 	uint32_t sizeEstadoPedido;
 	char* estadoPedido;
 	uint32_t sizeListaPlatos;

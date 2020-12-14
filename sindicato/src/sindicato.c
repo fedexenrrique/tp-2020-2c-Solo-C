@@ -1710,6 +1710,7 @@ t_header* serializarRespuestaPedido(tRespuestaSolicitudPedido* respuestaPedido){
 
 }
 void mapearInfoPedidoARespuesta(tMensajeInfoPedido* infoPedido,tRespuestaSolicitudPedido*respuesta){
+	respuesta->idPedido=infoPedido->idPedido;
 	respuesta->sizeEstadoPedido=strlen(infoPedido->estadoPedido);
 	respuesta->sizeListaPlatos=strlen(infoPedido->listaPlatos);
 	respuesta->sizeCantidadPlatos=strlen(infoPedido->cantidadPlatos);
@@ -1873,6 +1874,10 @@ void* handleConexion(void* arguments) {
 
 		header=serializarRespuestaOperacionPedidoNuevo(resultadoOperacion);
 
+		if(resultadoOperacion<0){
+			header->nro_msg=FAIL;
+		}else header->nro_msg=OK;
+
 		if (enviar_buffer(socketCliente, header) == false) {
 							log_error(logger,"No se pudo enviar la respuesta al pedido de info del restaurante");
 		}
@@ -1902,7 +1907,6 @@ void* handleConexion(void* arguments) {
 
 		header=serializar_respuesta_info_restaurante(respuestaArchivoInfoResto);
 
-
 		if (enviar_buffer(socketCliente, header) == false) {
 			log_error(logger,
 					"No se pudo enviar la respuesta al pedido de info del restaurante");
@@ -1920,6 +1924,10 @@ void* handleConexion(void* arguments) {
 			t_header* header=malloc(sizeof(t_header));
 
 			header=serializarRespuestaOperacionPlatoNuevo(resultadoOperacion);
+
+			if(resultadoOperacion<0){
+				header->nro_msg=FAIL;
+			}else header->nro_msg=OK;
 
 			if (enviar_buffer(socketCliente, header) == false) {
 					log_error(logger,
@@ -1942,6 +1950,9 @@ void* handleConexion(void* arguments) {
 			t_header* header=malloc(sizeof(t_header));
 
 			header=serializarRespuestaOperacionPlatoNuevo(resultado);
+			if(resultado<0){
+				header->nro_msg=FAIL;
+			}else header->nro_msg=OK;
 
 			if (enviar_buffer(socketCliente, header) == false) {
 				log_error(logger,"No se pudo enviar la respuesta al pedido de info del restaurante");
@@ -1959,7 +1970,7 @@ void* handleConexion(void* arguments) {
 			int resultado=1;
 
 			infoPedido=obtenerInfoPedido(solicitudPedido->nombreRestaurante,string_itoa(solicitudPedido->idPedido),resultado);
-
+			infoPedido->idPedido=solicitudPedido->idPedido;
 			mapearInfoPedidoARespuesta(infoPedido,respuestaPedido);
 
 			t_header* header=serializarRespuestaPedido(respuestaPedido);
@@ -1989,6 +2000,10 @@ void* handleConexion(void* arguments) {
 			resultadoOperacion=aumentarCantidadPlatoListo(solicitudPlatoListo->nombreRestaurante,solicitudPlatoListo->idPedido,solicitudPlatoListo->nombrePlatoListo);
 
 			t_header* header=serializarRespuestaPlatoListo(resultadoOperacion);
+
+			if(resultadoOperacion<0){
+				header->nro_msg=FAIL;
+			}else header->nro_msg=OK;
 			if (enviar_buffer(socketCliente, header) == false) {
 				log_error(logger,"No se pudo enviar la respuesta al pedido de info del restaurante");
 			}
@@ -2037,6 +2052,10 @@ void* handleConexion(void* arguments) {
 		t_header* header = malloc(sizeof(t_header));
 
 		header = serializarRespuestaOperacionPlatoNuevo(resultado);
+
+		if(resultado<0){
+			header->nro_msg=FAIL;
+		}else header->nro_msg=OK;
 
 		if (enviar_buffer(socketCliente, header) == false) {log_error(logger,
 			"No se pudo enviar la respuesta al pedido de info del restaurante");
@@ -2339,11 +2358,11 @@ int main(int argc, char *argv[]) {
 			configuracion->puertoEscucha);
 	pthread_mutex_t lock;
 
-	if (pthread_mutex_init(&lock, NULL) != 0)
+	/*if (pthread_mutex_init(&lock, NULL) != 0)
 	    {
 	        printf("\n mutex init failed\n");
 	        return 1;
-	    }
+	    }*/
 	while (1) {
 		//Crear Hilo
 	    struct arg_struct args;
@@ -2352,16 +2371,16 @@ int main(int argc, char *argv[]) {
 		int socketConectado = aceptar_conexion(socketServer);
 	    args.arg1=socketConectado;
 	    args.arg2=infoBloques;
-	    pthread_mutex_lock(&lock);
+	    //pthread_mutex_lock(&lock);
 		if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
 			log_error(logger,"Error creando el hilo");
 		}
 		//handleConexion(socketConectado,infoBloques);
-	    pthread_mutex_unlock(&lock);
+	    //pthread_mutex_unlock(&lock);
 
-	    pthread_join(hiloConexionAceptada, NULL);
-	    pthread_detach(hiloConexionAceptada);
-	    pthread_mutex_destroy(&lock);
+	   //pthread_join(hiloConexionAceptada, NULL);
+	    //pthread_detach(hiloConexionAceptada);
+	    //pthread_mutex_destroy(&lock);
 
 		break;
 
