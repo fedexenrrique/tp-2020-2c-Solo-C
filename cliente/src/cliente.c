@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 
     		    	}
 
-    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, argv[3], atoi(argv[4]) );
+    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, argv[3],(uint32_t) atoi(argv[4]) );
 
     		    	if ( confirmacion ) {
     		    		printf("Se confirmó el pedido.\n");
@@ -116,6 +116,9 @@ int main(int argc, char **argv) {
 
 				case CONSULTAR_PEDIDO:
     		    	printf(" 11- CONSULTAR_PEDIDO HACIA: APP, SINDICATO \n");
+    		    	conexion=enviar_11_consultar_pedido(g_ip_app, g_puerto_app,(uint32_t)atoi(argv[3]));
+    		    	encabezado=recibir_buffer(conexion);
+    		    	desrializar_11_respuesta_consultar_pedido(encabezado);
 		    		break;
 
 				default:

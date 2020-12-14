@@ -118,3 +118,72 @@ uint32_t solicitar_id_a_restaurante(uint32_t socket){
 	return id_pedido;
 
 }
+
+void procesar_consultar_pedido(uint32_t id_pedido,t_header * header_recibido){
+
+		bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+
+			return ( ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ) ? true : false ;
+
+		}
+
+	t_cliente_a_resto * asociacion = list_find( lista_clientes , _control_existe_asociacion_cliente_resto );
+
+	if ( asociacion != NULL ) {
+
+		printf("Se encontró asociación.");
+
+//	if(string_equals_ignore_case(asociacion->nombre_resto,"default"))//Verifico si es default y envio los platos default
+//		return g_platos_default;
+
+	int conexion=enviar_obtener_pedido(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,id_pedido);
+
+	header_recibido=recibir_buffer(conexion);
+	log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(header_recibido->nro_msg));
+
+	t_info_restaurante * info_resto= buscar_info_de_restaurante(asociacion->nombre_resto,lista_resto_conectados);
+
+	recibir_desde_app_respuesta_obtener_pedido_y_responder(header_recibido,info_resto);
+
+
+
+	} else {
+
+	printf("No se encontró la asociación.");
+
+	}
+}
+
+void recibir_desde_app_respuesta_obtener_pedido_y_responder(t_header * header_recibido,t_info_restaurante * info_resto){//Se recibe respuesta de comanda y se envia a cliente
+
+	int offset=0;
+
+	uint32_t size_nombre_resto=string_length(info_resto->resto_nombre);
+	uint32_t size_payload_nuevo=sizeof(uint32_t)+size_nombre_resto+header_recibido->size;
+	void * payload_nuevo=malloc(size_payload_nuevo);
+
+	memcpy(payload_nuevo+offset,&size_nombre_resto,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	memcpy(payload_nuevo+offset,info_resto->resto_nombre,size_nombre_resto);
+	offset+=size_nombre_resto;
+
+	memcpy(payload_nuevo+offset,header_recibido->payload,header_recibido->size);
+
+
+	t_header header_response;
+
+	header_response.modulo     = APP;
+	header_response.id_proceso = 0;
+	header_response.nro_msg    = CONSULTAR_PEDIDO;
+	header_response.size       = size_payload_nuevo;
+	header_response.payload    = payload_nuevo;
+
+	bool envio=enviar_buffer(info_resto->socket_conectado , &header_response);
+
+	if(envio==TRUE)log_info(logger,"Se envio correctamente la respuesta de consultar pedido al cliente");
+	else log_info(logger,"No se envio correctamente la respuesta de consultar pedido al cliente");
+
+
+
+}

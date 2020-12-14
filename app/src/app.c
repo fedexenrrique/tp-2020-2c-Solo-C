@@ -116,6 +116,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	}
 
 	uint32_t socket_aceptado = (uint32_t)(* ( (int*) p_socket_aceptado ));
+	uint32_t id_pedido;
 
 	t_header * header_recibido = recibir_buffer( socket_aceptado );
 
@@ -168,6 +169,8 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		//Me envia el restaurante el plato listo y yo informo a la comanda
 		break;
 	case CONSULTAR_PEDIDO:
+		id_pedido=recibir_11_consultar_pedido(header_recibido->payload);
+		procesar_consultar_pedido(id_pedido,header_recibido);
 		break;
 	case CONECTAR:
 
@@ -821,7 +824,7 @@ char ** procedimiento_04_consultar_platos( t_header * header_recibido ) {
 
 		printf("Se encontró asociación.");
 
-		if(string_equals_ignore_case(asociacion->nombre_resto,"default"))
+		if(string_equals_ignore_case(asociacion->nombre_resto,"default"))//Verifico si es default y envio los platos default
 			return g_platos_default;
 
 		t_info_restaurante * info_resto=buscar_info_de_restaurante(asociacion->nombre_resto,lista_resto_conectados);

@@ -245,6 +245,10 @@ bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
 		                         ,char * p_nom_plato, uint32_t p_cant_plato );
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato, uint32_t cantidad_plato);
 
+int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_pedido);
+void deserializar_11_respuesta_consultar_pedido(t_header * encabezado);
+uint32_t recibir_11_consultar_pedido(void *);
+
 bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
 
 bool enviar_13_finalizar_pedido (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
