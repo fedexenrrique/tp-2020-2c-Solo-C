@@ -304,7 +304,7 @@ uint32_t detectar_comando(char * p_comando) {
 
 }
 
-char * nro_comando_a_texto(uint32_t p_comando) {
+char * nro_comando_a_texto(cod_msg p_comando) {
 
 	switch (p_comando) {
 		case CONSULTAR_RESTAURANTES:  	return "CONSULTAR_RESTAURANTES" ;break;
@@ -422,11 +422,12 @@ bool enviar_buffer ( uint32_t p_conexion, t_header * p_header ) {
 
 t_header * recibir_buffer ( uint32_t socket_cliente ) {
 
-	uint32_t modulo, id_proceso, nro_msg, size;
+	uint32_t modulo, id_proceso, size;
+	cod_msg nro_msg;
 
 	recv(socket_cliente, &modulo     , sizeof(uint32_t), 0);
 	recv(socket_cliente, &id_proceso , sizeof(uint32_t), 0);
-	recv(socket_cliente, &nro_msg    , sizeof(uint32_t), 0);
+	recv(socket_cliente, &nro_msg    , sizeof(cod_msg), 0);
 	recv(socket_cliente, &size       , sizeof(uint32_t), 0);
 
 	t_header * l_header = malloc( sizeof(t_header) );
@@ -1970,7 +1971,7 @@ int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_pedido){
 
 	header_response.modulo     = APP;
 	header_response.id_proceso = 0;
-	header_response.nro_msg    = CONSULTAR_PLATOS;
+	header_response.nro_msg    = CONSULTAR_PEDIDO;
 	header_response.size       = sizeof(uint32_t);
 	header_response.payload    = payload;
 
@@ -1982,7 +1983,7 @@ int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_pedido){
 
 }
 
-void recibir_11_respuesta_consultar_pedido(t_header * encabezado){
+void deserializar_11_respuesta_consultar_pedido(t_header * encabezado){
 
 	t_list * lista_platos_del_pedido=list_create();
 	int cantidad_total_platos=(encabezado->size-2*sizeof(uint32_t))/sizeof(t_comida);
@@ -2007,8 +2008,9 @@ void recibir_11_respuesta_consultar_pedido(t_header * encabezado){
 	memcpy(&(size_nombre_resto),encabezado->payload+offset,sizeof(uint32_t));
 	offset+=sizeof(uint32_t);
 
-	char * nombre_resto=malloc(size_nombre_resto);
+	char * nombre_resto=malloc(size_nombre_resto+1);
 	memcpy(nombre_resto,encabezado->payload+offset,size_nombre_resto);
+	nombre_resto[size_nombre_resto]='\0';
 	offset+=size_nombre_resto;
 
 	memcpy(&(pedido->estado),encabezado->payload+offset,sizeof(estado_pedido));

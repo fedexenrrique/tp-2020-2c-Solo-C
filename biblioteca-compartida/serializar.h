@@ -90,9 +90,9 @@ typedef struct {
 } t_resto_conex;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
-	uint32_t    modulo;
+	cod_mod    modulo;
 	uint32_t    id_proceso;
-	uint32_t    nro_msg;
+	cod_msg    nro_msg;
 	uint32_t    size;
 	void     *  payload;
 } t_header;
@@ -268,7 +268,7 @@ uint32_t   recibir_confirmacion           ( uint32_t socket_cliente  );
 uint32_t   detectar_comando               ( char *   p_comando       );
 
 uint32_t  detectar_comando               ( char *   p_comando     );
-char *    nro_comando_a_texto            ( uint32_t p_comando     );
+char *    nro_comando_a_texto            ( cod_msg  p_comando     );
 uint32_t  detectar_modulo                ( char *   p_modulo      );
 char *    nro_modulo_a_texto             ( uint32_t p_modulo      );
 char *    nro_estado_pedido_a_texto      ( estado_pedido          );

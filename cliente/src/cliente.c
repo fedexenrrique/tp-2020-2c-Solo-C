@@ -81,13 +81,13 @@ int main(int argc, char **argv) {
 				case ANIADIR_PLATO:
 
 					printf(" 07- ANIADIR_PLATO HACIA: APP, SINDICATO \n");
-    		    	bool se_aniadio = enviar_07_aniadir_plato( g_ip_app, g_puerto_app, g_id_proceso, g_id_pedido_actual, argv[3] );
+    		    	bool se_aniadio = enviar_07_aniadir_plato( g_ip_app, g_puerto_app, g_id_proceso,(uint32_t) atoi(argv[3]), argv[4] );
     		    	printf( se_aniadio ? "Plato agregado al pedido.\n" : "No es posible agregar el plato.\n" );
 
     		    	break;
 
 				case CONFIRMAR_PEDIDO:
-    		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");
+    		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");// Aca deberia mandar solo el id
 
     		    	if ( argv[3] == NULL || argv[4] == NULL ) {
 
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
     		    	printf(" 11- CONSULTAR_PEDIDO HACIA: APP, SINDICATO \n");
     		    	conexion=enviar_11_consultar_pedido(g_ip_app, g_puerto_app,(uint32_t)atoi(argv[3]));
     		    	encabezado=recibir_buffer(conexion);
-    		    	desrializar_11_respuesta_consultar_pedido(encabezado);
+    		    	deserializar_11_respuesta_consultar_pedido(encabezado);
 		    		break;
 
 				default:
@@ -224,7 +224,7 @@ int main(int argc, char **argv) {
 				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
 				//RESPUESTA
 				encabezado=recibir_buffer(conexion);
-				log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
+				log_info(logger,"Se recibio el mensaje: %d",nro_comando_a_texto(encabezado->nro_msg));
 				deserializar_respuesta_obtener_pedido(encabezado);
 				break;
 

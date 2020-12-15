@@ -54,12 +54,25 @@ t_info_restaurante * deserializar_info_resto(void * payload,uint32_t size){
 
 bool  enviar_confirmar_pedido_a_resto(t_info_restaurante * info_resto,uint32_t id_pedido){
 
-	uint32_t nro_msg=CONFIRMAR_PEDIDO;
-	char * nombre_restaurante=NULL;
-
 
 	//Le mando el nombre en null, para reutilizar la funcion
-	t_header * encabezado=serializar_pedido(nro_msg, nombre_restaurante,id_pedido);
+//	t_header * encabezado=serializar_pedido(nro_msg, nombre_restaurante,id_pedido);
+
+	t_header * encabezado=malloc(sizeof(t_header));
+	int offset=0;
+
+	int size_buffer=sizeof(uint32_t);
+	void * buffer=malloc(size_buffer);
+
+	memcpy(buffer+offset,&id_pedido,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	encabezado->payload=buffer;
+	encabezado->size=size_buffer;
+	encabezado->id_proceso=1;
+	encabezado->modulo=APP;
+	encabezado->nro_msg=CONFIRMAR_PEDIDO;
+
 
 	//int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
@@ -92,6 +105,10 @@ t_info_restaurante * buscar_info_de_restaurante(char * nombre_resto,t_list * lis
 
 	t_info_restaurante * info_resto=list_find(lista_resto_conectados,buscar_resto_conectado);
 
+	if(info_resto==NULL)log_error(logger,"No encontre el nombre del restaurant en los existentes");
+
+	log_info(logger,"Se encontro la informacion del restaurant buscado: %s",info_resto->resto_nombre);
+
 	return info_resto;
 
 }
@@ -119,7 +136,7 @@ uint32_t solicitar_id_a_restaurante(uint32_t socket){
 
 }
 
-void procesar_consultar_pedido(uint32_t id_pedido,t_header * header_recibido){
+void procesar_consultar_pedido(uint32_t id_pedido,t_header * header_recibido,int socket_cliente){
 
 		bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
@@ -131,7 +148,7 @@ void procesar_consultar_pedido(uint32_t id_pedido,t_header * header_recibido){
 
 	if ( asociacion != NULL ) {
 
-		printf("Se encontró asociación.");
+		printf("Se encontró asociación.\n");
 
 //	if(string_equals_ignore_case(asociacion->nombre_resto,"default"))//Verifico si es default y envio los platos default
 //		return g_platos_default;
@@ -139,9 +156,11 @@ void procesar_consultar_pedido(uint32_t id_pedido,t_header * header_recibido){
 	int conexion=enviar_obtener_pedido(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,id_pedido);
 
 	header_recibido=recibir_buffer(conexion);
-	log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(header_recibido->nro_msg));
+	log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto((uint32_t)header_recibido->nro_msg));
 
 	t_info_restaurante * info_resto= buscar_info_de_restaurante(asociacion->nombre_resto,lista_resto_conectados);
+	if(info_resto==NULL)log_info(logger,"No se encontro el restaurante en la lista de restos conectados");
+	info_resto->socket_conectado=socket_cliente;
 
 	recibir_desde_app_respuesta_obtener_pedido_y_responder(header_recibido,info_resto);
 
@@ -162,6 +181,8 @@ void recibir_desde_app_respuesta_obtener_pedido_y_responder(t_header * header_re
 	uint32_t size_payload_nuevo=sizeof(uint32_t)+size_nombre_resto+header_recibido->size;
 	void * payload_nuevo=malloc(size_payload_nuevo);
 
+	//log_info(logger,"size nombre: %d - size payload: %d ",size_nombre_resto,size_payload_nuevo);
+
 	memcpy(payload_nuevo+offset,&size_nombre_resto,sizeof(uint32_t));
 	offset+=sizeof(uint32_t);
 
@@ -170,7 +191,7 @@ void recibir_desde_app_respuesta_obtener_pedido_y_responder(t_header * header_re
 
 	memcpy(payload_nuevo+offset,header_recibido->payload,header_recibido->size);
 
-
+//	mem_hexdump(payload_nuevo, size_payload_nuevo);
 	t_header header_response;
 
 	header_response.modulo     = APP;
@@ -188,14 +209,14 @@ void recibir_desde_app_respuesta_obtener_pedido_y_responder(t_header * header_re
 
 }
 
-t_plato_listo * recibir_10_plato_listo_resto_app(t_header * header_recibido){
+t_plato_listo_para_app * recibir_10_plato_listo_resto_app(t_header * header_recibido){
 
-	t_plato_listo * plato_listo=malloc(sizeof(plato_listo));
+	t_plato_listo_para_app * plato_listo=malloc(sizeof(t_plato_listo_para_app));
 	uint32_t offset=0;
 
-	plato_listo->pedido=malloc(sizeof(t_pedido));
+	//plato_listo->pedido=malloc(sizeof(t_pedido));
 
-	memcpy(&plato_listo->pedido->id_pedido,header_recibido->payload+offset,sizeof(uint32_t));
+	memcpy(&plato_listo->id_pedido,header_recibido->payload+offset,sizeof(uint32_t));
 	offset+=sizeof(uint32_t);
 
 	memcpy(&plato_listo->size_nombre_plato,header_recibido->payload+offset,sizeof(uint32_t));
@@ -211,7 +232,7 @@ t_plato_listo * recibir_10_plato_listo_resto_app(t_header * header_recibido){
 }
 
 
-bool realizar_plato_listo(t_plato_listo * plato_listo,uint32_t id_proceso){//plato listo no va a tener el size de nombre resto
+bool realizar_plato_listo(t_plato_listo_para_app * plato_listo,uint32_t id_proceso){//plato listo no va a tener el size de nombre resto
 
 			bool  buscar_resto_conectado(void * elemento){
 
@@ -225,7 +246,7 @@ bool realizar_plato_listo(t_plato_listo * plato_listo,uint32_t id_proceso){//pla
 			bool verificar_existencia_pedido_resto(void * elemento){
 				t_cliente_a_resto * asociacion=(t_cliente_a_resto*)elemento;
 
-				if(string_equals_ignore_case(plato_listo->nombre_plato==asociacion->nombre_resto)&&plato_listo->pedido->id_pedido==asociacion->id_pedido)
+				if(string_equals_ignore_case(plato_listo->nombre_plato,asociacion->nombre_resto)&&plato_listo->id_pedido==asociacion->id_pedido)
 					return TRUE;
 				return FALSE;
 
@@ -240,11 +261,85 @@ bool realizar_plato_listo(t_plato_listo * plato_listo,uint32_t id_proceso){//pla
 		log_info(logger,"No se encuentra el restaurante en la lista de conectados o el pedido no se encuentra confirmado");
 		return FALSE;
 	}
-	plato_listo->pedido->nombre_restaurante=asociacion->nombre_resto;
+	//plato_listo->nombre_restaurante=asociacion->nombre_resto;
 
-	bool resultado=enviar_plato_listo(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,plato_listo->pedido->id_pedido,plato_listo->nombre_plato);
+	bool resultado=enviar_plato_listo(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,plato_listo->id_pedido,plato_listo->nombre_plato);
+
+	int conexion=enviar_obtener_pedido(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,plato_listo->id_pedido);
+
+	t_header * encabezado=recibir_buffer(conexion);
+
+	deserializar_obtener_pedido_y_verificar_estado_correcto(encabezado);
 
 	return resultado;
 
-	//Faltaria verificar si se encuentra todo el plato listo
+
+}
+
+bool deserializar_obtener_pedido_y_verificar_estado_correcto(t_header * encabezado){
+
+	t_list * lista_platos_del_pedido=list_create();
+	int cantidad_total_platos=(encabezado->size-sizeof(estado_pedido))/sizeof(t_comida);
+	t_pedido_seg * pedido=malloc(sizeof(t_pedido));
+	int offset=0;
+
+			bool verificar_platos_terminados(void * elemento){
+				t_comida * comida=(t_comida*)elemento;
+				if(comida->cantidad_lista_comida!=comida->cantidad_total_comida)
+					return TRUE;
+				return FALSE;
+			}
+
+	memcpy(&(pedido->estado),encabezado->payload+offset,sizeof(estado_pedido));
+	offset+=sizeof(estado_pedido);
+
+	for(int i=0;i<cantidad_total_platos;i++){
+		t_comida * comida=malloc(sizeof(t_comida));
+
+		memcpy(&(comida->cantidad_lista_comida),encabezado->payload+offset,sizeof(uint32_t));
+		offset+=sizeof(uint32_t);
+
+		memcpy(&(comida->cantidad_total_comida),encabezado->payload+offset,sizeof(uint32_t));
+		offset+=sizeof(uint32_t);
+
+		memcpy(comida->nombre_comida,encabezado->payload+offset,SIZE_VECTOR_NOMBRE_PLATO);
+		offset+=SIZE_VECTOR_NOMBRE_PLATO;
+
+		list_add(lista_platos_del_pedido,comida);
+//		log_error(logger,"El numero de iteracion es: %d",i);
+	}
+
+	pedido->comidas_del_pedido=lista_platos_del_pedido;
+
+	log_info(logger,"El pedido se encuentra en estado: %s",nro_estado_pedido_a_texto(pedido->estado));
+
+    if(list_is_empty(pedido->comidas_del_pedido)){
+    	log_info(logger,"El pedido no contiene ningun plato");
+    	list_destroy(lista_platos_del_pedido);
+    	return TRUE;
+    }
+
+	t_comida * comida=NULL;
+    comida=(t_comida*)list_find(pedido->comidas_del_pedido,verificar_platos_terminados);
+
+	if(comida==NULL&&pedido->estado==TERMINADO){//Verifico si es correcto el estado
+
+		log_info(logger,"El pedido esta TERMINADO. Ya puede ser buscado por su repartidor");
+
+		//ACA TENDRIA QUE PERMITIR AL REPARTIDOR BUSCAR EL PEDIDO
+
+	}else{if(comida!=NULL&&pedido->estado==CONFIRMADO){
+		      log_info(logger,"El estado en el que se encuentra el pedido es CONFIRMADO");
+		      return TRUE;
+	      }else{
+	    	  log_error(logger,"El estado del pedido es erroneo o se encuentra en estado PENDIENTE");
+
+	      }
+
+	}
+
+	list_destroy(lista_platos_del_pedido);
+
+	return FALSE;
+
 }

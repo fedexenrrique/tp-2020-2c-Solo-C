@@ -116,7 +116,6 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 	}
 
 	uint32_t socket_aceptado = (uint32_t)(* ( (int*) p_socket_aceptado ));
-	uint32_t id_pedido;
 
 	t_header * header_recibido = recibir_buffer( socket_aceptado );
 
@@ -165,15 +164,15 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 		responder_09_confirmar_pedido ( socket_aceptado, TRUE );
 		break;
 
-	case PLATO_LISTO:
+	case PLATO_LISTO: ;
 		//Me envia el restaurante el plato listo y yo informo a la comanda
-		t_plato_listo * plato_listo=recibir_10_plato_listo_resto_app(header_recibido);
+		t_plato_listo_para_app * plato_listo=recibir_10_plato_listo_resto_app(header_recibido);
 		bool resultado=realizar_plato_listo(plato_listo,header_recibido->id_proceso);
 		(resultado)?log_info(logger,"Se realizo correctamente el plato listo"):log_info(logger,"No se pudo llevar a cabo el plato listo");
 		break;
-	case CONSULTAR_PEDIDO:
-		id_pedido=recibir_11_consultar_pedido(header_recibido->payload);
-		procesar_consultar_pedido(id_pedido,header_recibido);
+	case CONSULTAR_PEDIDO: ;
+		uint32_t id_pedido=recibir_11_consultar_pedido(header_recibido->payload);
+		procesar_consultar_pedido(id_pedido,header_recibido,socket_aceptado);
 		break;
 	case CONECTAR:
 
