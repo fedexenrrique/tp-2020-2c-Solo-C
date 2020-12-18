@@ -4,8 +4,10 @@
 int main(void) {
 
 	cargar_config();
+
 	obtener_info_restaurante();
-	iniciar_planificador();
+
+	iniciar_planificacion();
 
 	//g_sockets_abiertos = list_create();
 
@@ -22,6 +24,7 @@ int main(void) {
 	return 1;
 
 }
+
 
 void conectar_restaurante_a_applicacion(void) {
 
@@ -60,19 +63,13 @@ void conectar_restaurante_a_applicacion(void) {
 
 	enviar_buffer( sock_conectado, &head);
 
+
+
 	while (1) {
 
 		recibir_buffer( sock_conectado );
 
 	}
-
-
-
-
-
-
-
-
 
 
 	t_header * header_recibido = recibir_buffer( sock_conectado );
@@ -84,15 +81,78 @@ void conectar_restaurante_a_applicacion(void) {
 
 	mem_hexdump(header_recibido->payload, header_recibido->size);
 
+	t_header * header_respuesta = malloc(sizeof(t_header));
+	int offset;
+
 	switch ( header_recibido->nro_msg ) {
 	case CONSULTAR_PLATOS:
 		// consulto al sindicato y lo que me devuelve el sindicato lo respondo a la app
+		;
+		t_respuesta_platos_restaurante * respuesta_platos = consultar_platos_restaurante();
+		offset = 0;
+		int size_buffer = sizeof(uint32_t) + respuesta_platos->size_platos;
+		void * buffer = malloc(size_buffer);
+
+		memcpy(buffer + offset, &respuesta_platos->size_platos, sizeof(uint32_t));
+		offset += sizeof(uint32_t);
+
+		memcpy(buffer+offset, respuesta_platos->platos, respuesta_platos->size_platos);
+
+		header_respuesta->payload = buffer;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+		header_respuesta->nro_msg = CONSULTAR_PLATOS;
+
+		if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder la consulta de platos a la app");
+		}
+
 		break;
 	case CREAR_PEDIDO:
 		// primero le mando al sindicato si el sindicato responde OK, le tengo que devolver un id a la app
+		;
+		uint32_t respuesta_creacion_pedido = crear_pedido_restaurante(id_pedido_restaurante);
+		size_buffer = 0;
+		if (respuesta_creacion_pedido == 1) {
+			header_respuesta->nro_msg = OK;
+		}
+		else header_respuesta->nro_msg = FAIL;
+		header_respuesta->payload = NULL;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+
+		if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder la creacion de pedido a la app");
+		}
 		break;
 	case ANIADIR_PLATO:
 		// primero le mando al sindicato si el sindicato responde Ok, le tengo que devolver un OK o fail a la app
+		;
+		t_aniadir_plato_app_resto * plato_app_resto = deserializar_aniadir_plato_app(header_recibido->payload);
+		aniadir_plato * aniadir_plato = malloc(sizeof(aniadir_plato));
+		aniadir_plato->id_pedido = plato_app_resto->id_pedido;
+		aniadir_plato->size_nombre_restaurante = string_length(nombre_restaurante);
+		aniadir_plato->nombre_restaurante = nombre_restaurante;
+		aniadir_plato->size_nombre_plato = string_length(plato_app_resto->plato);
+		aniadir_plato->nombre_restaurante =plato_app_resto->plato;
+		uint32_t respuesta_aniadir_plato = aniadir_plato_restaurante(aniadir_plato);
+
+		size_buffer = 0;
+		if (respuesta_creacion_pedido == 1) {
+			header_respuesta->nro_msg = OK;
+		}
+		else header_respuesta->nro_msg = FAIL;
+		header_respuesta->payload = NULL;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+
+		if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder el aniadir plato a la app");
+		}
+
 		break;
 	case CONFIRMAR_PEDIDO:
 		// La app me manda el id yo lo confirmo le mando al sindicato, el responde OK o fail y lo informo a la app
@@ -111,12 +171,8 @@ void conectar_restaurante_a_applicacion(void) {
 
 		free( header_recibido->payload );
 
-	free( header_recibido );
-
-
-
-
-
+	free(header_recibido);
+	free(header_respuesta);
 
 	close( sock_conectado );
 
@@ -181,8 +237,6 @@ void iniciar_planificacion() {
 
 	sem_init(sem_hornos, 0, cantidad_hornos);
 
-
-
 }
 
 void cargar_colas_ready() {
@@ -235,7 +289,7 @@ void planificador_cpu(char * afinidad) {
 				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
 				if (cola_ready == NULL) {
 					int existe_cola_otro(void *p) {
-						dictionary_has_key(p, "OTRO);
+						dictionary_has_key(p, "OTRO");
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -273,7 +327,7 @@ void planificador_io() {
 				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
 				if (cola_ready == NULL) {
 					int existe_cola_otro(void *p) {
-						dictionary_has_key(p, "OTRO);
+						dictionary_has_key(p, "OTRO");
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -311,7 +365,7 @@ void planificador_bloqueados() {
 				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
 				if (cola_ready == NULL) {
 					int existe_cola_otro(void *p) {
-						dictionary_has_key(p, "OTRO);
+						dictionary_has_key(p, "OTRO");
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -374,7 +428,7 @@ t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * pa
 	return respuesta_info;
 }
 
-void consultar_platos_restaurante(void) {
+t_respuesta_platos_restaurante * consultar_platos_restaurante() {
 	int offset = 0;
 	t_header * header = malloc(sizeof(t_header));
 	t_solicitud_info_restaurante * solicitud_info = malloc(sizeof(t_solicitud_info_restaurante));
@@ -413,7 +467,7 @@ void consultar_platos_restaurante(void) {
 
 	log_info(logger_restaurante, "Resturante platos: %s", respuesta_info->platos);
 
-
+	return 	respuesta_info;
 }
 
 void cargar_variables(t_respuesta_info_restaurante * respuesta) {
@@ -459,19 +513,20 @@ t_respuesta_platos_restaurante * deserializar_respuesta_consulta_platos(void * p
 	return respuesta_info;
 }
 
-void crear_pedido_restaurante(pedido * pedido) {
+uint32_t crear_pedido_restaurante(uint32_t id_pedido) {
 	int offset = 0;
 	t_header * header = malloc(sizeof(t_header));
+
 	t_creacion_pedido * creacion_pedido = malloc(sizeof(t_creacion_pedido));
 
-	creacion_pedido->id_pedido = pedido->id_pedido;
-	creacion_pedido->size_estado_pedido = string_length(pedido->estado_pedido);
-	creacion_pedido->estado_pedido = pedido->estado_pedido;
-	creacion_pedido->size_lista_platos = string_length(pedido->lista_platos);
-	creacion_pedido->lista_platos = pedido->lista_platos;
-	creacion_pedido->size_cantidad_platos = string_length(pedido->cantidad_platos);
-	creacion_pedido->cantidad_platos = pedido->cantidad_platos;
-	creacion_pedido->precio_total = pedido->precio_total;
+	creacion_pedido->id_pedido = id_pedido;
+	creacion_pedido->size_estado_pedido = string_length("CREANDO");
+	creacion_pedido->estado_pedido = "CREANDO";
+	creacion_pedido->size_lista_platos = string_length("[]");
+	creacion_pedido->lista_platos = "[]";
+	creacion_pedido->size_cantidad_platos = string_length("[]");
+	creacion_pedido->cantidad_platos = "[]";
+	creacion_pedido->precio_total = 0;
 
 	int size_buffer = sizeof(uint32_t) * 5 + creacion_pedido->size_cantidad_platos + creacion_pedido->size_estado_pedido
 			+ creacion_pedido->size_lista_platos;
@@ -500,7 +555,6 @@ void crear_pedido_restaurante(pedido * pedido) {
 
 	memcpy(buffer + offset, &creacion_pedido->precio_total, sizeof(uint32_t));
 
-
 	header->payload = buffer;
 	header->size = size_buffer;
 	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
@@ -520,13 +574,23 @@ void crear_pedido_restaurante(pedido * pedido) {
 	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
 	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
 
-	int respuesta_creacion_pedido = deserializar_respuesta_creacion_pedido(mensaje_recibido->payload);
+	uint32_t respuesta_creacion_pedido = deserializar_respuesta_creacion_pedido(mensaje_recibido->payload);
+
+	if (respuesta_creacion_pedido == 1) {
+
+		pedido * pedido = malloc(sizeof(pedido));
+		pedido->id_pedido = id_pedido;
+		pedido->estado_pedido = "CREADO";
+		list_add(pedidos_creados, pedido);
+	}
 
 	log_info(logger_restaurante, "Respuesta creacion pedido: %d", respuesta_creacion_pedido);
 
+	return respuesta_creacion_pedido;
+
 }
 
-int deserializar_respuesta_creacion_pedido(void * payload) {
+uint32_t deserializar_respuesta_creacion_pedido(void * payload) {
 	int respuesta;
 
 	memcpy(&(respuesta), payload, sizeof(uint32_t));
@@ -534,15 +598,16 @@ int deserializar_respuesta_creacion_pedido(void * payload) {
 	return respuesta;
 }
 
-void aniadir_plato_restaurante(aniadir_plato * plato) {
+uint32_t aniadir_plato_restaurante(aniadir_plato * plato) {
 	int offset = 0;
+
 	t_header * header = malloc(sizeof(t_header));
 	t_guardar_plato_restaurante * creacion_pedido = malloc(sizeof(t_guardar_plato_restaurante));
 
 	creacion_pedido->id_pedido = plato->id_pedido;
 	creacion_pedido->size_nombre_plato = string_length(plato->nombre_plato);
 	creacion_pedido->nombre_plato = plato->nombre_plato;
-	creacion_pedido->cantidad_plato = plato->cantidad_plato;
+	creacion_pedido->cantidad_plato = 1;
 
 	int size_buffer = sizeof(uint32_t) * 3 + creacion_pedido->size_nombre_plato;
 	void * buffer = malloc(size_buffer);
@@ -577,9 +642,24 @@ void aniadir_plato_restaurante(aniadir_plato * plato) {
 	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
 	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
 
-	int respuesta_creacion_pedido = deserializar_respuesta_creacion_pedido(mensaje_recibido->payload);
+	uint32_t respuesta_creacion_pedido = deserializar_respuesta_creacion_pedido(mensaje_recibido->payload);
 
 	log_info(logger_restaurante, "Respuesta aniadir plato: %d", respuesta_creacion_pedido);
+
+	pedido * pedido = busca_pedido_en_lista(plato->id_pedido);
+
+	if (pedido != NULL) {
+		plato_cantidad * plato_cant = busca_plato_en_pedido(pedido, plato->nombre_plato);
+		if(plato_cant != NULL) plato_cant->cantidad++;
+		else {
+			plato_cantidad * plato_agregar = malloc(sizeof(plato_cantidad));
+			plato_agregar->plato = plato->nombre_plato;
+			plato_agregar->cantidad = 1;
+			list_add(pedido->lista_platos, plato_agregar);
+		}
+	}
+
+	return respuesta_creacion_pedido;
 }
 
 void confirmar_pedido(int id_pedido) {
@@ -713,6 +793,42 @@ t_respuesta_receta * deserializar_respuesta_receta(void * payload) {
 	payload += respuesta_info->size_tiempos;
 
 	return respuesta_info;
+}
+
+t_aniadir_plato_app_resto * deserializar_aniadir_plato_app(void * payload) {
+
+	t_aniadir_plato_app_resto * plato = malloc(sizeof(t_aniadir_plato_app_resto));
+
+	memcpy(&(plato->id_pedido), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
+
+	memcpy(&(plato->size_plato), payload, sizeof(uint32_t));
+	payload += sizeof(uint32_t);
+
+	plato->plato = malloc(sizeof(plato->size_plato) + 1);
+	memcpy((plato->plato), payload, plato->size_plato);
+
+	return plato;
+}
+
+pedido * busca_pedido_en_lista(uint32_t id_pedido) {
+	bool _detecta_pedido_en_lista(void * p_elem) {
+		return (((pedido *)p_elem)->id_pedido == id_pedido );
+	}
+
+	pedido * pedido = list_find(pedidos_creados, _detecta_pedido_en_lista);
+
+	return pedido;
+}
+
+plato_cantidad * busca_plato_en_pedido(pedido * pedido, char * plato) {
+	bool _detecta_plato_en_lista(void * p_elem) { // detecta si el restaurante está disponible en la APP
+		return string_equals_ignore_case( ((plato_cantidad*)p_elem)->plato , plato );
+	}
+
+	plato_cantidad * plato_cantidad = list_find(pedido->lista_platos, _detecta_plato_en_lista);
+
+	return plato_cantidad;
 }
 
 
