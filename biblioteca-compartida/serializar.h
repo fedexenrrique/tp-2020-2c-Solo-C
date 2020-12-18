@@ -187,6 +187,12 @@ typedef struct {
 	uint32_t		CantLista;
 } t_12_plato;
 
+typedef struct {
+	uint32_t		id_pedido;
+	uint32_t		size_plato;
+	char		*	plato;
+}t_aniadir_plato_app_resto;
+
 
 t_log    * logger;
 t_config * config;
