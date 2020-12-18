@@ -159,9 +159,15 @@ void conectar_restaurante_a_applicacion(void) {
 		break;
 	case CONSULTAR_PEDIDO:
 		// La app me manda la consulta y yo se reenvio al sindicato. Cuando este responde se lo devuelvo a la app
+
 		break;
 	case CONECTAR:
 		// responde la app para avisar que se conecto todo OK
+		header_respuesta->payload = NULL;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+		header_respuesta->nro_msg = OK;
 		break;
 	default:
 		printf("Mensaje no compatible con módulo RESTAURANTE.\n");
