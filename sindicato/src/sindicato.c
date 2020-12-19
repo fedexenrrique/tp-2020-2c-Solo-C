@@ -25,15 +25,16 @@ int paramValidos(char** parametros) {
 }
 
 //void levantarConsola(void* arguments) {
-	void levantarConsola(void* arguments) {
+	void* levantarConsola(void* infoBloques) {
 
 	printf(" ");
 	printf("*****************************CONSOLA SINDICATO*******************\n");
-	 struct arg_struct *args = (struct arg_struct *)arguments;
+	// struct arg_struct *args = (struct arg_struct *)arguments;
 	tInfoBloques* argInfoBloques=malloc(sizeof(tInfoBloques));
-
-	int socketCliente=args->arg1;
-	argInfoBloques=args->arg2;
+	argInfoBloques=(tInfoBloques*)infoBloques;
+	//argInfoBloques=(tInfoBloques*)infoBloques;
+	//int socketCliente=args->arg1;
+	//argInfoBloques=args->arg2;
 
 
 	while (1) {
@@ -2362,9 +2363,10 @@ int main(int argc, char *argv[]) {
 	//int resultado = finalizarPedido("LaParri",string_itoa(1), NULL, 0);
 
 	//levantarConsola(infoBloques);
-	if(pthread_create(&hiloConsola, NULL,levantarConsola,(void*)&argsConsola)==0){
+
+	/*if(pthread_create(&hiloConsola, NULL,levantarConsola,infoBloques)==0){
 				log_error(logger,"Error creando el hilo");
-	}
+	}*/
 	//mensajeConsultasPlatosPrueba("LaParri");
 
 
@@ -2385,11 +2387,18 @@ int main(int argc, char *argv[]) {
 
 		int socketConectado = aceptar_conexion(socketServer);
 	    args.arg1=socketConectado;
+	    args.arg2=malloc(sizeof(tInfoBloques));
 	    args.arg2=infoBloques;
 	    //pthread_mutex_lock(&lock);
+<<<<<<< HEAD
 		//if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
 			//log_error(logger,"Error creando el hilo");
 		//}
+=======
+		//pthread_create(&hiloConexionAceptada, NULL,handleConexion,&args);
+		//	log_error(logger,"Error creando el hilo");
+
+>>>>>>> 4a4b4b11ed8c1344677f5be3b71ee7a9ab8102b2
 		handleConexion(&args);
 	    //pthread_mutex_unlock(&lock);
 
