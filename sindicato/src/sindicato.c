@@ -25,13 +25,12 @@ int paramValidos(char** parametros) {
 }
 
 //void levantarConsola(void* arguments) {
-	void* levantarConsola(void* infoBloques) {
+	void* levantarConsola(void* info) {
 
 	printf(" ");
 	printf("*****************************CONSOLA SINDICATO*******************\n");
 	// struct arg_struct *args = (struct arg_struct *)arguments;
-	tInfoBloques* argInfoBloques=malloc(sizeof(tInfoBloques));
-	argInfoBloques=(tInfoBloques*)infoBloques;
+	//tInfoBloques* argInfoBloques=(tInfoBloques*)info;
 	//argInfoBloques=(tInfoBloques*)infoBloques;
 	//int socketCliente=args->arg1;
 	//argInfoBloques=args->arg2;
@@ -94,7 +93,7 @@ int paramValidos(char** parametros) {
 			log_info(logger,"Nombre: %s\n", restaurante->nombreRestaurante);
 			log_info(logger,"Cantidad Cocineros: %d\n", restaurante->cantCocineros);
 
-			int archivoGrabado=grabarArchivoRestaurante(restaurante,argInfoBloques);
+			int archivoGrabado=grabarArchivoRestaurante(restaurante,infoBloques);
 
 			if(archivoGrabado<0){
 				log_error(logger,"Archivo no grabado");
@@ -134,7 +133,7 @@ int paramValidos(char** parametros) {
 			log_info(logger,"Creando receta...\n");
 			log_info(logger,receta->nombreReceta);
 
-			int archivoGrabado=grabarArchivoReceta(receta,argInfoBloques);
+			int archivoGrabado=grabarArchivoReceta(receta,infoBloques);
 
 			if(archivoGrabado==0){
 						log_error(logger,"Archivo no grabado");
@@ -153,7 +152,7 @@ int paramValidos(char** parametros) {
 
 	}
 
-	free(argInfoBloques);
+	//free(argInfoBloques);
 
 }
 //COMPLETAR
@@ -174,6 +173,10 @@ tInfoBloques* leerInfoBloques(){
 	offset=offset+12;
 	pathArchivo[offset]='\0';
 
+	t_config* config= config_create(pathArchivo);
+
+
+
 	e=stat(pathArchivo,&info);
 
 	FILE* archInfoBloques= fopen(pathArchivo,"r+");
@@ -181,26 +184,31 @@ tInfoBloques* leerInfoBloques(){
 
 	if(e==0){
 		log_info(logger, "Leyendo archivo Info de Bloques");
-		map = (char*)mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchInfoBloques, 0);
+		/*map = (char*)mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED,fdArchInfoBloques, 0);
 
 		if (map == MAP_FAILED) {
 			close(fileno(archInfoBloques));
 			perror("Error mapeando el archivo");
 			exit(EXIT_FAILURE);
 
-		}
-		char** lineasArchivo = string_split(map, "\n");
+		}*/
+		//char** lineasArchivo = string_split(map, "\n");
 
-		infoBloques->tamBloques=atoi(string_substring(lineasArchivo[0],11,2));
-		infoBloques->cantBloques=atoi(string_substring(lineasArchivo[1],7,2));
-	}
-	if (munmap(map,info.st_size) == -1) {
+		infoBloques->cantBloques=config_get_int_value(config,"BLOCKS");
+		infoBloques->tamBloques=config_get_int_value(config,"BLOCK_SIZE");
+		infoBloques->magicNumber=config_get_string_value(config,"MAGIC_NUMBER");
+
+
+		//infoBloques->tamBloques=atoi(string_substring(lineasArchivo[0],11,2));
+		//infoBloques->cantBloques=atoi(string_substring(lineasArchivo[1],7,2));
+
+	/*if (munmap(map,info.st_size) == -1) {
 					log_error(logger,"Error al liberar memoria mapeada");
-					exit(EXIT_FAILURE);
+					exit(EXIT_FAILURE);*/
 
 	}
-	free(pathArchivo);
-	return infoBloques;
+config_destroy(config);
+return infoBloques;
 }
 
 
@@ -1818,9 +1826,9 @@ void* handleConexion(void* arguments) {
 	uint32_t modulo, idProceso, nroMsg, size=0;
     struct arg_struct *args = (struct arg_struct *)arguments;
 
-    int socketCliente=args->arg1;
-    tInfoBloques* infoBloques=malloc(sizeof(tInfoBloques));
-    infoBloques=args->arg2;
+    //args->socketArg=((struct arg_struct*)arguments)->socketArg;
+    //tInfoBloques* infoBloquesArg=((struct arg_struct*)arguments)->infoBloquesArg;
+    int socketCliente=(int)arguments;
 
 	t_header2* headerRecibido = malloc(sizeof(t_header2));
 
@@ -2326,7 +2334,7 @@ void incializarSemaforos(){
 int main(int argc, char *argv[]) {
 
 	cargarConfiguracion();
-	tInfoBloques* infoBloques=malloc(sizeof(tInfoBloques));
+	//infoBloques=malloc(sizeof(tInfoBloques));
 	infoBloques=importarInfoBloques();
 	//mutexDiccionarioRestos=PTHREAD_MUTEX_INITIALIZER;
 	incializarSemaforos();
@@ -2334,10 +2342,6 @@ int main(int argc, char *argv[]) {
 	asignarPaths();
 
 	montarFS(infoBloques);
-
-    struct arg_struct argsConsola;
-    argsConsola.arg1=0;
-    argsConsola.arg2=infoBloques;
 
 	//info=obtenerInfoRestaurante("Resto1");
 
@@ -2377,8 +2381,8 @@ int main(int argc, char *argv[]) {
 	//int resultado = finalizarPedido("LaParri",string_itoa(1), NULL, 0);
 
 	//levantarConsola(infoBloques);
-
-	if(pthread_create(&hiloConsola, NULL,levantarConsola,infoBloques)<0){
+	log_info(logger,"%d",infoBloques->cantBloques);
+	if(pthread_create(&hiloConsola, NULL,levantarConsola,NULL)<0){
 				log_error(logger,"Error creando el hilo");
 	}
 	//mensajeConsultasPlatosPrueba("LaParri");
@@ -2400,14 +2404,14 @@ int main(int argc, char *argv[]) {
 	    struct arg_struct* args=malloc(sizeof(struct arg_struct));
 
 		int socketConectado = aceptar_conexion(socketServer);
-	    args->arg1=socketConectado;
-	    args->arg2=malloc(sizeof(tInfoBloques));
-	    args->arg2=infoBloques;
+	    args->socketArg=socketConectado;
+	    args->infoBloquesArg=malloc(sizeof(tInfoBloques));
+	    args->infoBloquesArg=infoBloques;
 	    //pthread_mutex_lock(&lock);
-		//pthread_create(&hiloConexionAceptada, NULL,handleConexion,args);
+		pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)socketConectado);
 		//	log_error(logger,"Error creando el hilo");
 
-		handleConexion(args);
+		//handleConexion(args);
 		//if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
 			//log_error(logger,"Error creando el hilo");
 		//}
@@ -2421,7 +2425,7 @@ int main(int argc, char *argv[]) {
 	    //pthread_detach(hiloConexionAceptada);
 	    //pthread_mutex_destroy(&lock);
 
-		free(args->arg2);
+		free(args->infoBloquesArg);
 		free(args);
 
 	}

@@ -178,8 +178,8 @@ typedef struct{
 }tSolicitudPlatiListo;
 
 struct arg_struct {
-	int arg1;
-	tInfoBloques* arg2;
+	int socketArg;
+	tInfoBloques* infoBloquesArg;
 };
 
 tConfiguracion * configuracion;
