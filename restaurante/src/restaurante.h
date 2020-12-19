@@ -57,6 +57,10 @@ typedef struct {
 	uint32_t		cantidad;
 }plato_cantidad;
 
+typedef struct {
+	char		*	nombre;
+	uint32_t		tiempos;
+}pasos_tiempos;
 // FUNCIONES
 
 int									main													(void);
@@ -76,6 +80,7 @@ t_aniadir_plato_app_resto		*	deserializar_aniadir_plato_app							(void *);
 t_creacion_pedido				*	obtener_pedido											(int);
 t_creacion_pedido				*	deserializar_respuesta_obtener_pedido_restaurante		(void *);
 uint32_t							confirmar_pedido										(uint32_t);
+void 								generar_pcb_platos										(t_creacion_pedido *);
 t_respuesta_receta				*	obtener_receta											(char *);
 t_respuesta_receta				*	deserializar_respuesta_receta							(void *);
 void 								conectar_restaurante_a_applicacion						(void);

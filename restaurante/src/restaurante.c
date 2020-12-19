@@ -691,9 +691,81 @@ uint32_t aniadir_plato_restaurante(aniadir_plato * plato) {
 }
 
 uint32_t confirmar_pedido(uint32_t id_pedido) {
-	t_creacion_pedido * pedido = obtener_pedido(id_pedido);
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
 
-	return 1;
+	int size_buffer = sizeof(uint32_t);
+	void * buffer = malloc(size_buffer);
+
+	memcpy(buffer + offset, id_pedido, sizeof(uint32_t));
+
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = RESTAURANTE;
+	header->nro_msg = CONFIRMAR_PEDIDO;
+
+	int conexion = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
+
+	if (enviar_buffer(conexion, header) == false) {
+		log_error(logger_restaurante, "No se pudo enviar el pedido de info del restaurante");
+	}
+
+	t_header * mensaje_recibido = recibir_buffer(conexion);
+
+	log_info(logger_restaurante, "Se recibio mensaje del modulo: %d", mensaje_recibido->modulo);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo con id: %d", mensaje_recibido->id_proceso);
+	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
+	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
+
+	if (mensaje_recibido->nro_msg == OK) {
+		t_creacion_pedido * pedido = obtener_pedido(id_pedido);
+		generar_pcb_platos(pedido);
+		return 1;
+	}
+	else return 0;
+}
+
+void generar_pcb_platos(t_creacion_pedido * pedido_creado) {
+	char ** nombre_platos_array = string_get_string_as_array(pedido_creado->lista_platos);
+	char ** cantidad_platos_array = string_get_string_as_array(pedido_creado->cantidad_platos);
+
+	uint32_t i;
+	while (nombre_platos_array[i] != NULL) {
+
+		for(int j = 0; j < (atoi(cantidad_platos_array[i])); ++j) {
+
+			pcb_plato * pcb_p = malloc(sizeof(pcb_plato));
+			pcb_p->id_pedido = pedido_creado->id_pedido;
+			pcb_p->nombre_plato = nombre_platos_array[i];
+			pcb_p->estado = "COLA READY";
+
+			t_respuesta_receta * receta = obtener_receta(nombre_platos_array[i]);
+
+			char ** nombre_pasos_array = string_get_string_as_array(receta->pasos);
+			char ** tiempos_pasos_array = string_get_string_as_array(receta->tiempos);
+
+			t_list * recetas = list_create();
+			uint32_t h = 0;
+			while (nombre_pasos_array[h] != NULL) {
+				pasos_tiempos * pasos = malloc(sizeof(pasos_tiempos));
+				pasos->nombre = nombre_pasos_array[h];
+				pasos->tiempos = tiempos_pasos_array[h];
+				list_add(recetas, pasos);
+				h++;
+			}
+
+			pcb_p->receta = recetas;
+			pcb_p->receta_faltante = recetas;
+
+			t_queue cola_ready = obtener_cola_afinidad(nombre_platos_array[i]);
+			queue_push(cola_ready, pcb_p);
+		}
+
+		i++;
+
+	}
+
 }
 
 t_creacion_pedido * obtener_pedido(int id_pedido) {
