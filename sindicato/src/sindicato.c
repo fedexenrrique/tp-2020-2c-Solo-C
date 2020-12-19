@@ -1799,6 +1799,17 @@ t_solicitud_info_restaurante* deserializarSolicitudInfoRestaurante (void* payloa
 
 	return info;
 }
+
+void deserializarSolicitudPlatos(char* payload,t_solicitud_info_restaurante* infoPlatos){
+	uint32_t offset = 0;
+
+	memcpy(&infoPlatos->size_nombre_restaurante, payload, sizeof(uint32_t));
+	offset += sizeof(sizeof(uint32_t));
+	memcpy(infoPlatos->nombre_restaurante, payload + offset,infoPlatos->size_nombre_restaurante);
+	offset += infoPlatos->size_nombre_restaurante;
+
+
+}
 //void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
 void* handleConexion(void* arguments) {
 	log_info(logger, "Handle conexion aceptada...");
@@ -1834,9 +1845,11 @@ void* handleConexion(void* arguments) {
 
 	case CONSULTAR_PLATOS:{
 		char* restauranteBuscado=malloc(strlen(headerRecibido->payload));
+		t_solicitud_info_restaurante* infoPlatos=malloc(sizeof(t_solicitud_info_restaurante));
 		tMensajeInfoRestaurante *infoRestaurante=malloc(sizeof(tMensajeInfoRestaurante));
+		deserializarSolicitudPlatos(headerRecibido->payload,infoPlatos);
 		tRespuestaConsultaPlatos* respuestaConsultaPlatos=malloc(sizeof(tRespuestaConsultaPlatos));
-		infoRestaurante=obtenerInfoRestaurante(restauranteBuscado);
+		infoRestaurante=obtenerInfoRestaurante(infoPlatos->nombre_restaurante);
 		respuestaConsultaPlatos->platos=malloc(strlen(infoRestaurante->platos)+1);
 		memcpy(respuestaConsultaPlatos->platos,infoRestaurante->platos,strlen(infoRestaurante->platos));
 		respuestaConsultaPlatos->platos[strlen(infoRestaurante->platos)]='\0';
@@ -2093,8 +2106,7 @@ void* handleConexion(void* arguments) {
 	 int streamRespuestaSize = sizeof(uint32_t) * 4 + headerRespuesta->size;
 	 */
 	//ARMO RESPUESTA AL RESTAURANTE HARDCODEADA
-
-return NULL;
+	pthread_exit (NULL);
 }
 
 void armarBufferHardcodeadoRestaurante(t_header2* header,
@@ -2364,9 +2376,9 @@ int main(int argc, char *argv[]) {
 
 	//levantarConsola(infoBloques);
 
-	/*if(pthread_create(&hiloConsola, NULL,levantarConsola,infoBloques)==0){
+	if(pthread_create(&hiloConsola, NULL,levantarConsola,infoBloques)<0){
 				log_error(logger,"Error creando el hilo");
-	}*/
+	}
 	//mensajeConsultasPlatosPrueba("LaParri");
 
 
@@ -2383,24 +2395,23 @@ int main(int argc, char *argv[]) {
 	    }*/
 	while (1) {
 		//Crear Hilo
-	    struct arg_struct args;
+	    struct arg_struct* args=malloc(sizeof(struct arg_struct));
 
 		int socketConectado = aceptar_conexion(socketServer);
-	    args.arg1=socketConectado;
-	    args.arg2=malloc(sizeof(tInfoBloques));
-	    args.arg2=infoBloques;
+	    args->arg1=socketConectado;
+	    args->arg2=malloc(sizeof(tInfoBloques));
+	    args->arg2=infoBloques;
 	    //pthread_mutex_lock(&lock);
-		//pthread_create(&hiloConexionAceptada, NULL,handleConexion,&args);
+		pthread_create(&hiloConexionAceptada, NULL,handleConexion,args);
 		//	log_error(logger,"Error creando el hilo");
 
-		handleConexion(&args);
+		//handleConexion(&args);
 	    //pthread_mutex_unlock(&lock);
 
 	   //pthread_join(hiloConexionAceptada, NULL);
 	    //pthread_detach(hiloConexionAceptada);
 	    //pthread_mutex_destroy(&lock);
 
-		break;
 
 	}
 
