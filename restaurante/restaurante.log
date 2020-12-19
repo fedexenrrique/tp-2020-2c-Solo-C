@@ -493,3 +493,78 @@ NOMBRE_RESTAURANTE: McDonals
 [INFO] 10:38:36:796 restaurante/(5646:5646): Se recibio mensaje del modulo con id: -1208446976
 [INFO] 10:38:37:109 restaurante/(5646:5646): Se recibio el tipo de mensaje numero: -1073746200
 [INFO] 10:38:37:443 restaurante/(5646:5646): Se recibio un payload del tamaño: -1208446976
+[INFO] 11:15:34:752 restaurante/(11473:11473): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 11:15:39:736 restaurante/(11473:11473): Conexión exitosa!
+[INFO] 11:15:39:738 restaurante/(11473:11473): Se enviaron la cantidad de bytes: 27
+[INFO] 11:15:39:753 restaurante/(11473:11473): Se recibio mensaje del modulo: 5
+[INFO] 11:15:39:753 restaurante/(11473:11473): Se recibio mensaje del modulo con id: 2
+[INFO] 11:15:39:753 restaurante/(11473:11473): Se recibio el tipo de mensaje numero: 3
+[INFO] 11:15:39:753 restaurante/(11473:11473): Se recibio un payload del tamaño: 89
+[INFO] 11:15:39:753 restaurante/(11473:11473): Resturante cantidad cocineros: 2
+[INFO] 11:15:39:753 restaurante/(11473:11473): Resturante posicion x: 1
+[INFO] 11:15:39:753 restaurante/(11473:11473): Resturante posicion y: 1
+[INFO] 11:15:39:753 restaurante/(11473:11473): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 11:15:39:754 restaurante/(11473:11473): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 11:15:39:754 restaurante/(11473:11473): Resturante precio platos: [200,200,125]
+[INFO] 11:15:39:754 restaurante/(11473:11473): Resturante cantidad hornos: 1
+[INFO] 11:15:47:844 restaurante/(11473:11473): [asadoJugoso,asadoSeco,choripan]
+[INFO] 11:18:40:406 restaurante/(12084:12084): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 11:18:40:962 restaurante/(12084:12084): Conexión exitosa!
+[INFO] 11:18:40:962 restaurante/(12084:12084): Se enviaron la cantidad de bytes: 27
+[INFO] 11:18:40:996 restaurante/(12084:12084): Se recibio mensaje del modulo: 5
+[INFO] 11:18:40:996 restaurante/(12084:12084): Se recibio mensaje del modulo con id: 2
+[INFO] 11:18:40:996 restaurante/(12084:12084): Se recibio el tipo de mensaje numero: 3
+[INFO] 11:18:40:996 restaurante/(12084:12084): Se recibio un payload del tamaño: 89
+[INFO] 11:18:40:996 restaurante/(12084:12084): Resturante cantidad cocineros: 2
+[INFO] 11:18:40:997 restaurante/(12084:12084): Resturante posicion x: 1
+[INFO] 11:18:40:997 restaurante/(12084:12084): Resturante posicion y: 1
+[INFO] 11:18:40:997 restaurante/(12084:12084): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 11:18:40:997 restaurante/(12084:12084): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 11:18:40:997 restaurante/(12084:12084): Resturante precio platos: [200,200,125]
+[INFO] 11:18:40:997 restaurante/(12084:12084): Resturante cantidad hornos: 1
+[INFO] 11:18:40:997 restaurante/(12084:12084): [asadoJugoso,asadoSeco,choripan]
+[INFO] 11:26:56:24 restaurante/(12760:12760): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 11:26:56:925 restaurante/(12760:12760): Conexión exitosa!
+[INFO] 11:26:56:925 restaurante/(12760:12760): Se enviaron la cantidad de bytes: 27
+[INFO] 11:26:56:954 restaurante/(12760:12760): Se recibio mensaje del modulo: 5
+[INFO] 11:26:56:954 restaurante/(12760:12760): Se recibio mensaje del modulo con id: 2
+[INFO] 11:26:56:955 restaurante/(12760:12760): Se recibio el tipo de mensaje numero: 3
+[INFO] 11:26:56:955 restaurante/(12760:12760): Se recibio un payload del tamaño: 89
+[INFO] 11:26:56:955 restaurante/(12760:12760): Resturante cantidad cocineros: 2
+[INFO] 11:26:56:955 restaurante/(12760:12760): Resturante posicion x: 1
+[INFO] 11:26:56:955 restaurante/(12760:12760): Resturante posicion y: 1
+[INFO] 11:26:56:955 restaurante/(12760:12760): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 11:26:56:955 restaurante/(12760:12760): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 11:26:56:955 restaurante/(12760:12760): Resturante precio platos: [200,200,125]
+[INFO] 11:26:56:955 restaurante/(12760:12760): Resturante cantidad hornos: 1
+[INFO] 11:26:56:959 restaurante/(12760:12760): [asadoJugoso,asadoSeco,choripan]

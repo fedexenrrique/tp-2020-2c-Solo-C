@@ -17,13 +17,15 @@ int main(void) {
 
 	pthread_t  receptor_modulo_cliente_h;
 
-	pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
+	//pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
 
-	g_socket_cliente = crear_socket_escucha("127.0.0.1", puerto_escucha);
+	uint32_t g_socket_cliente_resto = crear_socket_escucha("127.0.0.1", puerto_escucha);
+
+	printf("RESTAURANTE -- Escuchando en puerto %s", puerto_escucha);
 
 	while (1) {
 
-		uint32_t socket_aceptado = aceptar_conexion( g_socket_cliente );
+		uint32_t socket_aceptado = aceptar_conexion( g_socket_cliente_resto );
 
 		if ( socket_aceptado <= 0) {
 
@@ -411,6 +413,7 @@ void iniciar_planificacion() {
 	cola_exit = queue_create();
 
 	cargar_colas_ready();
+	sem_hornos = malloc(sizeof(sem_t));
 	sem_init(sem_hornos, 0, cantidad_hornos);
 	int i;
 	while (list_get(cocineros, i) != NULL) {
@@ -429,7 +432,7 @@ void iniciar_planificacion() {
 }
 
 void cargar_colas_ready() {
-	int cola_creada;
+	int cola_creada = 0;
 	for(int i = 0; i < list_size(cocineros); ++i) {
 		char * cocinero = list_get(cocineros, i);
 		if (cocinero != "OTRO") {
