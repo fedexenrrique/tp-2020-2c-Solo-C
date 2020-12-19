@@ -15,13 +15,165 @@ int main(void) {
 
 	//signal(SIGINT, sigint);
 
-	// pthread_t  receptor_modulo_cliente_h;
+	pthread_t  receptor_modulo_cliente_h;
 
-	// pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
+	pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
 
-	//conectar_restaurante_a_applicacion();
+	g_socket_cliente = crear_socket_escucha("127.0.0.1", puerto_escucha);
+
+	while (1) {
+
+		uint32_t socket_aceptado = aceptar_conexion( g_socket_cliente );
+
+		if ( socket_aceptado <= 0) {
+
+			perror("Error al aceptar el socket.");
+			exit(-1);
+
+		}
+
+		pthread_t  thread_restaurante;
+
+		pthread_create(&thread_restaurante, NULL, (void*)&procesamiento_mensaje, (void*)(&socket_aceptado));
+
+	}
 
 	return 1;
+
+}
+
+void procesamiento_mensaje( void * p_socket_aceptado ) {
+	uint32_t socket_aceptado = (uint32_t)(* ( (int*) p_socket_aceptado ));
+
+	t_header * header_recibido = recibir_buffer( socket_aceptado );
+
+	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
+	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
+	printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
+	printf( "Bytes:        %d.\n" , header_recibido->size       );
+
+	mem_hexdump(header_recibido->payload, header_recibido->size);
+
+	t_header * header_respuesta = malloc(sizeof(t_header));
+	int offset;
+
+	switch ( header_recibido->nro_msg ) {
+	case CONSULTAR_PLATOS:
+		;
+		t_respuesta_platos_restaurante * respuesta_platos = consultar_platos_restaurante();
+		offset = 0;
+		int size_buffer = sizeof(uint32_t) + respuesta_platos->size_platos;
+		void * buffer = malloc(size_buffer);
+
+		memcpy(buffer + offset, &respuesta_platos->size_platos, sizeof(uint32_t));
+		offset += sizeof(uint32_t);
+
+		memcpy(buffer+offset, respuesta_platos->platos, respuesta_platos->size_platos);
+
+		header_respuesta->payload = buffer;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+		header_respuesta->nro_msg = CONSULTAR_PLATOS;
+
+		if (enviar_buffer( socket_aceptado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder la consulta de platos al cliente");
+		}
+		break;
+	case CREAR_PEDIDO:
+		// primero le mando al sindicato si el sindicato responde OK, le tengo que devolver un id a la app
+		;
+		uint32_t respuesta_creacion_pedido = crear_pedido_restaurante(id_pedido_restaurante);
+		size_buffer = 0;
+		if (respuesta_creacion_pedido == 1) {
+			header_respuesta->nro_msg = OK;
+		}
+		else header_respuesta->nro_msg = FAIL;
+		header_respuesta->payload = NULL;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+
+		if (enviar_buffer( socket_aceptado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder la creacion de pedido al cliente");
+		}
+		break;
+	case ANIADIR_PLATO:
+		// primero le mando al sindicato si el sindicato responde Ok, le tengo que devolver un OK o fail a la app
+		;
+		t_aniadir_plato_app_resto * plato_app_resto = deserializar_aniadir_plato_app(header_recibido->payload);
+		aniadir_plato * aniadir_plato = malloc(sizeof(aniadir_plato));
+		aniadir_plato->id_pedido = plato_app_resto->id_pedido;
+		aniadir_plato->size_nombre_restaurante = string_length(nombre_restaurante);
+		aniadir_plato->nombre_restaurante = nombre_restaurante;
+		aniadir_plato->size_nombre_plato = string_length(plato_app_resto->plato);
+		aniadir_plato->nombre_restaurante =plato_app_resto->plato;
+		uint32_t respuesta_aniadir_plato = aniadir_plato_restaurante(aniadir_plato);
+
+		size_buffer = 0;
+		if (respuesta_creacion_pedido == 1) {
+			header_respuesta->nro_msg = OK;
+		}
+		else header_respuesta->nro_msg = FAIL;
+		header_respuesta->payload = NULL;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+
+		if (enviar_buffer( socket_aceptado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder el aniadir plato al cliente");
+		}
+
+		break;
+	case CONFIRMAR_PEDIDO:
+		// La app me manda el id yo lo confirmo le mando al sindicato, el responde OK o fail y lo informo a la app
+		;
+		uint32_t id_pedido;
+		memcpy(&(id_pedido), header_recibido->payload, sizeof(uint32_t));
+
+		uint32_t pedido_confirmado = confirmar_pedido(id_pedido);
+		if (pedido_confirmado == 1) {
+			header_respuesta->nro_msg = OK;
+		}
+		else header_respuesta->nro_msg = FAIL;
+		header_respuesta->payload = NULL;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+
+		if (enviar_buffer( socket_aceptado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder el confirmar pedido al cliente");
+		}
+
+		break;
+
+	/*
+	case CONSULTAR_PEDIDO:
+		break;
+		 */
+	case CONECTAR:
+		// responde la app para avisar que se conecto todo OK
+		header_respuesta->payload = NULL;
+		header_respuesta->size = size_buffer;
+		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+		header_respuesta->modulo = RESTAURANTE;
+		header_respuesta->nro_msg = OK;
+		if (enviar_buffer( socket_aceptado, header_respuesta) == false) {
+			log_error(logger_restaurante, "No se pudo responder el conectar al cliente");
+		}
+
+		break;
+	default:
+		printf("Mensaje no compatible con módulo RESTAURANTE.\n");
+	}
+
+	if ( header_recibido->size > 0 || header_recibido->payload != NULL )
+
+		free( header_recibido->payload );
+
+	free( header_recibido );
+
+	close( socket_aceptado );
 
 }
 
@@ -68,9 +220,6 @@ void conectar_restaurante_a_applicacion(void) {
 	while (1) {
 
 		//recibir_buffer( sock_conectado ); }
-
-
-
 		t_header * header_recibido = recibir_buffer( sock_conectado );
 
 
@@ -262,10 +411,21 @@ void iniciar_planificacion() {
 	cola_exit = queue_create();
 
 	cargar_colas_ready();
-
-
 	sem_init(sem_hornos, 0, cantidad_hornos);
+	int i;
+	while (list_get(cocineros, i) != NULL) {
 
+		pthread_t  planificacion_cola_ready;
+		char * variable = list_get(cocineros, i);
+		pthread_create(&planificacion_cola_ready, NULL, planificador_cpu, variable);
+		i++;
+	}
+
+	pthread_t  planificacion_cola_io;
+	pthread_create(&planificacion_cola_io, NULL, (void*)&planificador_io, (void*)NULL );
+
+	pthread_t  planificacion_cola_bloqueados;
+	pthread_create(&planificacion_cola_bloqueados, NULL, (void*)&planificador_bloqueados, (void*)NULL );
 }
 
 void cargar_colas_ready() {
@@ -273,52 +433,58 @@ void cargar_colas_ready() {
 	for(int i = 0; i < list_size(cocineros); ++i) {
 		char * cocinero = list_get(cocineros, i);
 		if (cocinero != "OTRO") {
-			t_queue * cola_ready = queue_create();
-			t_dictionary * cola_ready_afinidad = dictionary_create();
-			dictionary_put(cola_ready_afinidad, cocinero, cola_ready);
+			t_queue * cola_ready_ = queue_create();
+			cola_ready_afinidad * cola_ready_afinidad = malloc(sizeof(pasos_tiempos));
+			cola_ready_afinidad->cola_ready = cola_ready_;
+			cola_ready_afinidad->afinidad = cocinero;
 			list_add(colas_ready, cola_ready_afinidad);
 		}
 		else {
 			if (cola_creada == 0) {
 				cola_creada = 1;
-				t_queue * cola_ready = queue_create();
-				t_dictionary * cola_ready_afinidad = dictionary_create();
-				dictionary_put(cola_ready_afinidad, cocinero, cola_ready);
+				t_queue * cola_ready_ = queue_create();
+				cola_ready_afinidad * cola_ready_afinidad = malloc(sizeof(pasos_tiempos));
+				cola_ready_afinidad->cola_ready = cola_ready_;
+				cola_ready_afinidad->afinidad = "OTRO";
 				list_add(colas_ready, cola_ready_afinidad);
 			}
 		}
 	}
 }
 
-void planificador_cpu(char * afinidad) {
+void * planificador_cpu(void * afinidad_void) {
+	char * afinidad = (char *) afinidad_void;
 	while (1) {
 		t_queue * cola_ready = obtener_cola_afinidad(afinidad);
 		if (queue_size(cola_ready) != 0) {
 			pcb_plato * plato = queue_pop(cola_ready);
-			t_dictionary * paso = list_get(plato->receta_faltante, 0);
-			uint32_t cantidad_cpu = dictionary_get(paso, "HORNEAR");
+			pasos_tiempos * paso = list_get(plato->receta_faltante, 0);
+			uint32_t cantidad_cpu = paso->tiempos;
 			if(cantidad_cpu != NULL) {
 				for(int i = 0; i < cantidad_cpu; ++i ) {
 					log_info(logger_restaurante, "CPU -- plato: %s, realizando %d de %d", plato->nombre_plato, i, cantidad_cpu);
 				}
 			}
 			list_remove(plato->receta_faltante, 0);
-			t_dictionary * paso_nuevo = list_get(plato->receta_faltante, 0);
+			pasos_tiempos * paso_nuevo = list_get(plato->receta_faltante, 0);
 			if (paso_nuevo == NULL) {
 				queue_push(cola_exit, plato);
 			}
-			else if (dictionary_has_key(paso_nuevo, "REPOSAR")) {
+			else if (string_equals_ignore_case(paso_nuevo->nombre, "REPOSAR")) {
 				queue_push(cola_bloqueados, plato);
+			}
+			else if (string_equals_ignore_case(paso_nuevo->nombre, "REPOSAR")) {
+				queue_push(cola_io, plato);
 			}
 			else {
 				t_queue * cola_ready;
-				int existe_cola_ready(void * p) {
-					dictionary_has_key(p, plato->nombre_plato);
+				int existe_cola_ready(void * p_elem) {
+					return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , paso_nuevo->nombre);
 				}
-				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+				cola_ready = list_find(colas_ready, existe_cola_ready);
 				if (cola_ready == NULL) {
-					int existe_cola_otro(void *p) {
-						dictionary_has_key(p, "OTRO");
+					int existe_cola_otro(void *p_elem) {
+						return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , "OTRO");
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -333,30 +499,30 @@ void planificador_io() {
 		if (queue_size(cola_io) != 0) {
 			sem_wait(sem_hornos);
 			pcb_plato * plato = queue_pop(cola_io);
-			t_dictionary * paso = list_get(plato->receta_faltante, 0);
-			uint32_t cantidad_io = dictionary_get(paso, "HORNEAR");
+			pasos_tiempos * paso = list_get(plato->receta_faltante, 0);
+			uint32_t cantidad_io = paso->tiempos;
 			if(cantidad_io != NULL) {
 				for(int i = 0; i < cantidad_io; ++i ) {
 					log_info(logger_restaurante, "I/0 -- plato: %s, realizando %d de %d", plato->nombre_plato, i, cantidad_io);
 				}
 			}
 			list_remove(plato->receta_faltante, 0);
-			t_dictionary * paso_nuevo = list_get(plato->receta_faltante, 0);
+			pasos_tiempos * paso_nuevo = list_get(plato->receta_faltante, 0);
 			if (paso_nuevo == NULL) {
 				queue_push(cola_exit, plato);
 			}
-			else if (dictionary_has_key(paso_nuevo, "REPOSAR")) {
+			else if (string_equals_ignore_case(paso_nuevo->nombre, "REPOSAR")) {
 				queue_push(cola_bloqueados, plato);
 			}
 			else {
 				t_queue * cola_ready;
-				int existe_cola_ready(void * p) {
-					dictionary_has_key(p, plato->nombre_plato);
+				int existe_cola_ready(void * p_elem) {
+					return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , paso_nuevo->nombre);
 				}
-				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+				cola_ready = list_find(colas_ready, existe_cola_ready);
 				if (cola_ready == NULL) {
-					int existe_cola_otro(void *p) {
-						dictionary_has_key(p, "OTRO");
+					int existe_cola_otro(void *p_elem) {
+						return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , "OTRO");
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -371,30 +537,30 @@ void planificador_bloqueados() {
 	while (1) {
 		if (queue_size(cola_bloqueados) != 0) {
 			pcb_plato * plato = queue_pop(cola_bloqueados);
-			t_dictionary * paso = list_get(plato->receta_faltante, 0);
-			uint32_t cantidad_reposar = dictionary_get(paso, "REPOSAR");
+			pasos_tiempos * paso = list_get(plato->receta_faltante, 0);
+			uint32_t cantidad_reposar = paso->tiempos;
 			if(cantidad_reposar != NULL) {
 				for(int i = 0; i < cantidad_reposar; ++i ) {
 					log_info(logger_restaurante, "REPOSAR -- plato: %s, realizando %d de %d", plato->nombre_plato, i, cantidad_reposar);
 				}
 			}
 			list_remove(plato->receta_faltante, 0);
-			t_dictionary * paso_nuevo = list_get(plato->receta_faltante, 0);
+			pasos_tiempos * paso_nuevo = list_get(plato->receta_faltante, 0);
 			if (paso_nuevo == NULL) {
 				queue_push(cola_exit, plato);
 			}
-			else if (dictionary_has_key(paso, "REPOSAR")) {
-				queue_push(cola_bloqueados, plato);
+			else if (string_equals_ignore_case(paso_nuevo->nombre, "HORNEAR")) {
+				queue_push(cola_io, plato);
 			}
 			else {
 				t_queue * cola_ready;
-				int existe_cola_ready(void * p) {
-					dictionary_has_key(p, plato->nombre_plato);
+				int existe_cola_ready(void * p_elem) {
+					return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , paso_nuevo->nombre);
 				}
-				cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+				cola_ready = list_find(colas_ready, existe_cola_ready);
 				if (cola_ready == NULL) {
-					int existe_cola_otro(void *p) {
-						dictionary_has_key(p, "OTRO");
+					int existe_cola_otro(void *p_elem) {
+						return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , "OTRO");
 					}
 					cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 				}
@@ -406,13 +572,13 @@ void planificador_bloqueados() {
 
 t_queue * obtener_cola_afinidad(char * afinidad) {
 	t_queue * cola_ready;
-	int existe_cola_ready(void * p) {
-		dictionary_has_key(p, afinidad);
+	int existe_cola_ready(void * p_elem) {
+		return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , afinidad);
 	}
-	cola_ready = list_find(colas_ready, (void *) existe_cola_ready);
+	cola_ready = list_find(colas_ready, existe_cola_ready);
 	if (cola_ready == NULL) {
-		int existe_cola_otro(void *p) {
-			dictionary_has_key(p, "OTRO");
+		int existe_cola_otro(void *p_elem) {
+			return string_equals_ignore_case( ((cola_ready_afinidad*)p_elem)->afinidad , "OTRO");
 		}
 		cola_ready = list_find(colas_ready, (void *) existe_cola_otro);
 	}
@@ -691,9 +857,81 @@ uint32_t aniadir_plato_restaurante(aniadir_plato * plato) {
 }
 
 uint32_t confirmar_pedido(uint32_t id_pedido) {
-	t_creacion_pedido * pedido = obtener_pedido(id_pedido);
+	int offset = 0;
+	t_header * header = malloc(sizeof(t_header));
 
-	return 1;
+	int size_buffer = sizeof(uint32_t);
+	void * buffer = malloc(size_buffer);
+
+	memcpy(buffer + offset, id_pedido, sizeof(uint32_t));
+
+	header->payload = buffer;
+	header->size = size_buffer;
+	header->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+	header->modulo = RESTAURANTE;
+	header->nro_msg = CONFIRMAR_PEDIDO;
+
+	int conexion = crear_socket_y_conectar(ip_sindicato, puerto_sindicato);
+
+	if (enviar_buffer(conexion, header) == false) {
+		log_error(logger_restaurante, "No se pudo enviar el pedido de info del restaurante");
+	}
+
+	t_header * mensaje_recibido = recibir_buffer(conexion);
+
+	log_info(logger_restaurante, "Se recibio mensaje del modulo: %d", mensaje_recibido->modulo);
+	log_info(logger_restaurante, "Se recibio mensaje del modulo con id: %d", mensaje_recibido->id_proceso);
+	log_info(logger_restaurante, "Se recibio el tipo de mensaje numero: %d", mensaje_recibido->nro_msg);
+	log_info(logger_restaurante, "Se recibio un payload del tamaño: %d", mensaje_recibido->size);
+
+	if (mensaje_recibido->nro_msg == OK) {
+		t_creacion_pedido * pedido = obtener_pedido(id_pedido);
+		generar_pcb_platos(pedido);
+		return 1;
+	}
+	else return 0;
+}
+
+void generar_pcb_platos(t_creacion_pedido * pedido_creado) {
+	char ** nombre_platos_array = string_get_string_as_array(pedido_creado->lista_platos);
+	char ** cantidad_platos_array = string_get_string_as_array(pedido_creado->cantidad_platos);
+
+	uint32_t i;
+	while (nombre_platos_array[i] != NULL) {
+
+		for(int j = 0; j < (atoi(cantidad_platos_array[i])); ++j) {
+
+			pcb_plato * pcb_p = malloc(sizeof(pcb_plato));
+			pcb_p->id_pedido = pedido_creado->id_pedido;
+			pcb_p->nombre_plato = nombre_platos_array[i];
+			pcb_p->estado = "COLA READY";
+
+			t_respuesta_receta * receta = obtener_receta(nombre_platos_array[i]);
+
+			char ** nombre_pasos_array = string_get_string_as_array(receta->pasos);
+			char ** tiempos_pasos_array = string_get_string_as_array(receta->tiempos);
+
+			t_list * recetas = list_create();
+			uint32_t h = 0;
+			while (nombre_pasos_array[h] != NULL) {
+				pasos_tiempos * pasos = malloc(sizeof(pasos_tiempos));
+				pasos->nombre = nombre_pasos_array[h];
+				pasos->tiempos = tiempos_pasos_array[h];
+				list_add(recetas, pasos);
+				h++;
+			}
+
+			pcb_p->receta = recetas;
+			pcb_p->receta_faltante = recetas;
+
+			t_queue * cola_ready = obtener_cola_afinidad(nombre_platos_array[i]);
+			queue_push(cola_ready, pcb_p);
+		}
+
+		i++;
+
+	}
+
 }
 
 t_creacion_pedido * obtener_pedido(int id_pedido) {

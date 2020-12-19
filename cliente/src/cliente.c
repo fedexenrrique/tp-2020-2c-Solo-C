@@ -52,8 +52,16 @@ int main(int argc, char **argv) {
 				case CONSULTAR_PLATOS:
     		    	printf(" 04- CONSULTAR_PLATOS HACIA: APP \n");
 
+							void mostrar_platos(void * elemento){
+								char * plato=(char *)elemento;
+								printf("%s \n",plato);
+							}
     		    	t_list * platos = enviar_04_consultar_platos( g_ip_app, g_puerto_app, g_id_proceso );
 
+//    		    	if(platos==NULL)log_error(logger,"Me esta llegando la lista de platos nulas");
+
+//    		    	log_info(logger,"La lista de los platos esta: %d",list_is_empty(platos));
+//    		    	list_iterate(platos,mostrar_platos);
     		    	list_destroy_and_destroy_elements( platos, _string_destroyer );
 
 		    		break;
@@ -66,32 +74,33 @@ int main(int argc, char **argv) {
     		    	if ( id_pedido == -1 )
     		    		printf("No se pudo crear el pedido.\n");
     		    	else
-    		    		log_error(logger, "Se creó el pedido con ID '%d'.\n", id_pedido );
+    		    		log_info(logger, "Se creó el pedido con ID '%d'.\n", id_pedido );
 
     		    	break;
     		    
 				case ANIADIR_PLATO:
 
 					printf(" 07- ANIADIR_PLATO HACIA: APP, SINDICATO \n");
-    		    	bool se_aniadio = enviar_07_aniadir_plato( g_ip_app, g_puerto_app, g_id_proceso, g_id_pedido_actual, argv[3] );
+    		    	bool se_aniadio = enviar_07_aniadir_plato( g_ip_app, g_puerto_app, g_id_proceso,(uint32_t) atoi(argv[3]), argv[4] );
     		    	printf( se_aniadio ? "Plato agregado al pedido.\n" : "No es posible agregar el plato.\n" );
 
     		    	break;
 
 				case CONFIRMAR_PEDIDO:
-    		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");
+    		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");// Aca deberia mandar solo el id
 
-    		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+    		    	if ( argv[3] == NULL  ) {
 
     		    		printf("Debe ingresar mas parámetros.\n");
 
-    		    		enviar_09_confirmar_pedido_hack ( g_ip_app, g_puerto_app );
+    		    		//enviar_09_confirmar_pedido( g_ip_app, g_puerto_app,argv[3],(uint32_t)argv[4]);
+    		    		//enviar_09_confirmar_pedido_hack ( g_ip_app, g_puerto_app );
 
     		    		break;
 
     		    	}
 
-    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, argv[3], atoi(argv[4]) );
+    		    	bool confirmacion = enviar_09_confirmar_pedido_a_resto ( g_ip_app, g_puerto_app,g_id_proceso,(uint32_t) atoi(argv[3]) );
 
     		    	if ( confirmacion ) {
     		    		printf("Se confirmó el pedido.\n");
@@ -107,7 +116,13 @@ int main(int argc, char **argv) {
 
 				case CONSULTAR_PEDIDO:
     		    	printf(" 11- CONSULTAR_PEDIDO HACIA: APP, SINDICATO \n");
-		    		break;
+    		    	conexion=enviar_11_consultar_pedido(g_ip_app, g_puerto_app,g_id_proceso,(uint32_t)atoi(argv[3]));
+    		    	encabezado=recibir_buffer(conexion);
+    		    	if(encabezado->nro_msg==CONSULTAR_PEDIDO)
+    		    		deserializar_11_respuesta_consultar_pedido(encabezado);
+    		    	else
+    		    		log_info(logger,"No se pudo obtener el pedido. Corrobore los datos ingresados");
+    		    	break;
 
 				default:
     		    	log_error(logger, "Comando no válido para el módulo APP.");
@@ -212,7 +227,7 @@ int main(int argc, char **argv) {
 				conexion=enviar_obtener_pedido(g_ip_comanda, g_puerto_comanda,argv[3],(uint32_t)atoi(argv[4]));
 				//RESPUESTA
 				encabezado=recibir_buffer(conexion);
-				log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
+				log_info(logger,"Se recibio el mensaje: %d",nro_comando_a_texto(encabezado->nro_msg));
 				deserializar_respuesta_obtener_pedido(encabezado);
 				break;
 
@@ -253,23 +268,64 @@ int main(int argc, char **argv) {
 				case CONSULTAR_PLATOS: 
 
 					printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO \n");
-    		    	// enviar_consultar_restaurante(g_ip_app, g_puerto_app);
+
+    		    	t_list * platos = enviar_04_consultar_platos( g_ip_restaurante, g_puerto_restaurante, CONSULTAR_PLATOS);
+
+    		    	list_destroy_and_destroy_elements( platos, _string_destroyer );
     		    	break;
     		    
 				case CREAR_PEDIDO:
     		    	printf(" 05- CREAR_PEDIDO            HACIA: APP, RESTAURANTE            \n");
+
+    		    	uint32_t id_pedido = enviar_05_crear_pedido(g_ip_restaurante, g_puerto_restaurante, CREAR_PEDIDO );
+    		    	g_id_pedido_actual = id_pedido;
+
+    		    	if ( id_pedido == -1 ) printf("No se pudo crear el pedido.\n");
+    		    	else log_error(logger, "Se creó el pedido con ID '%d'.\n", id_pedido );
+
 		    		break;
     		    
 				case ANIADIR_PLATO:
     		    	printf(" 07- ANIADIR_PLATO           HACIA: APP, RESTAURANTE            \n");
+    		    	bool se_aniadio = enviar_07_aniadir_plato(g_ip_restaurante, g_puerto_restaurante, ANIADIR_PLATO, g_id_pedido_actual, argv[3]);
+    		    	printf( se_aniadio ? "Plato agregado al pedido.\n" : "No es posible agregar el plato.\n" );
 		    		break;
 
 				case CONFIRMAR_PEDIDO:
     		    	printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
+    		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+    		    	}
+
+    		    	bool confirmacion = enviar_09_confirmar_pedido (g_ip_restaurante, g_puerto_restaurante, argv[3], atoi(argv[4]) );
+
+    		    	if ( confirmacion ) {
+    		    		printf("Se confirmó el pedido.\n");
+    		    	} else {
+    		    		printf("No es posible confirmar el pedido.\n");
+    		    	}
 		    		break;
     		    
 				case CONSULTAR_PEDIDO:
     		    	printf(" 11- CONSULTAR_PEDIDO        HACIA: APP, RESTAURANTE \n");
+    		    	if ( argv[3] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+    		    	}
+
+    		    	bool confirmacion = enviar_12_obtener_pedido(g_ip_restaurante, g_puerto_restaurante, argv[3], atoi(argv[4]));
+
+    		    	if ( confirmacion ) {
+    		    		printf("Se confirmó el pedido.\n");
+    		    	} else {
+    		    		printf("No es posible confirmar el pedido.\n");
+    		    	}
+
 		    		break;
 
 				default:

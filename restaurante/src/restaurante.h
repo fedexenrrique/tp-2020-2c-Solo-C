@@ -29,7 +29,14 @@ t_queue			* 	cola_exit;
 
 sem_t			*	sem_hornos;
 
-typedef struct{
+
+
+typedef struct {
+	t_queue		*	cola_ready;
+	char		*	afinidad;
+}cola_ready_afinidad;
+
+typedef struct {
 	uint32_t		id_pedido;
 	char		* 	estado_pedido;
 	t_list		* 	lista_platos; //lista de plato_cantidad
@@ -57,14 +64,20 @@ typedef struct {
 	uint32_t		cantidad;
 }plato_cantidad;
 
+typedef struct {
+	char		*	nombre;
+	uint32_t		tiempos;
+}pasos_tiempos;
 // FUNCIONES
 
 int									main													(void);
 void 								obtener_info_restaurante								(void);
 void								iniciar_planificacion									(void);
+void							*	planificador_cpu										(void *);
 void								planificador_io											(void);
 void								planificador_bloqueados									(void);
 t_queue							*	obtener_cola_afinidad									(char *);
+void								procesamiento_mensaje									(void *);
 void								cargar_variables										(t_respuesta_info_restaurante *);
 t_respuesta_info_restaurante 	* 	deserializar_respuesta_info_restaurante					(void *);
 t_respuesta_platos_restaurante	*	consultar_platos_restaurante							(void);
@@ -76,6 +89,7 @@ t_aniadir_plato_app_resto		*	deserializar_aniadir_plato_app							(void *);
 t_creacion_pedido				*	obtener_pedido											(int);
 t_creacion_pedido				*	deserializar_respuesta_obtener_pedido_restaurante		(void *);
 uint32_t							confirmar_pedido										(uint32_t);
+void 								generar_pcb_platos										(t_creacion_pedido *);
 t_respuesta_receta				*	obtener_receta											(char *);
 t_respuesta_receta				*	deserializar_respuesta_receta							(void *);
 void 								conectar_restaurante_a_applicacion						(void);

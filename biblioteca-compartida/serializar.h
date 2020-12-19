@@ -90,9 +90,9 @@ typedef struct {
 } t_resto_conex;
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
-	uint32_t    modulo;
+	cod_mod    modulo;
 	uint32_t    id_proceso;
-	uint32_t    nro_msg;
+	cod_msg    nro_msg;
 	uint32_t    size;
 	void     *  payload;
 } t_header;
@@ -194,6 +194,8 @@ typedef struct {
 }t_aniadir_plato_app_resto;
 
 
+
+
 t_log    * logger;
 t_config * config;
 
@@ -215,7 +217,8 @@ int        enviar_guardar_pedido   (char* p_ip,char* p_puerto,char * nombre_rest
 
 int        enviar_obtener_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante,uint32_t id_pedido);//                 ""
 
-bool  enviar_09_confirmar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
+bool  enviar_09_confirmar_pedido     (char* p_ip,char* p_puerto, char * nombre_resto,uint32_t p_id_pedido);
+bool  enviar_09_confirmar_pedido_a_resto   (char* p_ip,char* p_puerto,uint32_t id_modulo,uint32_t p_id_pedido);
 
 bool enviar_09_confirmar_pedido_modulos ( char* p_ip, char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido );
 
@@ -230,6 +233,8 @@ bool enviar_02_seleccionar_restaurante( char* p_ip, char* p_puerto, uint32_t p_p
 void responder_02_seleccionar_restaurante( int socket_cliente, bool seleccionado );
 
 t_list * enviar_04_consultar_platos( char* p_ip, char* p_puerto, uint32_t p_id_process );
+char ** enviar_04_consultar_platos_app_a_resto(uint32_t);
+char ** deserializar_respuesta_consultar_platos(t_header *);
 void responder_04_consultar_platos( uint32_t socket_cliente, char ** p_platos );
 
 uint32_t enviar_05_crear_pedido( char* p_ip, char* p_puerto, uint32_t p_id_process );
@@ -246,6 +251,10 @@ bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
 		                         ,char * p_nom_resto, uint32_t p_id_pedido
 		                         ,char * p_nom_plato, uint32_t p_cant_plato );
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato, uint32_t cantidad_plato);
+
+int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_proceso,uint32_t id_pedido);
+void deserializar_11_respuesta_consultar_pedido(t_header * encabezado);
+uint32_t recibir_11_consultar_pedido(void *);
 
 bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
 
@@ -266,7 +275,7 @@ uint32_t   recibir_confirmacion           ( uint32_t socket_cliente  );
 uint32_t   detectar_comando               ( char *   p_comando       );
 
 uint32_t  detectar_comando               ( char *   p_comando     );
-char *    nro_comando_a_texto            ( uint32_t p_comando     );
+char *    nro_comando_a_texto            ( cod_msg  p_comando     );
 uint32_t  detectar_modulo                ( char *   p_modulo      );
 char *    nro_modulo_a_texto             ( uint32_t p_modulo      );
 char *    nro_estado_pedido_a_texto      ( estado_pedido          );

@@ -304,7 +304,7 @@ uint32_t detectar_comando(char * p_comando) {
 
 }
 
-char * nro_comando_a_texto(uint32_t p_comando) {
+char * nro_comando_a_texto(cod_msg p_comando) {
 
 	switch (p_comando) {
 		case CONSULTAR_RESTAURANTES:  	return "CONSULTAR_RESTAURANTES" ;break;
@@ -422,11 +422,12 @@ bool enviar_buffer ( uint32_t p_conexion, t_header * p_header ) {
 
 t_header * recibir_buffer ( uint32_t socket_cliente ) {
 
-	uint32_t modulo, id_proceso, nro_msg, size;
+	uint32_t modulo, id_proceso, size;
+	cod_msg nro_msg;
 
 	recv(socket_cliente, &modulo     , sizeof(uint32_t), 0);
 	recv(socket_cliente, &id_proceso , sizeof(uint32_t), 0);
-	recv(socket_cliente, &nro_msg    , sizeof(uint32_t), 0);
+	recv(socket_cliente, &nro_msg    , sizeof(cod_msg), 0);
 	recv(socket_cliente, &size       , sizeof(uint32_t), 0);
 
 	t_header * l_header = malloc( sizeof(t_header) );
@@ -663,7 +664,7 @@ bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, char * p_nom_resto
 
 	uint32_t size_nombre_resto = string_length( p_nom_resto );
 
-	uint32_t size_payload = sizeof(uint32_t) * 2 + size_nombre_resto;
+	uint32_t size_payload = sizeof(uint32_t)* 2 + size_nombre_resto;
 
 	void * l_payload = malloc( size_payload );
 
@@ -706,6 +707,40 @@ bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, char * p_nom_resto
 		return false;
 
 	}
+
+}
+
+bool  enviar_09_confirmar_pedido_a_resto   (char* p_ip,char* p_puerto,uint32_t id_proceso,uint32_t id_pedido){
+
+	t_header * encabezado=malloc(sizeof(t_header));
+	int offset=0;
+
+	int size_buffer=sizeof(uint32_t);
+	void * buffer=malloc(size_buffer);
+
+	memcpy(buffer+offset,&id_pedido,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	encabezado->payload=buffer;
+	encabezado->size=size_buffer;
+	encabezado->id_proceso=id_proceso;
+	encabezado->modulo=CLIENTE;
+	encabezado->nro_msg=CONFIRMAR_PEDIDO;
+
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE){
+			log_error(logger,"No se pudo enviar el guardado del pedido");
+			return FALSE;}
+
+	encabezado=recibir_buffer(conexion);
+
+		log_info(logger,"Se recibio mensaje del modulo numero: %d",encabezado->id_proceso);
+		log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
+		if(encabezado->nro_msg==OK)return TRUE;
+		return FALSE;
+
 
 }
 
@@ -922,48 +957,48 @@ void responder_04_consultar_platos( uint32_t socket_cliente, char ** p_platos ) 
 
 bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proceso, uint32_t p_id_pedido, char * p_plato ) {
 
-	bool _recibir_confirmacion( uint32_t p_conexion ) {
+					bool _recibir_confirmacion( uint32_t p_conexion ) {
 
-		t_header * header_restaurantes = recibir_buffer( p_conexion );
+						t_header * header_restaurantes = recibir_buffer( p_conexion );
 
-		printf( "Módulo:       %d.\n" , header_restaurantes->modulo     );
-		printf( "ID Proceso:   %d.\n" , header_restaurantes->id_proceso );
-		printf( "Nro. mensaje: %d.\n" , header_restaurantes->nro_msg    );
-		printf( "Bytes:        %d.\n" , header_restaurantes->size       );
+						printf( "Módulo:       %d.\n" , header_restaurantes->modulo     );
+						printf( "ID Proceso:   %d.\n" , header_restaurantes->id_proceso );
+						printf( "Nro. mensaje: %d.\n" , header_restaurantes->nro_msg    );
+						printf( "Bytes:        %d.\n" , header_restaurantes->size       );
 
-		switch ( header_restaurantes->nro_msg ){
+						switch ( header_restaurantes->nro_msg ){
 
-			case OK:
+							case OK:
 
-				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
+								if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 
-				free(header_restaurantes);
+								free(header_restaurantes);
 
-				return true;
+								return true;
 
-				break;
+								break;
 
-			case FAIL:
+							case FAIL:
 
-				if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
+								if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
 
-				free(header_restaurantes);
+								free(header_restaurantes);
 
-				return false;
+								return false;
 
-				break;
+								break;
 
-			default:
+							default:
 
-				free(header_restaurantes);
+								free(header_restaurantes);
 
-				return false;
+								return false;
 
-				break;
+								break;
 
-		}
+						}
 
-	}
+					}
 
 	if ( p_plato == NULL ) {
 
@@ -973,6 +1008,8 @@ bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proces
 
 	}
 
+	log_info(logger,"El id del plato que se quiere enviar es: %d",p_id_pedido);
+
 	uint32_t size_nombre_plato = string_length( p_plato );
 
 	uint32_t size_payload = sizeof(uint32_t) * 2 + size_nombre_plato;
@@ -981,9 +1018,9 @@ bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proces
 
 	uint32_t despla = 0;
 
-	uint32_t cant_plato = 1;
+//	uint32_t cant_plato = 1;
 
-	memcpy( l_payload + despla, &cant_plato, sizeof(uint32_t) );
+	memcpy( l_payload + despla, &p_id_pedido, sizeof(uint32_t) );
 
 	despla += sizeof(uint32_t);
 
@@ -994,6 +1031,8 @@ bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proces
 	memcpy( l_payload + despla, p_plato, size_nombre_plato );
 
 	despla += size_nombre_plato;
+
+	mem_hexdump(l_payload,size_payload);
 
 	t_header l_header;
 
@@ -1146,7 +1185,7 @@ bool enviar_12_obtener_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, 
 
 			uint32_t estado = 0;
 
-			memcpy( &estado, header_restaurantes->payload + despla, sizeof(uint32_t) );
+			memcpy( &estado, header_restaurantes->payload + despla, sizeof(uint32_t) );//ERROR, PUEDE PORQ NO ENCONTRO EL PEDIDO
 
 			despla += sizeof(uint32_t);
 
@@ -1268,7 +1307,7 @@ int enviar_obtener_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante
 
 	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
-	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el guardado del pedido");
+	if(enviar_buffer(conexion,encabezado)==FALSE)log_error(logger,"No se pudo enviar el obtener pedido");
 
 	return conexion;
 }
@@ -1286,6 +1325,7 @@ int  enviar_confirmar_pedido   (char* p_ip,char* p_puerto, char * nombre_restaur
 
 	return conexion;
 }
+
 
 bool enviar_13_finalizar_pedido   (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido){
 
@@ -1513,7 +1553,7 @@ bool enviar_08_guardar_plato( char * p_ip       , char *   p_puerto
 
 	memcpy( l_payload + despla, p_nom_plato, size_nombre_plato );
 
-	despla += size_nombre_resto;
+	despla += size_nombre_plato;
 
 	memcpy( l_payload + despla, &p_cant_plato, sizeof(uint32_t) );
 
@@ -1919,5 +1959,139 @@ void _string_destroyer( void * p_elem ) {
 	if ( p_elem != NULL ) free(p_elem);
 
 }
+//  ACA TENGO Q TERMINAR
+char ** enviar_04_consultar_platos_app_a_resto(uint32_t socket_conectado){
+
+	t_header header_response;
+	char ** vector_platos=NULL;
+
+	header_response.modulo     = APP;
+	header_response.id_proceso = 0;
+	header_response.nro_msg    = CONSULTAR_PLATOS;
+	header_response.size       = 0;
+	header_response.payload    = NULL;
+
+	enviar_buffer( socket_conectado, &header_response);
+
+	t_header * encabezado=recibir_buffer(socket_conectado);
+
+	//Tengo q deserializar y cargarlo en un vector y retornarlo
+
+	vector_platos=deserializar_respuesta_consultar_platos(encabezado);
+
+	return vector_platos;
+
+}
+
+char ** deserializar_respuesta_consultar_platos(t_header * encabezado){
+
+	char * platos_cadena=NULL;
+	//int size_string=0;
+	char ** vector_platos=NULL;
 
 
+	platos_cadena=malloc(encabezado->size+1);//------------------------------ver si viene con o sin el fin de cadena
+	memcpy(platos_cadena,encabezado->payload+sizeof(uint32_t),encabezado->size);
+
+	vector_platos=string_split(platos_cadena,",");
+
+	return vector_platos;
+}
+
+
+int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_proceso,uint32_t id_pedido){
+
+	t_header header_response;
+	void * payload=malloc(sizeof(uint32_t));
+
+	memcpy(payload,&id_pedido,sizeof(uint32_t));
+
+
+	header_response.modulo     = APP;
+	header_response.id_proceso = id_proceso;
+	header_response.nro_msg    = CONSULTAR_PEDIDO;
+	header_response.size       = sizeof(uint32_t);
+	header_response.payload    = payload;
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	enviar_buffer( conexion, &header_response);
+
+	return conexion;
+
+}
+
+void deserializar_11_respuesta_consultar_pedido(t_header * encabezado){
+
+	t_list * lista_platos_del_pedido=list_create();
+	int cantidad_total_platos=(encabezado->size-2*sizeof(uint32_t))/sizeof(t_comida);
+	t_pedido_seg * pedido=malloc(sizeof(t_pedido));
+	int size_nombre_resto=0;
+	int offset=0;
+
+			void mostrar_platos_pedido(void * elemento){
+				t_comida * comida=(t_comida*)elemento;
+				printf("-------------------\n");
+				log_info(logger,"El plato es: %s",comida->nombre_comida);
+				log_info(logger,"La cantidad total pedida del plato es: %d",comida->cantidad_total_comida);
+				log_info(logger,"La cantidad total pedida que ya se encuentra lista es: %d",comida->cantidad_lista_comida);
+				printf("\n");
+			}
+
+	log_info(logger,"Por empezar a deserializar");
+	log_info(logger,"cantidad total de los diferentes tipos de platos: %d",cantidad_total_platos);
+//	log_error(logger,"el tamaño del payload es: %d",encabezado->size);
+//	log_error(logger,"el sizeof de t_comida es: %d",sizeof(t_comida));
+
+	memcpy(&(size_nombre_resto),encabezado->payload+offset,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	char * nombre_resto=malloc(size_nombre_resto+1);
+	memcpy(nombre_resto,encabezado->payload+offset,size_nombre_resto);
+	nombre_resto[size_nombre_resto]='\0';
+	offset+=size_nombre_resto;
+
+	memcpy(&(pedido->estado),encabezado->payload+offset,sizeof(estado_pedido));
+	offset+=sizeof(estado_pedido);
+
+	for(int i=0;i<cantidad_total_platos;i++){
+		t_comida * comida=malloc(sizeof(t_comida));
+
+		memcpy(&(comida->cantidad_lista_comida),encabezado->payload+offset,sizeof(uint32_t));
+		offset+=sizeof(uint32_t);
+
+		memcpy(&(comida->cantidad_total_comida),encabezado->payload+offset,sizeof(uint32_t));
+		offset+=sizeof(uint32_t);
+
+		memcpy(comida->nombre_comida,encabezado->payload+offset,SIZE_VECTOR_NOMBRE_PLATO);
+		offset+=SIZE_VECTOR_NOMBRE_PLATO;
+
+		list_add(lista_platos_del_pedido,comida);
+//		log_error(logger,"El numero de iteracion es: %d",i);
+	}
+
+	pedido->comidas_del_pedido=lista_platos_del_pedido;
+
+	log_info(logger,"El pedido se encuentra en el restaurante: %s",nombre_resto);
+	log_info(logger,"El pedido se encuentra en estado: %s",nro_estado_pedido_a_texto(pedido->estado));
+	log_info(logger,"Los platos son los siguientes:");
+	printf("\n");
+
+	list_iterate(pedido->comidas_del_pedido,mostrar_platos_pedido);
+
+	list_destroy(lista_platos_del_pedido);
+
+
+
+}
+
+uint32_t recibir_11_consultar_pedido(void * payload){
+
+	uint32_t id_pedido=0;
+
+	memcpy(&id_pedido,payload,sizeof(uint32_t));
+
+	return id_pedido;
+
+
+}
