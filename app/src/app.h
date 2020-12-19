@@ -8,12 +8,10 @@
 #ifndef APP_H_
 #define APP_H_
 
-#include <serializar.h>
 
-#include <commons/log.h>
-#include <commons/config.h>
-#include <commons/memory.h>
-#include "commons/collections/list.h"
+#include "utils.h"
+
+
 
 t_log    * logger;
 t_config * config;
@@ -44,7 +42,20 @@ pthread_t  g_thread_long_term_scheduler;
 pthread_t  g_thread_medium_term_scheduler;
 pthread_t  g_thread_short_term_scheduler;
 
+t_list * lista_clientes; // t_cliente_resto   datos del cliente y el resto seleccionado
+t_queue * queue_confirmados_cliente_resto; // t_cliente_a_resto  los pedido q ya fueron confirmados
+t_list * lista_resto_conectados; // t_info_restarante
+
+t_queue * g_cola_nuevos; //Es las cola de los REPARTIDORES nuevos  t_pcb_repartidor*
+t_queue * g_cola_listos;//Guarda los repartidores(dependiendo FIFO o SJF) t_pcb_repartidor*
+t_list  * g_lista_listos;//
+t_queue * g_cola_bloqueados;
+
+sem_t    sem_nuevos;
+sem_t    sem_listos;//Podria ser semaforo q se habilita cuando agrego un repartidor a la cola de listos  g_cola_listos  t_pcb_repartidor
+sem_t    sem_bloq;// Seria un semaforo para que se bloquee el repartidor
 sem_t g_nro_cpus ;
+
 
 typedef enum {
 
@@ -58,19 +69,6 @@ typedef enum {
 
 } enum_estado;
 
-typedef struct {
-	uint32_t    resto_x;
-	uint32_t    resto_y;
-	char*       resto_nombre;
-	uint32_t    socket_conectado;
-	char**      list_platos;
-} t_info_restarante;
-
-t_list * lista_clientes; // t_cliente_resto
-
-t_queue * queue_confirmados_cliente_resto; // t_cliente_a_resto
-
-t_list * lista_resto_conectados; // t_info_restarante
 
 typedef struct { // uint32_t modulo, id_proceso, nro_msg, size;
 	uint32_t            id_cliente;
@@ -105,7 +103,7 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    tiempo_de_descanso;
 	uint32_t    cansancio;
 	sem_t       semaforo;
-	sem_t       sem_bloq;
+	sem_t       sem_bloq; //Esto podria ser un semaforo general para poder sacar un elemento de la cola de bloqueados
 	enum_estado estado;
 	uint32_t    id_cliente;
 	uint32_t    cliente_x;
@@ -115,18 +113,15 @@ typedef struct { // g_cola_nuevos, g_cola_listos, g_cola_bloqueados
 	uint32_t    resto_x;
 	uint32_t    resto_y;
 	sem_t       cpu;
-	sem_t       bloq;
+	sem_t       bloq; // Seria un semaforo para que se bloquee el repartidor
 
 } t_pcb_repartidor;
 
-t_queue * g_cola_nuevos;
-t_queue * g_cola_listos;
-t_list  * g_lista_listos;
-t_queue * g_cola_bloqueados;
+typedef struct{
+	char *   nombre_resto;
+	uint32_t conexion    ;
+}t_conexion_resto;
 
-sem_t    sem_nuevos;
-sem_t    sem_listos;
-sem_t    sem_bloq;
 
 // FUNCIONES
 

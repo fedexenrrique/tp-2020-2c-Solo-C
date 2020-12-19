@@ -207,6 +207,10 @@ char* pathRecetas;
 char* pathAbsolutoBloquesAsignadosARestos;
 char* pathAbsolutoBloquesAsignadosAPedidos;
 char* pathAbsolutoBloquesAsignadosARecetas;
+pthread_t hiloConexionAceptada;
+pthread_t hiloConsola;
+
+
 pthread_mutex_t mutexDiccionarioRestos;//=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexDiccionarioRecetas;//=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexDiccionarioPedidos;//=PTHREAD_MUTEX_INITIALIZER;
