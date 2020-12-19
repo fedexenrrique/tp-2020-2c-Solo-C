@@ -211,7 +211,8 @@ int        enviar_guardar_pedido   (char* p_ip,char* p_puerto,char * nombre_rest
 
 int        enviar_obtener_pedido   (char* p_ip,char* p_puerto,char * nombre_restaurante,uint32_t id_pedido);//                 ""
 
-bool  enviar_09_confirmar_pedido     (char* p_ip,char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido);
+bool  enviar_09_confirmar_pedido     (char* p_ip,char* p_puerto, char * nombre_resto,uint32_t p_id_pedido);
+bool  enviar_09_confirmar_pedido_a_resto   (char* p_ip,char* p_puerto,uint32_t id_modulo,uint32_t p_id_pedido);
 
 bool enviar_09_confirmar_pedido_modulos ( char* p_ip, char* p_puerto, char * p_nom_resto, uint32_t p_id_pedido );
 
@@ -245,7 +246,7 @@ bool  enviar_08_guardar_plato   ( char * p_ip       , char *   p_puerto
 		                         ,char * p_nom_plato, uint32_t p_cant_plato );
 int 	          enviar_guardar_plato    (char* p_ip,char* p_puerto, char * nombre_restaurante,uint32_t id_pedido, char * nombre_plato, uint32_t cantidad_plato);
 
-int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_pedido);
+int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_proceso,uint32_t id_pedido);
 void deserializar_11_respuesta_consultar_pedido(t_header * encabezado);
 uint32_t recibir_11_consultar_pedido(void *);
 

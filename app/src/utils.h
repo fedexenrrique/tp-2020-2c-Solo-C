@@ -49,4 +49,6 @@ bool realizar_plato_listo(t_plato_listo_para_app *,uint32_t);
 t_plato_listo_para_app * recibir_10_plato_listo_resto_app(t_header *);
 void recibir_obtener_pedido_y_verificar_estado_correcto (t_header *);
 bool deserializar_obtener_pedido_y_verificar_estado_correcto(t_header *);
+bool enviar_07_aniadir_plato_app_a_resto(int,uint32_t,char*);
+void armar_y_enviar_respuesta(cod_msg tipo_msj,int socket_cliente);
 #endif /* UTILS_H_ */

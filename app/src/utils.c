@@ -76,34 +76,36 @@ bool  enviar_confirmar_pedido_a_resto(t_info_restaurante * info_resto,uint32_t i
 
 	//int conexion =crear_socket_y_conectar(p_ip,p_puerto);
 
-	if(enviar_buffer(info_resto->socket_conectado,encabezado)==FALSE){
-		log_error(logger,"No se pudo enviar el guardado del pedido");
-	    return FALSE;}
+	if(string_equals_ignore_case(info_resto->resto_nombre,"default")){
+		if(enviar_buffer(info_resto->socket_conectado,encabezado)==FALSE){
+			log_error(logger,"No se pudo enviar el guardado del pedido");
+			return FALSE;}
 
-	encabezado=recibir_buffer(info_resto->socket_conectado);
+		encabezado=recibir_buffer(info_resto->socket_conectado);
 
-	log_info(logger,"Se recibio mensaje del modulo numero: %d",encabezado->id_proceso);
-	log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
-	if(encabezado->nro_msg==OK)return TRUE;
-	return FALSE;
-
-
+		log_info(logger,"Se recibio mensaje del modulo numero: %d",encabezado->id_proceso);
+		log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
+		if(encabezado->nro_msg==OK)return TRUE;
+		return FALSE;
+	}
+	return TRUE;
 }
 
 
-t_info_restaurante * buscar_info_de_restaurante(char * nombre_resto,t_list * lista_resto_conectados){
+t_info_restaurante * buscar_info_de_restaurante(char * nombre_resto,t_list * lista){
 
 	bool  buscar_resto_conectado(void * elemento){
 
 		t_info_restaurante * info_resto=(t_info_restaurante *)elemento;
 
-		if(string_equals_ignore_case(info_resto->resto_nombre,nombre_resto))
-			return TRUE;
+		if(string_equals_ignore_case(info_resto->resto_nombre,nombre_resto)){
+			//log_info(logger,"Se encontro coindidencia en la lista");
+			return TRUE;}
 		return FALSE;
 
 	}
 
-	t_info_restaurante * info_resto=list_find(lista_resto_conectados,buscar_resto_conectado);
+	t_info_restaurante * info_resto=list_find(lista,buscar_resto_conectado);
 
 	if(info_resto==NULL)log_error(logger,"No encontre el nombre del restaurant en los existentes");
 
@@ -140,35 +142,38 @@ void procesar_consultar_pedido(uint32_t id_pedido,t_header * header_recibido,int
 
 		bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
-			return ( ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ) ? true : false ;
+			return ( ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso && ((t_cliente_a_resto*)p_elem)->id_pedido==id_pedido) ? true : false ;
 
 		}
 
 	t_cliente_a_resto * asociacion = list_find( lista_clientes , _control_existe_asociacion_cliente_resto );
 
 	if ( asociacion != NULL ) {
-
 		printf("Se encontró asociación.\n");
 
 //	if(string_equals_ignore_case(asociacion->nombre_resto,"default"))//Verifico si es default y envio los platos default
 //		return g_platos_default;
 
-	int conexion=enviar_obtener_pedido(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,id_pedido);
+		int conexion=enviar_obtener_pedido(g_ip_comanda,g_puerto_comanda,asociacion->nombre_resto,id_pedido);
 
-	header_recibido=recibir_buffer(conexion);
-	log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto((uint32_t)header_recibido->nro_msg));
+		header_recibido=recibir_buffer(conexion);
+		log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto((uint32_t)header_recibido->nro_msg));
 
-	t_info_restaurante * info_resto= buscar_info_de_restaurante(asociacion->nombre_resto,lista_resto_conectados);
-	if(info_resto==NULL)log_info(logger,"No se encontro el restaurante en la lista de restos conectados");
-	info_resto->socket_conectado=socket_cliente;
+		t_info_restaurante * info_resto= buscar_info_de_restaurante(asociacion->nombre_resto,lista_resto_conectados);
+		if(info_resto==NULL)log_info(logger,"No se encontro el restaurante en la lista de restos conectados");
+		info_resto->socket_conectado=socket_cliente;
 
-	recibir_desde_app_respuesta_obtener_pedido_y_responder(header_recibido,info_resto);
+		recibir_desde_app_respuesta_obtener_pedido_y_responder(header_recibido,info_resto);
 
 
 
 	} else {
 
-	printf("No se encontró la asociación.");
+	//printf("No se encontró la asociación.");
+	log_info(logger, "No se encontro el id del pedido dentro la lista");
+	cod_msg tipo_msj=FAIL;
+	armar_y_enviar_respuesta(tipo_msj,socket_cliente);
+
 
 	}
 }
@@ -341,5 +346,130 @@ bool deserializar_obtener_pedido_y_verificar_estado_correcto(t_header * encabeza
 	list_destroy(lista_platos_del_pedido);
 
 	return FALSE;
+
+}
+
+bool enviar_07_aniadir_plato_app_a_resto(int socket_conectado,uint32_t id_pedido,char * nombre_plato){
+
+
+			bool _recibir_confirmacion( uint32_t p_conexion ) {
+
+				t_header * header_restaurantes = recibir_buffer( p_conexion );
+
+				printf( "Módulo:       %d.\n" , header_restaurantes->modulo     );
+				printf( "ID Proceso:   %d.\n" , header_restaurantes->id_proceso );
+				printf( "Nro. mensaje: %d.\n" , header_restaurantes->nro_msg    );
+				printf( "Bytes:        %d.\n" , header_restaurantes->size       );
+
+				switch ( header_restaurantes->nro_msg ){
+
+					case OK:
+
+						if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
+
+						free(header_restaurantes);
+
+						return true;
+
+						break;
+
+					case FAIL:
+
+						if ( header_restaurantes->payload != NULL ) free( header_restaurantes->payload );
+
+						free(header_restaurantes);
+
+						return false;
+
+						break;
+
+					default:
+
+						free(header_restaurantes);
+
+						return false;
+
+						break;
+
+				}
+
+			}
+
+		if ( nombre_plato == NULL ) {
+
+		printf("Debe ingresar un plato para añadir al pedido.\n");
+
+		return false;
+
+		}
+
+		uint32_t size_nombre_plato = string_length( nombre_plato );
+
+		uint32_t size_payload = sizeof(uint32_t) * 2 + size_nombre_plato;
+
+		void * l_payload = malloc( size_payload );
+
+		uint32_t despla = 0;
+
+		//	uint32_t cant_plato = 1;
+
+		memcpy( l_payload + despla, &id_pedido, sizeof(uint32_t) );
+
+		despla += sizeof(uint32_t);
+
+		memcpy( l_payload + despla, &size_nombre_plato, sizeof(uint32_t) );
+
+		despla += sizeof(uint32_t);
+
+		memcpy( l_payload + despla, nombre_plato, size_nombre_plato );
+
+		despla += size_nombre_plato;
+
+		t_header l_header;
+
+		l_header.modulo     = APP;
+		l_header.id_proceso = 99;
+		l_header.nro_msg    = ANIADIR_PLATO;
+		l_header.size       = size_payload;
+		l_header.payload    = l_payload;
+
+		//uint32_t conexion = crear_socket_y_conectar(p_ip, p_puerto);
+
+		if ( enviar_buffer( socket_conectado, &l_header ) ) {
+
+		bool resultado = _recibir_confirmacion (socket_conectado);
+
+
+		return resultado;
+
+		} else {
+
+
+		return false;
+
+		}
+
+
+}
+
+void armar_y_enviar_respuesta(cod_msg tipo_msj,int socket_cliente){
+
+	t_header * nuevo_encabezado=malloc(sizeof(t_header));
+
+	nuevo_encabezado->id_proceso=100;
+	nuevo_encabezado->modulo=COMANDA;
+	nuevo_encabezado->nro_msg=tipo_msj;
+
+	nuevo_encabezado->size=0;
+	nuevo_encabezado->payload=NULL;
+
+	bool exito_envio=enviar_buffer(socket_cliente,nuevo_encabezado);
+
+	if(exito_envio==FALSE)log_error(logger,"No se envio correctamente la respuesta al modulo");
+	else log_info(logger,"Se envio correctamente la respuesta al modulo");
+
+	free(nuevo_encabezado);
+	printf("----------------------------------------------------------------------------------------------\n");
+
 
 }

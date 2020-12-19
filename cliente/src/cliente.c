@@ -89,18 +89,18 @@ int main(int argc, char **argv) {
 				case CONFIRMAR_PEDIDO:
     		    	printf(" 09- CONFIRMAR_PEDIDO HACIA: APP, SINDICATO \n");// Aca deberia mandar solo el id
 
-    		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+    		    	if ( argv[3] == NULL  ) {
 
     		    		printf("Debe ingresar mas parámetros.\n");
 
-    		    		enviar_09_confirmar_pedido( g_ip_app, g_puerto_app,argv[3],(uint32_t)argv[4]);
+    		    		//enviar_09_confirmar_pedido( g_ip_app, g_puerto_app,argv[3],(uint32_t)argv[4]);
     		    		//enviar_09_confirmar_pedido_hack ( g_ip_app, g_puerto_app );
 
     		    		break;
 
     		    	}
 
-    		    	bool confirmacion = enviar_09_confirmar_pedido ( g_ip_app, g_puerto_app, argv[3],(uint32_t) atoi(argv[4]) );
+    		    	bool confirmacion = enviar_09_confirmar_pedido_a_resto ( g_ip_app, g_puerto_app,g_id_proceso,(uint32_t) atoi(argv[3]) );
 
     		    	if ( confirmacion ) {
     		    		printf("Se confirmó el pedido.\n");
@@ -116,10 +116,13 @@ int main(int argc, char **argv) {
 
 				case CONSULTAR_PEDIDO:
     		    	printf(" 11- CONSULTAR_PEDIDO HACIA: APP, SINDICATO \n");
-    		    	conexion=enviar_11_consultar_pedido(g_ip_app, g_puerto_app,(uint32_t)atoi(argv[3]));
+    		    	conexion=enviar_11_consultar_pedido(g_ip_app, g_puerto_app,g_id_proceso,(uint32_t)atoi(argv[3]));
     		    	encabezado=recibir_buffer(conexion);
-    		    	deserializar_11_respuesta_consultar_pedido(encabezado);
-		    		break;
+    		    	if(encabezado->nro_msg==CONSULTAR_PEDIDO)
+    		    		deserializar_11_respuesta_consultar_pedido(encabezado);
+    		    	else
+    		    		log_info(logger,"No se pudo obtener el pedido. Corrobore los datos ingresados");
+    		    	break;
 
 				default:
     		    	log_error(logger, "Comando no válido para el módulo APP.");

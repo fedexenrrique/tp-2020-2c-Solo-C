@@ -121,7 +121,7 @@ void procesamiento_mensaje( void * p_socket_aceptado ) {
 
 	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
 	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
-	printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
+	printf( "Tipo mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
 	printf( "Bytes:        %d.\n" , header_recibido->size       );
 
 	mem_hexdump(header_recibido->payload, header_recibido->size);
@@ -892,13 +892,23 @@ uint32_t procedimiento_05_crear_pedido( t_header * header_recibido ) {
 
 bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 
-				bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
+	char * nombre_plato;
+	t_cliente_a_resto * asociacion;
+			   bool _control_existe_asociacion_cliente_resto ( void * p_elem ) {
 
 					return ((t_cliente_a_resto*)p_elem)->id_cliente == header_recibido->id_proceso ;
 
 				}
 
-	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_asociacion_cliente_resto );
+				bool  buscar_resto_conectado(void * elemento){
+
+					t_info_restaurante * info_resto=(t_info_restaurante *)elemento;
+
+					if(string_equals_ignore_case(info_resto->resto_nombre,asociacion->nombre_resto))
+						return TRUE;
+					return FALSE;}
+
+	asociacion = list_find( lista_clientes, _control_existe_asociacion_cliente_resto );
 
 	if ( asociacion == NULL || asociacion->id_pedido == 0 ) {
 
@@ -912,18 +922,21 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 	uint32_t cantidad_platos=1;
 	uint32_t id_pedido = 0;
 
-	memcpy( &id_pedido, header_recibido->payload + despla, sizeof(uint32_t) );
+	mem_hexdump(header_recibido->payload+ despla,sizeof(uint32_t));
 
+	memcpy( &id_pedido, header_recibido->payload + despla, sizeof(uint32_t) );
+	log_info(logger,"El id del pedido que se recibio es: %d",id_pedido);
 	despla += sizeof(uint32_t);
 
 	uint32_t size_nombre_plato = 0;
 
+//	mem_hexdump(header_recibido->payload+ despla,sizeof(uint32_t));
 	memcpy( &size_nombre_plato, header_recibido->payload + despla, sizeof(uint32_t) );
 
 	despla += sizeof(uint32_t);
 
-	char * nombre_plato = malloc(size_nombre_plato+1);
-
+	nombre_plato = malloc(size_nombre_plato+1);
+//	mem_hexdump(header_recibido->payload+ despla,size_nombre_plato);
 	memcpy( nombre_plato, header_recibido->payload + despla, size_nombre_plato );
 
 	despla += size_nombre_plato;
@@ -933,6 +946,20 @@ bool procesamiento_07_aniadir_plato( t_header * header_recibido ) {
 	printf("\n%s\n", nombre_plato);
 
 	if(asociacion->id_pedido!=id_pedido)log_error(logger,"Cliente envio mal el id del pedido. Se utiliza el existente %d:",asociacion->id_pedido);
+	//else log_info(logger,"El id del pedido enviado, se corresponde con el que se encuentra guardado");
+
+/*	bool esta_en_lista = list_any_satisfy( lista_resto_conectados, _detecta_restaurante_en_lista );
+
+	if(!esta_en_lista)
+		log_info(logger,"No se encontro el restaurante en la lista de conectados");
+	else
+		log_info(logger,"Se encontro el restaurante en la lista de conectados");
+*/
+	t_info_restaurante * info_resto=(t_info_restaurante*)list_find(lista_resto_conectados,buscar_resto_conectado);
+	//if(info_resto!=NULL)log_info(logger,"Se encontro el resto al q pertenece el plato que se quiere agregar");
+//	t_info_restaurante * info_resto=buscar_info_de_restaurante(nombre_plato,lista_resto_conectados);
+	if(!string_equals_ignore_case(info_resto->resto_nombre,"default"))
+		enviar_07_aniadir_plato_app_a_resto(info_resto->socket_conectado,id_pedido,nombre_plato);
 
 	bool guardado = enviar_08_guardar_plato(  g_ip_comanda , g_puerto_comanda
 										    , asociacion->nombre_resto
@@ -982,7 +1009,7 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 				bool _control_existe_pedido ( void * p_elem ) {//Aca le agregue la comprobacion del nombre del resto tambien. "COmprueba sii existe pedido para tal resto"
 
-					return ((t_cliente_a_resto*)p_elem)->id_pedido == id_pedido && string_equals_ignore_case(((t_cliente_a_resto*)p_elem)->nombre_resto ,nombre_resto) ;
+					return ((t_cliente_a_resto*)p_elem)->id_pedido == id_pedido; //&& string_equals_ignore_case(((t_cliente_a_resto*)p_elem)->nombre_resto ,nombre_resto) ;
 
 					}
 
@@ -1000,7 +1027,9 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	despla += sizeof(uint32_t);
 
-	uint32_t size_nombre_resto = 0;
+	log_info(logger,"Se recibio el id %d", id_pedido);
+
+/*	uint32_t size_nombre_resto = 0;
 
 	memcpy( &size_nombre_resto, header_recibido->payload + despla, sizeof(uint32_t) );
 
@@ -1015,34 +1044,30 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 	nombre_resto[size_nombre_resto] = '\0';
 
 	printf("\n%s\n", nombre_resto);
-
+*/
 	//aca tendria q mandar msj a restaurant, y confirmar pedido
 
-	if(!string_equals_ignore_case(nombre_resto,"default")){
+	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_pedido );
+
+	bool verificar_si_es_default=string_equals_ignore_case(asociacion->nombre_resto,"default");
+
+	printf("Es default: %d \n",verificar_si_es_default);
+	if(!verificar_si_es_default){
 		t_info_restaurante * resto=list_find(lista_resto_conectados,buscar_resto);
 
 		confirmacion=enviar_confirmar_pedido_a_resto(resto,id_pedido);
 
 		if(confirmacion==FALSE){
-			printf( "No se pudo confirmar el pedido.\n" );
+			printf( "No se pudo confirmar el pedido por parte del Restaurante.\n" );
 			return confirmacion;
 		}
 
 	}
 
-	confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, nombre_resto, id_pedido );
-
-	if (confirmacion) {
-
-		printf( "Se confirmó el pedido.\n" );
-
-	   } else{ printf( "No se pudo confirmar el pedido.\n" );
-	   	   	   	return confirmacion;   }
-
 	//confirmacion = TRUE;
 													//--------ESTO DEBERIA IR PRIMERO CREO
 
-	t_cliente_a_resto * asociacion = list_find( lista_clientes, _control_existe_pedido );
+
 
 	if ( asociacion == NULL ) {
 
@@ -1052,7 +1077,17 @@ bool procesamiento_09_confirmar_pedido ( t_header * header_recibido ) {
 
 	   } else {
 
-		agregar_pedid_a_planificacion (asociacion);  //Agrego pedido a la cola de confirmados cliente_resto  queue_confirmados_cliente_resto
+			confirmacion = enviar_09_confirmar_pedido ( g_ip_comanda, g_puerto_comanda, asociacion->nombre_resto, id_pedido );
+
+			if (confirmacion) {
+
+				printf( "Se confirmó el pedido por parte de la comanda.\n" );
+
+			   } else{ printf( "No se pudo confirmar el pedido por parte de la Comanda.\n" );
+			   	   	   	return confirmacion;   }
+
+
+       		agregar_pedid_a_planificacion (asociacion);  //Agrego pedido a la cola de confirmados cliente_resto  queue_confirmados_cliente_resto
 
 	   }
 

@@ -664,7 +664,7 @@ bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, char * p_nom_resto
 
 	uint32_t size_nombre_resto = string_length( p_nom_resto );
 
-	uint32_t size_payload = sizeof(uint32_t) * 2 + size_nombre_resto;
+	uint32_t size_payload = sizeof(uint32_t)* 2 + size_nombre_resto;
 
 	void * l_payload = malloc( size_payload );
 
@@ -707,6 +707,40 @@ bool enviar_09_confirmar_pedido ( char* p_ip, char* p_puerto, char * p_nom_resto
 		return false;
 
 	}
+
+}
+
+bool  enviar_09_confirmar_pedido_a_resto   (char* p_ip,char* p_puerto,uint32_t id_proceso,uint32_t id_pedido){
+
+	t_header * encabezado=malloc(sizeof(t_header));
+	int offset=0;
+
+	int size_buffer=sizeof(uint32_t);
+	void * buffer=malloc(size_buffer);
+
+	memcpy(buffer+offset,&id_pedido,sizeof(uint32_t));
+	offset+=sizeof(uint32_t);
+
+	encabezado->payload=buffer;
+	encabezado->size=size_buffer;
+	encabezado->id_proceso=id_proceso;
+	encabezado->modulo=CLIENTE;
+	encabezado->nro_msg=CONFIRMAR_PEDIDO;
+
+
+	int conexion =crear_socket_y_conectar(p_ip,p_puerto);
+
+	if(enviar_buffer(conexion,encabezado)==FALSE){
+			log_error(logger,"No se pudo enviar el guardado del pedido");
+			return FALSE;}
+
+	encabezado=recibir_buffer(conexion);
+
+		log_info(logger,"Se recibio mensaje del modulo numero: %d",encabezado->id_proceso);
+		log_info(logger,"Se recibio el mensaje: %s",nro_comando_a_texto(encabezado->nro_msg));
+		if(encabezado->nro_msg==OK)return TRUE;
+		return FALSE;
+
 
 }
 
@@ -974,6 +1008,8 @@ bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proces
 
 	}
 
+	log_info(logger,"El id del plato que se quiere enviar es: %d",p_id_pedido);
+
 	uint32_t size_nombre_plato = string_length( p_plato );
 
 	uint32_t size_payload = sizeof(uint32_t) * 2 + size_nombre_plato;
@@ -995,6 +1031,8 @@ bool enviar_07_aniadir_plato( char * p_ip, char * p_puerto, uint32_t p_id_proces
 	memcpy( l_payload + despla, p_plato, size_nombre_plato );
 
 	despla += size_nombre_plato;
+
+	mem_hexdump(l_payload,size_payload);
 
 	t_header l_header;
 
@@ -1961,7 +1999,7 @@ char ** deserializar_respuesta_consultar_platos(t_header * encabezado){
 }
 
 
-int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_pedido){
+int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_proceso,uint32_t id_pedido){
 
 	t_header header_response;
 	void * payload=malloc(sizeof(uint32_t));
@@ -1970,7 +2008,7 @@ int enviar_11_consultar_pedido(char* p_ip,char* p_puerto,uint32_t id_pedido){
 
 
 	header_response.modulo     = APP;
-	header_response.id_proceso = 0;
+	header_response.id_proceso = id_proceso;
 	header_response.nro_msg    = CONSULTAR_PEDIDO;
 	header_response.size       = sizeof(uint32_t);
 	header_response.payload    = payload;
