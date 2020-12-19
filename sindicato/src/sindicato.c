@@ -2402,7 +2402,14 @@ int main(int argc, char *argv[]) {
 	    args->arg2=malloc(sizeof(tInfoBloques));
 	    args->arg2=infoBloques;
 	    //pthread_mutex_lock(&lock);
-		pthread_create(&hiloConexionAceptada, NULL,handleConexion,args);
+		//pthread_create(&hiloConexionAceptada, NULL,handleConexion,args);
+		//	log_error(logger,"Error creando el hilo");
+
+		handleConexion(&args);
+		//if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
+			//log_error(logger,"Error creando el hilo");
+		//}
+		//pthread_create(&hiloConexionAceptada, NULL,handleConexion,&args);
 		//	log_error(logger,"Error creando el hilo");
 
 		//handleConexion(&args);
@@ -2411,7 +2418,6 @@ int main(int argc, char *argv[]) {
 	   //pthread_join(hiloConexionAceptada, NULL);
 	    //pthread_detach(hiloConexionAceptada);
 	    //pthread_mutex_destroy(&lock);
-
 
 	}
 
