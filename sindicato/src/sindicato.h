@@ -207,7 +207,7 @@ char* pathRecetas;
 char* pathAbsolutoBloquesAsignadosARestos;
 char* pathAbsolutoBloquesAsignadosAPedidos;
 char* pathAbsolutoBloquesAsignadosARecetas;
-pthread_t hiloConexionAceptada;
+
 pthread_t hiloConsola;
 
 

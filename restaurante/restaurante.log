@@ -475,3 +475,21 @@ NOMBRE_RESTAURANTE: McDonals
 [INFO] 05:51:52:346 restaurante/(18152:18152): Se recibio mensaje del modulo con id: -1208446976
 [INFO] 05:51:55:238 restaurante/(18152:18152): Se recibio el tipo de mensaje numero: -1073746200
 [INFO] 05:51:56:644 restaurante/(18152:18152): Se recibio un payload del tamaño: -1208446976
+[INFO] 10:38:24:775 restaurante/(5646:5646): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: McDonals
+
+[INFO] 10:38:33:965 restaurante/(5646:5646): Conexión exitosa!
+[INFO] 10:38:34:219 restaurante/(5646:5646): Se enviaron la cantidad de bytes: 28
+[ERROR] 10:38:35:481 restaurante/(5646:5646): Se recibieron menos bytes de los que se esperaban
+[INFO] 10:38:36:366 restaurante/(5646:5646): Se recibio mensaje del modulo: 4
+[INFO] 10:38:36:796 restaurante/(5646:5646): Se recibio mensaje del modulo con id: -1208446976
+[INFO] 10:38:37:109 restaurante/(5646:5646): Se recibio el tipo de mensaje numero: -1073746200
+[INFO] 10:38:37:443 restaurante/(5646:5646): Se recibio un payload del tamaño: -1208446976

@@ -2408,6 +2408,7 @@ int main(int argc, char *argv[]) {
 	    args->infoBloquesArg=malloc(sizeof(tInfoBloques));
 	    args->infoBloquesArg=infoBloques;
 	    //pthread_mutex_lock(&lock);
+	    pthread_t hiloConexionAceptada;
 		pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)socketConectado);
 		//	log_error(logger,"Error creando el hilo");
 
