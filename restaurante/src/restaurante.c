@@ -67,115 +67,144 @@ void conectar_restaurante_a_applicacion(void) {
 
 	while (1) {
 
-		recibir_buffer( sock_conectado );
-
-	}
+		//recibir_buffer( sock_conectado ); }
 
 
-	t_header * header_recibido = recibir_buffer( sock_conectado );
 
-	printf( "Módulo:       %d.\n" , header_recibido->modulo     );
-	printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
-	printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
-	printf( "Bytes:        %d.\n" , header_recibido->size       );
+		t_header * header_recibido = recibir_buffer( sock_conectado );
 
-	mem_hexdump(header_recibido->payload, header_recibido->size);
 
-	t_header * header_respuesta = malloc(sizeof(t_header));
-	int offset;
+		printf( "Módulo:       %d.\n" , header_recibido->modulo     );
+		printf( "ID Proceso:   %d.\n" , header_recibido->id_proceso );
+		printf( "Nro. mensaje: %s.\n" , nro_comando_a_texto( header_recibido->nro_msg )   );
+		printf( "Bytes:        %d.\n" , header_recibido->size       );
 
-	switch ( header_recibido->nro_msg ) {
-	case CONSULTAR_PLATOS:
-		// consulto al sindicato y lo que me devuelve el sindicato lo respondo a la app
-		;
-		t_respuesta_platos_restaurante * respuesta_platos = consultar_platos_restaurante();
-		offset = 0;
-		int size_buffer = sizeof(uint32_t) + respuesta_platos->size_platos;
-		void * buffer = malloc(size_buffer);
+		mem_hexdump(header_recibido->payload, header_recibido->size);
 
-		memcpy(buffer + offset, &respuesta_platos->size_platos, sizeof(uint32_t));
-		offset += sizeof(uint32_t);
+		t_header * header_respuesta = malloc(sizeof(t_header));
+		int offset;
 
-		memcpy(buffer+offset, respuesta_platos->platos, respuesta_platos->size_platos);
+		switch ( header_recibido->nro_msg ) {
+		case CONSULTAR_PLATOS:
+			// consulto al sindicato y lo que me devuelve el sindicato lo respondo a la app
+			;
+			t_respuesta_platos_restaurante * respuesta_platos = consultar_platos_restaurante();
+			offset = 0;
+			int size_buffer = sizeof(uint32_t) + respuesta_platos->size_platos;
+			void * buffer = malloc(size_buffer);
 
-		header_respuesta->payload = buffer;
-		header_respuesta->size = size_buffer;
-		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
-		header_respuesta->modulo = RESTAURANTE;
-		header_respuesta->nro_msg = CONSULTAR_PLATOS;
+			memcpy(buffer + offset, &respuesta_platos->size_platos, sizeof(uint32_t));
+			offset += sizeof(uint32_t);
 
-		if (enviar_buffer( sock_conectado, header_respuesta) == false) {
-			log_error(logger_restaurante, "No se pudo responder la consulta de platos a la app");
-		}
+			memcpy(buffer+offset, respuesta_platos->platos, respuesta_platos->size_platos);
 
-		break;
-	case CREAR_PEDIDO:
-		// primero le mando al sindicato si el sindicato responde OK, le tengo que devolver un id a la app
-		;
-		uint32_t respuesta_creacion_pedido = crear_pedido_restaurante(id_pedido_restaurante);
-		size_buffer = 0;
-		if (respuesta_creacion_pedido == 1) {
+			header_respuesta->payload = buffer;
+			header_respuesta->size = size_buffer;
+			header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+			header_respuesta->modulo = RESTAURANTE;
+			header_respuesta->nro_msg = CONSULTAR_PLATOS;
+
+			if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+				log_error(logger_restaurante, "No se pudo responder la consulta de platos a la app");
+			}
+			break;
+		case CREAR_PEDIDO:
+			// primero le mando al sindicato si el sindicato responde OK, le tengo que devolver un id a la app
+			;
+			uint32_t respuesta_creacion_pedido = crear_pedido_restaurante(id_pedido_restaurante);
+			size_buffer = 0;
+			if (respuesta_creacion_pedido == 1) {
+				header_respuesta->nro_msg = OK;
+			}
+			else header_respuesta->nro_msg = FAIL;
+			header_respuesta->payload = NULL;
+			header_respuesta->size = size_buffer;
+			header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+			header_respuesta->modulo = RESTAURANTE;
+
+			if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+				log_error(logger_restaurante, "No se pudo responder la creacion de pedido a la app");
+			}
+			break;
+		case ANIADIR_PLATO:
+			// primero le mando al sindicato si el sindicato responde Ok, le tengo que devolver un OK o fail a la app
+			;
+			t_aniadir_plato_app_resto * plato_app_resto = deserializar_aniadir_plato_app(header_recibido->payload);
+			aniadir_plato * aniadir_plato = malloc(sizeof(aniadir_plato));
+			aniadir_plato->id_pedido = plato_app_resto->id_pedido;
+			aniadir_plato->size_nombre_restaurante = string_length(nombre_restaurante);
+			aniadir_plato->nombre_restaurante = nombre_restaurante;
+			aniadir_plato->size_nombre_plato = string_length(plato_app_resto->plato);
+			aniadir_plato->nombre_restaurante =plato_app_resto->plato;
+			uint32_t respuesta_aniadir_plato = aniadir_plato_restaurante(aniadir_plato);
+
+			size_buffer = 0;
+			if (respuesta_creacion_pedido == 1) {
+				header_respuesta->nro_msg = OK;
+			}
+			else header_respuesta->nro_msg = FAIL;
+			header_respuesta->payload = NULL;
+			header_respuesta->size = size_buffer;
+			header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+			header_respuesta->modulo = RESTAURANTE;
+
+			if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+				log_error(logger_restaurante, "No se pudo responder el aniadir plato a la app");
+			}
+
+			break;
+		case CONFIRMAR_PEDIDO:
+			// La app me manda el id yo lo confirmo le mando al sindicato, el responde OK o fail y lo informo a la app
+			;
+			uint32_t id_pedido;
+			memcpy(&(id_pedido), header_recibido->payload, sizeof(uint32_t));
+
+			uint32_t pedido_confirmado = confirmar_pedido(id_pedido);
+			if (pedido_confirmado == 1) {
+				header_respuesta->nro_msg = OK;
+			}
+			else header_respuesta->nro_msg = FAIL;
+			header_respuesta->payload = NULL;
+			header_respuesta->size = size_buffer;
+			header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+			header_respuesta->modulo = RESTAURANTE;
+
+			if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+				log_error(logger_restaurante, "No se pudo responder el confirmar pedido a la app");
+			}
+
+			break;
+
+		/*
+		case CONSULTAR_PEDIDO:
+			break;
+			 */
+		case CONECTAR:
+			// responde la app para avisar que se conecto todo OK
+			header_respuesta->payload = NULL;
+			header_respuesta->size = size_buffer;
+			header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
+			header_respuesta->modulo = RESTAURANTE;
 			header_respuesta->nro_msg = OK;
-		}
-		else header_respuesta->nro_msg = FAIL;
-		header_respuesta->payload = NULL;
-		header_respuesta->size = size_buffer;
-		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
-		header_respuesta->modulo = RESTAURANTE;
+			if (enviar_buffer( sock_conectado, header_respuesta) == false) {
+				log_error(logger_restaurante, "No se pudo responder el conectar a la app");
+			}
 
-		if (enviar_buffer( sock_conectado, header_respuesta) == false) {
-			log_error(logger_restaurante, "No se pudo responder la creacion de pedido a la app");
-		}
-		break;
-	case ANIADIR_PLATO:
-		// primero le mando al sindicato si el sindicato responde Ok, le tengo que devolver un OK o fail a la app
-		;
-		t_aniadir_plato_app_resto * plato_app_resto = deserializar_aniadir_plato_app(header_recibido->payload);
-		aniadir_plato * aniadir_plato = malloc(sizeof(aniadir_plato));
-		aniadir_plato->id_pedido = plato_app_resto->id_pedido;
-		aniadir_plato->size_nombre_restaurante = string_length(nombre_restaurante);
-		aniadir_plato->nombre_restaurante = nombre_restaurante;
-		aniadir_plato->size_nombre_plato = string_length(plato_app_resto->plato);
-		aniadir_plato->nombre_restaurante =plato_app_resto->plato;
-		uint32_t respuesta_aniadir_plato = aniadir_plato_restaurante(aniadir_plato);
-
-		size_buffer = 0;
-		if (respuesta_creacion_pedido == 1) {
-			header_respuesta->nro_msg = OK;
-		}
-		else header_respuesta->nro_msg = FAIL;
-		header_respuesta->payload = NULL;
-		header_respuesta->size = size_buffer;
-		header_respuesta->id_proceso = 2; //TODO: esta hardcodeado el 2, hay que modificarlo desp
-		header_respuesta->modulo = RESTAURANTE;
-
-		if (enviar_buffer( sock_conectado, header_respuesta) == false) {
-			log_error(logger_restaurante, "No se pudo responder el aniadir plato a la app");
+			break;
+		default:
+			printf("Mensaje no compatible con módulo RESTAURANTE.\n");
 		}
 
-		break;
-	case CONFIRMAR_PEDIDO:
-		// La app me manda el id yo lo confirmo le mando al sindicato, el responde OK o fail y lo informo a la app
-		break;
-	case CONSULTAR_PEDIDO:
-		// La app me manda la consulta y yo se reenvio al sindicato. Cuando este responde se lo devuelvo a la app
-		break;
-	case CONECTAR:
-		// responde la app para avisar que se conecto todo OK
-		break;
-	default:
-		printf("Mensaje no compatible con módulo RESTAURANTE.\n");
-	}
-
-	if ( header_recibido->size > 0 || header_recibido->payload != NULL )
+		if ( header_recibido->size > 0 || header_recibido->payload != NULL )
 
 		free( header_recibido->payload );
 
-	free(header_recibido);
-	free(header_respuesta);
+		free(header_recibido);
+		free(header_respuesta);
+
+	}
 
 	close( sock_conectado );
-
 }
 
 void obtener_info_restaurante(void) {
@@ -587,7 +616,6 @@ uint32_t crear_pedido_restaurante(uint32_t id_pedido) {
 	log_info(logger_restaurante, "Respuesta creacion pedido: %d", respuesta_creacion_pedido);
 
 	return respuesta_creacion_pedido;
-
 }
 
 uint32_t deserializar_respuesta_creacion_pedido(void * payload) {
@@ -662,9 +690,10 @@ uint32_t aniadir_plato_restaurante(aniadir_plato * plato) {
 	return respuesta_creacion_pedido;
 }
 
-void confirmar_pedido(int id_pedido) {
+uint32_t confirmar_pedido(uint32_t id_pedido) {
 	t_creacion_pedido * pedido = obtener_pedido(id_pedido);
 
+	return 1;
 }
 
 t_creacion_pedido * obtener_pedido(int id_pedido) {

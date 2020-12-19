@@ -75,7 +75,7 @@ uint32_t							aniadir_plato_restaurante								(aniadir_plato *);
 t_aniadir_plato_app_resto		*	deserializar_aniadir_plato_app							(void *);
 t_creacion_pedido				*	obtener_pedido											(int);
 t_creacion_pedido				*	deserializar_respuesta_obtener_pedido_restaurante		(void *);
-void								confirmar_pedido										(int);
+uint32_t							confirmar_pedido										(uint32_t);
 t_respuesta_receta				*	obtener_receta											(char *);
 t_respuesta_receta				*	deserializar_respuesta_receta							(void *);
 void 								conectar_restaurante_a_applicacion						(void);
