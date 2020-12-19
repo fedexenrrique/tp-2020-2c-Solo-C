@@ -444,3 +444,540 @@ NOMBRE_RESTAURANTE: THEFOODTRUCKSTORE
 [INFO] 00:51:30:648 restaurante/(7592:7592): Resturante platos: [cualquiera]:24:780 
 [INFO] 00:51:31:204 restaurante/(7592:7592): Resturante precio platos: [2,4]:24
 [INFO] 00:51:31:636 restaurante/(7592:7592): Resturante cantidad hornos: 1
+[INFO] 04:05:22:548 restaurante/(10844:10844): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:05:22:550 restaurante/(10844:10844): Conexión exitosa!
+[INFO] 04:05:22:550 restaurante/(10844:10844): Se enviaron la cantidad de bytes: 27
+[ERROR] 04:05:22:564 restaurante/(10844:10844): Se recibieron menos bytes de los que se esperaban
+[INFO] 04:05:22:564 restaurante/(10844:10844): Se recibio mensaje del modulo: 4
+[INFO] 04:05:22:564 restaurante/(10844:10844): Se recibio mensaje del modulo con id: -1217671168
+[INFO] 04:05:22:564 restaurante/(10844:10844): Se recibio el tipo de mensaje numero: -1217671168
+[INFO] 04:05:22:564 restaurante/(10844:10844): Se recibio un payload del tamaño: -1079561640
+[INFO] 04:05:55:620 restaurante/(10875:10875): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:06:26:498 restaurante/(10875:10875): Conexión exitosa!
+[INFO] 04:06:29:875 restaurante/(10875:10875): Se enviaron la cantidad de bytes: 27
+[ERROR] 04:06:30:134 restaurante/(10875:10875): Se recibieron menos bytes de los que se esperaban
+[INFO] 04:06:31:364 restaurante/(10875:10875): Se recibio mensaje del modulo: 4
+[INFO] 04:06:33:769 restaurante/(10875:10875): Se recibio mensaje del modulo con id: -1208442880
+[INFO] 04:06:37:356 restaurante/(10875:10875): Se recibio el tipo de mensaje numero: -1208442880
+[INFO] 04:06:38:48 restaurante/(10875:10875): Se recibio un payload del tamaño: -1073745992
+[INFO] 04:07:34:264 restaurante/(10947:10947): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:11:54:956 restaurante/(11206:11206): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:12:03:855 restaurante/(11206:11206): Conexión exitosa!
+[INFO] 04:12:03:856 restaurante/(11206:11206): Se enviaron la cantidad de bytes: 27
+[INFO] 04:12:03:862 restaurante/(11206:11206): Se recibio mensaje del modulo: 5
+[INFO] 04:12:03:862 restaurante/(11206:11206): Se recibio mensaje del modulo con id: 2
+[INFO] 04:12:03:862 restaurante/(11206:11206): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:12:03:862 restaurante/(11206:11206): Se recibio un payload del tamaño: 86
+[INFO] 04:12:03:863 restaurante/(11206:11206): Resturante cantidad cocineros: 2
+[INFO] 04:12:03:863 restaurante/(11206:11206): Resturante posicion x: 1
+[INFO] 04:12:03:870 restaurante/(11206:11206): Resturante posicion y: 1
+[INFO] 04:12:03:870 restaurante/(11206:11206): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:12:03:870 restaurante/(11206:11206): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:12:03:870 restaurante/(11206:11206): Resturante precio platos: [200,200,125]
+[INFO] 04:12:03:870 restaurante/(11206:11206): Resturante cantidad hornos: 1
+[INFO] 04:12:43:416 restaurante/(11269:11269): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:12:44:366 restaurante/(11269:11269): [ BIBLIO - crear_socket_y_conectar] No se pudo establecer la conexión al módulo servidor.
+[ERROR] 04:12:44:367 restaurante/(11269:11269): No se pudo enviar el pedido de info del restaurante
+[INFO] 04:12:44:367 restaurante/(11269:11269): Se recibio mensaje del modulo: 4
+[INFO] 04:12:44:368 restaurante/(11269:11269): Se recibio mensaje del modulo con id: -1208442880
+[INFO] 04:12:44:368 restaurante/(11269:11269): Se recibio el tipo de mensaje numero: -1208442880
+[INFO] 04:12:44:368 restaurante/(11269:11269): Se recibio un payload del tamaño: -1073745992
+[INFO] 04:13:14:975 restaurante/(11310:11310): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:13:15:825 restaurante/(11310:11310): [ BIBLIO - crear_socket_y_conectar] No se pudo establecer la conexión al módulo servidor.
+[ERROR] 04:13:15:825 restaurante/(11310:11310): No se pudo enviar el pedido de info del restaurante
+[INFO] 04:13:15:825 restaurante/(11310:11310): Se recibio mensaje del modulo: 4
+[INFO] 04:13:15:825 restaurante/(11310:11310): Se recibio mensaje del modulo con id: -1208442880
+[INFO] 04:13:15:825 restaurante/(11310:11310): Se recibio el tipo de mensaje numero: -1208442880
+[INFO] 04:13:15:825 restaurante/(11310:11310): Se recibio un payload del tamaño: -1073746200
+[INFO] 04:14:28:90 restaurante/(11460:11460): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:14:28:608 restaurante/(11460:11460): Conexión exitosa!
+[INFO] 04:14:28:609 restaurante/(11460:11460): Se enviaron la cantidad de bytes: 27
+[INFO] 04:14:28:613 restaurante/(11460:11460): Se recibio mensaje del modulo: 5
+[INFO] 04:14:28:613 restaurante/(11460:11460): Se recibio mensaje del modulo con id: 2
+[INFO] 04:14:28:613 restaurante/(11460:11460): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:14:28:613 restaurante/(11460:11460): Se recibio un payload del tamaño: 86
+[INFO] 04:14:28:614 restaurante/(11460:11460): Resturante cantidad cocineros: 2
+[INFO] 04:14:28:614 restaurante/(11460:11460): Resturante posicion x: 1
+[INFO] 04:14:28:614 restaurante/(11460:11460): Resturante posicion y: 1
+[INFO] 04:14:28:614 restaurante/(11460:11460): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:14:28:614 restaurante/(11460:11460): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:14:28:614 restaurante/(11460:11460): Resturante precio platos: [200,200,125]
+[INFO] 04:14:28:614 restaurante/(11460:11460): Resturante cantidad hornos: 1
+[INFO] 04:15:57:831 restaurante/(11702:11702): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:16:04:448 restaurante/(11702:11702): Conexión exitosa!
+[INFO] 04:16:04:816 restaurante/(11702:11702): Se enviaron la cantidad de bytes: 27
+[INFO] 04:16:07:552 restaurante/(11702:11702): Se recibio mensaje del modulo: 5
+[INFO] 04:16:08:181 restaurante/(11702:11702): Se recibio mensaje del modulo con id: 2
+[INFO] 04:16:08:722 restaurante/(11702:11702): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:16:09:349 restaurante/(11702:11702): Se recibio un payload del tamaño: 86
+[INFO] 04:16:11:311 restaurante/(11702:11702): Resturante cantidad cocineros: 2
+[INFO] 04:16:11:500 restaurante/(11702:11702): Resturante posicion x: 1
+[INFO] 04:16:11:839 restaurante/(11702:11702): Resturante posicion y: 1
+[INFO] 04:16:12:233 restaurante/(11702:11702): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:16:12:810 restaurante/(11702:11702): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:16:13:324 restaurante/(11702:11702): Resturante precio platos: [200,200,125]
+[INFO] 04:16:14:48 restaurante/(11702:11702): Resturante cantidad hornos: 1
+[INFO] 04:21:20:140 restaurante/(12588:12588): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:21:21:132 restaurante/(12588:12588): Conexión exitosa!
+[INFO] 04:21:21:133 restaurante/(12588:12588): Se enviaron la cantidad de bytes: 27
+[INFO] 04:21:21:137 restaurante/(12588:12588): Se recibio mensaje del modulo: 5
+[INFO] 04:21:21:137 restaurante/(12588:12588): Se recibio mensaje del modulo con id: 2
+[INFO] 04:21:21:137 restaurante/(12588:12588): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:21:21:137 restaurante/(12588:12588): Se recibio un payload del tamaño: 86
+[INFO] 04:21:21:138 restaurante/(12588:12588): Resturante cantidad cocineros: 2
+[INFO] 04:21:21:138 restaurante/(12588:12588): Resturante posicion x: 1
+[INFO] 04:21:21:138 restaurante/(12588:12588): Resturante posicion y: 1
+[INFO] 04:21:21:138 restaurante/(12588:12588): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:21:21:138 restaurante/(12588:12588): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:21:21:138 restaurante/(12588:12588): Resturante precio platos: [200,200,125]
+[INFO] 04:21:21:138 restaurante/(12588:12588): Resturante cantidad hornos: 1
+[INFO] 04:23:28:910 restaurante/(12908:12908): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:23:29:569 restaurante/(12908:12908): Conexión exitosa!
+[INFO] 04:23:29:569 restaurante/(12908:12908): Se enviaron la cantidad de bytes: 27
+[INFO] 04:23:29:570 restaurante/(12908:12908): Se recibio mensaje del modulo: 5
+[INFO] 04:23:29:571 restaurante/(12908:12908): Se recibio mensaje del modulo con id: 2
+[INFO] 04:23:29:571 restaurante/(12908:12908): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:23:29:571 restaurante/(12908:12908): Se recibio un payload del tamaño: 86
+[INFO] 04:23:29:571 restaurante/(12908:12908): Resturante cantidad cocineros: 2
+[INFO] 04:23:29:572 restaurante/(12908:12908): Resturante posicion x: 1
+[INFO] 04:23:29:572 restaurante/(12908:12908): Resturante posicion y: 1
+[INFO] 04:23:29:572 restaurante/(12908:12908): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:23:29:572 restaurante/(12908:12908): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:23:29:572 restaurante/(12908:12908): Resturante precio platos: [200,200,125]
+[INFO] 04:23:29:572 restaurante/(12908:12908): Resturante cantidad hornos: 1
+[INFO] 04:26:06:808 restaurante/(13126:13126): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:26:06:809 restaurante/(13126:13126): Conexión exitosa!
+[INFO] 04:26:06:810 restaurante/(13126:13126): Se enviaron la cantidad de bytes: 27
+[INFO] 04:26:06:814 restaurante/(13126:13126): Se recibio mensaje del modulo: 5
+[INFO] 04:26:06:814 restaurante/(13126:13126): Se recibio mensaje del modulo con id: 2
+[INFO] 04:26:06:814 restaurante/(13126:13126): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:26:06:814 restaurante/(13126:13126): Se recibio un payload del tamaño: 86
+[INFO] 04:26:06:814 restaurante/(13126:13126): Resturante cantidad cocineros: 2
+[INFO] 04:26:06:814 restaurante/(13126:13126): Resturante posicion x: 1
+[INFO] 04:26:06:814 restaurante/(13126:13126): Resturante posicion y: 1
+[INFO] 04:26:06:814 restaurante/(13126:13126): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:26:06:815 restaurante/(13126:13126): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:26:06:815 restaurante/(13126:13126): Resturante precio platos: [200,200,125]
+[INFO] 04:26:06:815 restaurante/(13126:13126): Resturante cantidad hornos: 1
+[INFO] 04:29:59:346 restaurante/(13354:13354): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:29:59:347 restaurante/(13354:13354): Conexión exitosa!
+[INFO] 04:29:59:348 restaurante/(13354:13354): Se enviaron la cantidad de bytes: 27
+[INFO] 04:29:59:356 restaurante/(13354:13354): Se recibio mensaje del modulo: 5
+[INFO] 04:29:59:356 restaurante/(13354:13354): Se recibio mensaje del modulo con id: 2
+[INFO] 04:29:59:357 restaurante/(13354:13354): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:29:59:357 restaurante/(13354:13354): Se recibio un payload del tamaño: 86
+[INFO] 04:29:59:357 restaurante/(13354:13354): Resturante cantidad cocineros: 2
+[INFO] 04:29:59:357 restaurante/(13354:13354): Resturante posicion x: 1
+[INFO] 04:29:59:357 restaurante/(13354:13354): Resturante posicion y: 1
+[INFO] 04:29:59:357 restaurante/(13354:13354): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:29:59:357 restaurante/(13354:13354): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:29:59:357 restaurante/(13354:13354): Resturante precio platos: [200,200,125]
+[INFO] 04:29:59:357 restaurante/(13354:13354): Resturante cantidad hornos: 1
+[INFO] 04:31:10:254 restaurante/(13423:13423): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:31:10:255 restaurante/(13423:13423): [ BIBLIO - crear_socket_y_conectar] No se pudo establecer la conexión al módulo servidor.
+[ERROR] 04:31:10:255 restaurante/(13423:13423): No se pudo enviar el pedido de info del restaurante
+[INFO] 04:31:10:255 restaurante/(13423:13423): Se recibio mensaje del modulo: 4
+[INFO] 04:31:10:255 restaurante/(13423:13423): Se recibio mensaje del modulo con id: -1208442880
+[INFO] 04:31:10:255 restaurante/(13423:13423): Se recibio el tipo de mensaje numero: -1208442880
+[INFO] 04:31:10:255 restaurante/(13423:13423): Se recibio un payload del tamaño: -1073746200
+[INFO] 04:31:33:307 restaurante/(11175:11175): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:31:33:308 restaurante/(11175:11175): Conexión exitosa!
+[INFO] 04:31:33:309 restaurante/(11175:11175): Se enviaron la cantidad de bytes: 27
+[INFO] 04:31:33:309 restaurante/(11175:11175): Se recibio mensaje del modulo: 5
+[INFO] 04:31:33:309 restaurante/(11175:11175): Se recibio mensaje del modulo con id: 2
+[INFO] 04:31:33:309 restaurante/(11175:11175): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:31:33:309 restaurante/(11175:11175): Se recibio un payload del tamaño: 86
+[INFO] 04:31:33:309 restaurante/(11175:11175): Resturante cantidad cocineros: 2
+[INFO] 04:31:33:310 restaurante/(11175:11175): Resturante posicion x: 1
+[INFO] 04:31:33:315 restaurante/(11175:11175): Resturante posicion y: 1
+[INFO] 04:31:33:315 restaurante/(11175:11175): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:31:33:315 restaurante/(11175:11175): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:31:33:315 restaurante/(11175:11175): Resturante precio platos: [200,200,125]
+[INFO] 04:31:33:315 restaurante/(11175:11175): Resturante cantidad hornos: 1
+[INFO] 04:33:56:509 restaurante/(13564:13564): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:33:56:510 restaurante/(13564:13564): Conexión exitosa!
+[INFO] 04:33:56:510 restaurante/(13564:13564): Se enviaron la cantidad de bytes: 27
+[INFO] 04:33:56:512 restaurante/(13564:13564): Se recibio mensaje del modulo: 5
+[INFO] 04:33:56:512 restaurante/(13564:13564): Se recibio mensaje del modulo con id: 2
+[INFO] 04:33:56:512 restaurante/(13564:13564): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:33:56:512 restaurante/(13564:13564): Se recibio un payload del tamaño: 86
+[INFO] 04:33:56:512 restaurante/(13564:13564): Resturante cantidad cocineros: 2
+[INFO] 04:33:56:512 restaurante/(13564:13564): Resturante posicion x: 1
+[INFO] 04:33:56:512 restaurante/(13564:13564): Resturante posicion y: 1
+[INFO] 04:33:56:512 restaurante/(13564:13564): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:33:56:512 restaurante/(13564:13564): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:33:56:512 restaurante/(13564:13564): Resturante precio platos: [200,200,125]
+[INFO] 04:33:56:512 restaurante/(13564:13564): Resturante cantidad hornos: 1
+[INFO] 04:34:07:535 restaurante/(13564:13949): [ BIBLIO - crear_socket_y_conectar] No se pudo establecer la conexión al módulo servidor.
+[INFO] 04:36:01:497 restaurante/(14105:14105): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:36:02:40 restaurante/(14105:14105): Conexión exitosa!
+[INFO] 04:36:02:40 restaurante/(14105:14105): Se enviaron la cantidad de bytes: 27
+[INFO] 04:36:02:45 restaurante/(14105:14105): Se recibio mensaje del modulo: 5
+[INFO] 04:36:02:45 restaurante/(14105:14105): Se recibio mensaje del modulo con id: 2
+[INFO] 04:36:02:45 restaurante/(14105:14105): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:36:02:45 restaurante/(14105:14105): Se recibio un payload del tamaño: 86
+[INFO] 04:36:02:45 restaurante/(14105:14105): Resturante cantidad cocineros: 2
+[INFO] 04:36:02:45 restaurante/(14105:14105): Resturante posicion x: 1
+[INFO] 04:36:02:46 restaurante/(14105:14105): Resturante posicion y: 1
+[INFO] 04:36:02:46 restaurante/(14105:14105): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:36:02:46 restaurante/(14105:14105): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:36:02:46 restaurante/(14105:14105): Resturante precio platos: [200,200,125]ANTE: L
+[INFO] 04:36:02:46 restaurante/(14105:14105): Resturante cantidad hornos: 1
+[INFO] 04:42:58:27 restaurante/(14359:14359): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:42:58:29 restaurante/(14359:14359): Conexión exitosa!
+[INFO] 04:42:58:30 restaurante/(14359:14359): Se enviaron la cantidad de bytes: 27
+[INFO] 04:42:58:34 restaurante/(14359:14359): Se recibio mensaje del modulo: 5
+[INFO] 04:42:58:34 restaurante/(14359:14359): Se recibio mensaje del modulo con id: 2
+[INFO] 04:42:58:34 restaurante/(14359:14359): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:42:58:35 restaurante/(14359:14359): Se recibio un payload del tamaño: 86
+[INFO] 04:42:58:35 restaurante/(14359:14359): Resturante cantidad cocineros: 2
+[INFO] 04:42:58:35 restaurante/(14359:14359): Resturante posicion x: 1
+[INFO] 04:42:58:35 restaurante/(14359:14359): Resturante posicion y: 1
+[INFO] 04:42:58:35 restaurante/(14359:14359): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:42:58:36 restaurante/(14359:14359): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:42:58:36 restaurante/(14359:14359): Resturante precio platos: [200,200,125]NTE: La
+[INFO] 04:42:58:36 restaurante/(14359:14359): Resturante cantidad hornos: 1
+[INFO] 04:44:55:743 restaurante/(14718:14718): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:44:55:746 restaurante/(14718:14718): Conexión exitosa!
+[INFO] 04:44:55:746 restaurante/(14718:14718): Se enviaron la cantidad de bytes: 27
+[INFO] 04:44:55:751 restaurante/(14718:14718): Se recibio mensaje del modulo: 5
+[INFO] 04:44:55:751 restaurante/(14718:14718): Se recibio mensaje del modulo con id: 2
+[INFO] 04:44:55:751 restaurante/(14718:14718): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:44:55:751 restaurante/(14718:14718): Se recibio un payload del tamaño: 86
+[INFO] 04:44:55:752 restaurante/(14718:14718): Resturante cantidad cocineros: 2
+[INFO] 04:44:55:752 restaurante/(14718:14718): Resturante posicion x: 1
+[INFO] 04:44:55:752 restaurante/(14718:14718): Resturante posicion y: 1
+[INFO] 04:44:55:752 restaurante/(14718:14718): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:44:55:752 restaurante/(14718:14718): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:44:55:752 restaurante/(14718:14718): Resturante precio platos: [200,200,125]
+[INFO] 04:44:55:753 restaurante/(14718:14718): Resturante cantidad hornos: 1
+[INFO] 04:48:05:726 restaurante/(14912:14912): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 04:48:05:726 restaurante/(14912:14912): Conexión exitosa!
+[INFO] 04:48:05:727 restaurante/(14912:14912): Se enviaron la cantidad de bytes: 27
+[INFO] 04:48:05:733 restaurante/(14912:14912): Se recibio mensaje del modulo: 5
+[INFO] 04:48:05:733 restaurante/(14912:14912): Se recibio mensaje del modulo con id: 2
+[INFO] 04:48:05:734 restaurante/(14912:14912): Se recibio el tipo de mensaje numero: 3
+[INFO] 04:48:05:734 restaurante/(14912:14912): Se recibio un payload del tamaño: 86
+[INFO] 04:48:05:734 restaurante/(14912:14912): Resturante cantidad cocineros: 2
+[INFO] 04:48:05:734 restaurante/(14912:14912): Resturante posicion x: 1
+[INFO] 04:48:05:734 restaurante/(14912:14912): Resturante posicion y: 1
+[INFO] 04:48:05:734 restaurante/(14912:14912): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 04:48:05:734 restaurante/(14912:14912): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 04:48:05:734 restaurante/(14912:14912): Resturante precio platos: [200,200,125]
+[INFO] 04:48:05:734 restaurante/(14912:14912): Resturante cantidad hornos: 1
+[INFO] 05:08:18:731 restaurante/(15783:15783): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 05:08:18:732 restaurante/(15783:15783): Conexión exitosa!
+[INFO] 05:08:18:732 restaurante/(15783:15783): Se enviaron la cantidad de bytes: 27
+[INFO] 05:08:18:752 restaurante/(15783:15783): Se recibio mensaje del modulo: 5
+[INFO] 05:08:18:752 restaurante/(15783:15783): Se recibio mensaje del modulo con id: 2
+[INFO] 05:08:18:752 restaurante/(15783:15783): Se recibio el tipo de mensaje numero: 3
+[INFO] 05:08:18:752 restaurante/(15783:15783): Se recibio un payload del tamaño: 86
+[INFO] 05:08:18:752 restaurante/(15783:15783): Resturante cantidad cocineros: 2
+[INFO] 05:08:18:753 restaurante/(15783:15783): Resturante posicion x: 1
+[INFO] 05:08:18:753 restaurante/(15783:15783): Resturante posicion y: 1
+[INFO] 05:08:18:753 restaurante/(15783:15783): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 05:08:18:753 restaurante/(15783:15783): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 05:08:18:753 restaurante/(15783:15783): Resturante precio platos: [200,200,125]
+[INFO] 05:08:18:753 restaurante/(15783:15783): Resturante cantidad hornos: 1
+[INFO] 05:09:01:388 restaurante/(15783:15783): Se conecto Cliente
+[INFO] 05:09:54:302 restaurante/(15783:15809): Conexión exitosa!
+[INFO] 05:09:54:302 restaurante/(15783:15809): Se enviaron la cantidad de bytes: 27
+[INFO] 05:09:54:308 restaurante/(15783:15809): Se recibio mensaje del modulo: 5
+[INFO] 05:09:54:308 restaurante/(15783:15809): Se recibio mensaje del modulo con id: 5
+[INFO] 05:09:54:308 restaurante/(15783:15809): Se recibio el tipo de mensaje numero: 4
+[INFO] 05:09:54:309 restaurante/(15783:15809): Se recibio un payload del tamaño: 76
+[INFO] 05:12:28:542 restaurante/(16236:16236): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 05:12:28:543 restaurante/(16236:16236): Conexión exitosa!
+[INFO] 05:12:28:544 restaurante/(16236:16236): Se enviaron la cantidad de bytes: 27
+[INFO] 05:12:28:544 restaurante/(16236:16236): Se recibio mensaje del modulo: 5
+[INFO] 05:12:28:544 restaurante/(16236:16236): Se recibio mensaje del modulo con id: 2
+[INFO] 05:12:28:544 restaurante/(16236:16236): Se recibio el tipo de mensaje numero: 3
+[INFO] 05:12:28:544 restaurante/(16236:16236): Se recibio un payload del tamaño: 86
+[INFO] 05:12:28:545 restaurante/(16236:16236): Resturante cantidad cocineros: 2
+[INFO] 05:12:28:545 restaurante/(16236:16236): Resturante posicion x: 1
+[INFO] 05:12:28:545 restaurante/(16236:16236): Resturante posicion y: 1
+[INFO] 05:12:28:545 restaurante/(16236:16236): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 05:12:28:545 restaurante/(16236:16236): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 05:12:28:545 restaurante/(16236:16236): Resturante precio platos: [200,200,125]
+[INFO] 05:12:28:545 restaurante/(16236:16236): Resturante cantidad hornos: 1
+[INFO] 05:13:46:994 restaurante/(16236:16236): Se conecto Cliente
+[INFO] 05:14:08:118 restaurante/(16236:16457): Conexión exitosa!
+[INFO] 05:14:08:119 restaurante/(16236:16457): Se enviaron la cantidad de bytes: 27
+[INFO] 05:14:08:119 restaurante/(16236:16457): Se recibio mensaje del modulo: 5
+[INFO] 05:14:08:119 restaurante/(16236:16457): Se recibio mensaje del modulo con id: 5
+[INFO] 05:14:08:120 restaurante/(16236:16457): Se recibio el tipo de mensaje numero: 4
+[INFO] 05:14:08:120 restaurante/(16236:16457): Se recibio un payload del tamaño: 76
+[INFO] 05:16:15:546 restaurante/(16747:16747): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 05:16:15:547 restaurante/(16747:16747): Conexión exitosa!
+[INFO] 05:16:15:548 restaurante/(16747:16747): Se enviaron la cantidad de bytes: 27
+[INFO] 05:16:15:549 restaurante/(16747:16747): Se recibio mensaje del modulo: 5
+[INFO] 05:16:15:549 restaurante/(16747:16747): Se recibio mensaje del modulo con id: 2
+[INFO] 05:16:15:549 restaurante/(16747:16747): Se recibio el tipo de mensaje numero: 3
+[INFO] 05:16:15:550 restaurante/(16747:16747): Se recibio un payload del tamaño: 86
+[INFO] 05:16:15:550 restaurante/(16747:16747): Resturante cantidad cocineros: 2
+[INFO] 05:16:15:551 restaurante/(16747:16747): Resturante posicion x: 1
+[INFO] 05:16:15:551 restaurante/(16747:16747): Resturante posicion y: 1
+[INFO] 05:16:15:551 restaurante/(16747:16747): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 05:16:15:551 restaurante/(16747:16747): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 05:16:15:551 restaurante/(16747:16747): Resturante precio platos: [200,200,125]
+[INFO] 05:16:15:551 restaurante/(16747:16747): Resturante cantidad hornos: 1
+[INFO] 05:16:37:232 restaurante/(16747:16747): Se conecto Cliente
+[INFO] 05:16:52:55 restaurante/(16747:16765): Conexión exitosa!
+[INFO] 05:16:53:371 restaurante/(16747:16765): Se enviaron la cantidad de bytes: 27
+[ERROR] 05:16:54:322 restaurante/(16747:16765): Se recibieron menos bytes de los que se esperaban
+[INFO] 05:16:54:918 restaurante/(16747:16765): Se recibio mensaje del modulo: 16777217
+[INFO] 05:16:55:114 restaurante/(16747:16765): Se recibio mensaje del modulo con id: 11
+[INFO] 05:16:55:961 restaurante/(16747:16765): Se recibio el tipo de mensaje numero: -1237318440
+[INFO] 05:16:56:623 restaurante/(16747:16765): Se recibio un payload del tamaño: 27
+[INFO] 05:18:33:920 restaurante/(16957:16957): 
+PUERTO_ESCUCHA: 5002
+IP_SINDICATO: 127.0.0.1
+PUERTO_SINDICATO: 5003
+IP_APP: 127.0.0.1
+PUERTO_APP: 5004
+QUANTUM: 2
+PATH_ARCHIVO_LOG: restaurante.log
+ALGORIMO_PLANIFICACION: RR
+NOMBRE_RESTAURANTE: LaParri
+
+[INFO] 05:18:33:921 restaurante/(16957:16957): Conexión exitosa!
+[INFO] 05:18:33:922 restaurante/(16957:16957): Se enviaron la cantidad de bytes: 27
+[INFO] 05:18:33:925 restaurante/(16957:16957): Se recibio mensaje del modulo: 5
+[INFO] 05:18:33:925 restaurante/(16957:16957): Se recibio mensaje del modulo con id: 2
+[INFO] 05:18:33:925 restaurante/(16957:16957): Se recibio el tipo de mensaje numero: 3
+[INFO] 05:18:33:925 restaurante/(16957:16957): Se recibio un payload del tamaño: 86
+[INFO] 05:18:33:926 restaurante/(16957:16957): Resturante cantidad cocineros: 2
+[INFO] 05:18:33:926 restaurante/(16957:16957): Resturante posicion x: 1
+[INFO] 05:18:33:926 restaurante/(16957:16957): Resturante posicion y: 1
+[INFO] 05:18:33:926 restaurante/(16957:16957): Resturante afinidad cocineros: [asadoJugoso]
+[INFO] 05:18:33:926 restaurante/(16957:16957): Resturante platos: [asadoJugoso,asadoSeco,choripan]
+[INFO] 05:18:33:926 restaurante/(16957:16957): Resturante precio platos: [200,200,125]
+[INFO] 05:18:33:926 restaurante/(16957:16957): Resturante cantidad hornos: 1
+[INFO] 05:18:50:212 restaurante/(16957:16957): Se conecto Cliente
+[INFO] 05:19:04:844 restaurante/(16957:16971): Conexión exitosa!
+[INFO] 05:19:04:844 restaurante/(16957:16971): Se enviaron la cantidad de bytes: 27
+[ERROR] 05:19:05:814 restaurante/(16957:16971): Se recibieron menos bytes de los que se esperaban
+[INFO] 05:19:05:815 restaurante/(16957:16971): Se recibio mensaje del modulo: 16777217
+[INFO] 05:19:05:815 restaurante/(16957:16971): Se recibio mensaje del modulo con id: 11
+[INFO] 05:19:05:815 restaurante/(16957:16971): Se recibio el tipo de mensaje numero: -1237318440
+[INFO] 05:19:05:817 restaurante/(16957:16971): Se recibio un payload del tamaño: 27

@@ -2387,17 +2387,15 @@ int main(int argc, char *argv[]) {
 	    args.arg1=socketConectado;
 	    args.arg2=infoBloques;
 	    //pthread_mutex_lock(&lock);
-		if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
-			log_error(logger,"Error creando el hilo");
-		}
-		//handleConexion(socketConectado,infoBloques);
+		//if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
+			//log_error(logger,"Error creando el hilo");
+		//}
+		handleConexion(&args);
 	    //pthread_mutex_unlock(&lock);
 
 	   //pthread_join(hiloConexionAceptada, NULL);
 	    //pthread_detach(hiloConexionAceptada);
 	    //pthread_mutex_destroy(&lock);
-
-		break;
 
 	}
 

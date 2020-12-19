@@ -17,10 +17,11 @@ int main(void) {
 
 	pthread_t  receptor_modulo_cliente_h;
 
-	pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
+	//pthread_create(&receptor_modulo_cliente_h, NULL, (void*)&conectar_restaurante_a_applicacion, (void*)NULL );
 
 	g_socket_cliente = crear_socket_escucha("127.0.0.1", puerto_escucha);
 
+	if (g_socket_cliente >= 0) printf("Escuchando en puerto %s \n", puerto_escucha );
 	while (1) {
 
 		uint32_t socket_aceptado = aceptar_conexion( g_socket_cliente );
@@ -411,6 +412,7 @@ void iniciar_planificacion() {
 	cola_exit = queue_create();
 
 	cargar_colas_ready();
+	sem_hornos = malloc(sizeof(sem_t));
 	sem_init(sem_hornos, 0, cantidad_hornos);
 	int i;
 	while (list_get(cocineros, i) != NULL) {
@@ -668,12 +670,14 @@ t_respuesta_platos_restaurante * consultar_platos_restaurante() {
 void cargar_variables(t_respuesta_info_restaurante * respuesta) {
 	char ** platos_array = string_get_string_as_array(respuesta->platos);
 	int i = 0;
+	platos = list_create();
 	while (platos_array[i] != NULL) {
 		list_add(platos, platos_array[i]);
 		i++;
 	}
 
 	char ** cocineros_array = string_get_string_as_array(respuesta->afinidad_cocineros);
+	cocineros = list_create();
 	for(i = 0; i < respuesta->cantidad_cocineros; ++i) {
 		if(cocineros_array[i] == NULL) {
 			list_add(cocineros, cocineros_array[i]);
@@ -689,6 +693,7 @@ void cargar_variables(t_respuesta_info_restaurante * respuesta) {
 
 	char ** precios_array = string_get_string_as_array(respuesta->platos);
 	i = 0;
+	platos_precios = dictionary_create();
 	while (precios_array[i] != NULL) {
 		dictionary_put(platos_precios, list_get(platos, i), precios_array[i]);
 		i++;

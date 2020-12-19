@@ -318,9 +318,9 @@ int main(int argc, char **argv) {
     		    		break;
     		    	}
 
-    		    	bool confirmacion = enviar_12_obtener_pedido(g_ip_restaurante, g_puerto_restaurante, argv[3], atoi(argv[4]));
+    		    	bool confirmacion_resto = enviar_12_obtener_pedido(g_ip_restaurante, g_puerto_restaurante, argv[3], atoi(argv[4]));
 
-    		    	if ( confirmacion ) {
+    		    	if ( confirmacion_resto ) {
     		    		printf("Se confirmó el pedido.\n");
     		    	} else {
     		    		printf("No es posible confirmar el pedido.\n");
