@@ -253,23 +253,64 @@ int main(int argc, char **argv) {
 				case CONSULTAR_PLATOS: 
 
 					printf(" 04- CONSULTAR_PLATOS        HACIA: APP, RESTAURANTE, SINDICATO \n");
-    		    	// enviar_consultar_restaurante(g_ip_app, g_puerto_app);
+
+    		    	t_list * platos = enviar_04_consultar_platos( g_ip_restaurante, g_puerto_restaurante, CONSULTAR_PLATOS);
+
+    		    	list_destroy_and_destroy_elements( platos, _string_destroyer );
     		    	break;
     		    
 				case CREAR_PEDIDO:
     		    	printf(" 05- CREAR_PEDIDO            HACIA: APP, RESTAURANTE            \n");
+
+    		    	uint32_t id_pedido = enviar_05_crear_pedido(g_ip_restaurante, g_puerto_restaurante, CREAR_PEDIDO );
+    		    	g_id_pedido_actual = id_pedido;
+
+    		    	if ( id_pedido == -1 ) printf("No se pudo crear el pedido.\n");
+    		    	else log_error(logger, "Se creó el pedido con ID '%d'.\n", id_pedido );
+
 		    		break;
     		    
 				case ANIADIR_PLATO:
     		    	printf(" 07- ANIADIR_PLATO           HACIA: APP, RESTAURANTE            \n");
+    		    	bool se_aniadio = enviar_07_aniadir_plato(g_ip_restaurante, g_puerto_restaurante, ANIADIR_PLATO, g_id_pedido_actual, argv[3]);
+    		    	printf( se_aniadio ? "Plato agregado al pedido.\n" : "No es posible agregar el plato.\n" );
 		    		break;
 
 				case CONFIRMAR_PEDIDO:
     		    	printf(" 09- CONFIRMAR_PEDIDO        HACIA: APP, RESTAURANTE, COMANDA, SINDICATO \n");
+    		    	if ( argv[3] == NULL || argv[4] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+    		    	}
+
+    		    	bool confirmacion = enviar_09_confirmar_pedido (g_ip_restaurante, g_puerto_restaurante, argv[3], atoi(argv[4]) );
+
+    		    	if ( confirmacion ) {
+    		    		printf("Se confirmó el pedido.\n");
+    		    	} else {
+    		    		printf("No es posible confirmar el pedido.\n");
+    		    	}
 		    		break;
     		    
 				case CONSULTAR_PEDIDO:
     		    	printf(" 11- CONSULTAR_PEDIDO        HACIA: APP, RESTAURANTE \n");
+    		    	if ( argv[3] == NULL ) {
+
+    		    		printf("Debe ingresar mas parámetros.\n");
+
+    		    		break;
+    		    	}
+
+    		    	bool confirmacion = enviar_12_obtener_pedido(g_ip_restaurante, g_puerto_restaurante, argv[3], atoi(argv[4]));
+
+    		    	if ( confirmacion ) {
+    		    		printf("Se confirmó el pedido.\n");
+    		    	} else {
+    		    		printf("No es posible confirmar el pedido.\n");
+    		    	}
+
 		    		break;
 
 				default:

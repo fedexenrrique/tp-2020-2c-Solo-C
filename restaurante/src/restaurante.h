@@ -29,7 +29,14 @@ t_queue			* 	cola_exit;
 
 sem_t			*	sem_hornos;
 
-typedef struct{
+
+
+typedef struct {
+	t_queue		*	cola_ready;
+	char		*	afinidad;
+}cola_ready_afinidad;
+
+typedef struct {
 	uint32_t		id_pedido;
 	char		* 	estado_pedido;
 	t_list		* 	lista_platos; //lista de plato_cantidad
@@ -66,9 +73,11 @@ typedef struct {
 int									main													(void);
 void 								obtener_info_restaurante								(void);
 void								iniciar_planificacion									(void);
+void							*	planificador_cpu										(void *);
 void								planificador_io											(void);
 void								planificador_bloqueados									(void);
 t_queue							*	obtener_cola_afinidad									(char *);
+void								procesamiento_mensaje									(void *);
 void								cargar_variables										(t_respuesta_info_restaurante *);
 t_respuesta_info_restaurante 	* 	deserializar_respuesta_info_restaurante					(void *);
 t_respuesta_platos_restaurante	*	consultar_platos_restaurante							(void);
