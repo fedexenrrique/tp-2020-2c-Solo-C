@@ -109,9 +109,9 @@ int crearDirectorioRestaurantes(){
 
 int crearDirectorioRecetas(){
 	int e = 0;
-	pathRecetas=string_new();
+	//pathRecetas=string_new();
 
-	string_append_with_format(&pathRecetas,"%s%s",pathFiles,"Recetas/");
+	//string_append_with_format(&pathRecetas,"%s%s",pathFiles,"Recetas/");
 
 	e = mkdir(pathRecetas, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
@@ -122,7 +122,7 @@ int crearDirectorioRecetas(){
 	} else
 		log_info(logger, "Directorio de recetas creado");
 
-	free(pathRecetas);
+	//free(pathRecetas);
 	return 1;
 
 }
@@ -625,11 +625,11 @@ int actualizarArchivosBloques(char* pathBloques,char* lineaArchivoBloquesAsignad
 								pthread_mutex_unlock(&mutexDiccionarioRestos);
 							}else if(strcmp(tipoRecurso,"PEDIDO")==0){
 								pthread_mutex_unlock(&mutexArchivoBloquesAsignadosPedidos);
-								pthread_mutex_unlock(&mutexDiccionarioRestos);
+								pthread_mutex_unlock(&mutexDiccionarioPedidos);
 
 							}else {
 								pthread_mutex_unlock(&mutexArchivoBloquesAsignadosRecetas);
-								pthread_mutex_unlock(&mutexDiccionarioRestos);
+								pthread_mutex_unlock(&mutexDiccionarioRecetas);
 
 							}
 				free(lines);
@@ -725,6 +725,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 	//AGREGAR VERIFICACION DE BLOQUES LIBRES EN LAS SIGUINTES CONDICIONES
 
 	if((cantEscritura % infoBloques->tamBloques)==0 && cantEscritura==infoBloques->tamBloques){
+		log_info(logger, "Grabando archivo de un solo bloque");
 		cantBloquesAEscribir= (cantEscritura)/ (infoBloques->tamBloques);
 		bloqueActual=bloqueInicial;
 		char* pathBloqueActual=malloc(strlen(pathBloques)+strlen(string_itoa(bloqueActual))+4+1);
@@ -748,6 +749,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 			pthread_mutex_unlock(&mutexBloques);
 
 	}else {
+		log_info(logger, "Calculando numero de bloques a escribir");
+
 		int sizeStringConPunteros=cantEscritura+ (((cantEscritura) / (infoBloques->tamBloques))*sizeof(uint32_t));
 		//int sizeString=strlen()
 		//char* stringNuevo=mempcy(propiedades,)
@@ -763,9 +766,13 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 
 		if(strcmp(tipoRecurso,"PEDIDO")==0&& strcmp(operacion,"ACTUALIZAR")==0){
+			log_info(logger, "Actualizando bloques de pedido");
+
 			int bloquesExtra=cantBloquesAEscribir-list_size(bloquesAsignadosARecurso);
 
 			if(bloquesExtra>0){
+				log_info(logger, "Aniadiendo bloques extras al pedido");
+
 				for(int i=0;i<bloquesExtra;i++){ //asigno n bloques mas
 					pthread_mutex_lock(&mutexBitMap);
 					bloqueSiguienteNuevo=buscarBloqueLibre(infoBloques);
@@ -777,6 +784,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 				//En este caso tengo que sacar bloques, en caso que se hayan eliminado elementos del string y se redujera su tamaño
 				//saco n elementos de la lista de bloques asignados y los libero para algun otro uso
 			}else if (bloquesExtra<0){
+
 				//int bloqueActualAEliminar=atoi(list_get(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1));
 				for(int i=0;(list_size(bloquesAsignadosARecurso)-bloquesExtra);i++){ //asigno n bloques mas
 					int bloqueAEliminar=list_get(bloquesAsignadosARecurso,list_size(bloquesAsignadosARecurso)-1-i);
@@ -793,6 +801,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		for (i=0; i<cantBloquesAEscribir;i++){
 			if(i<cantBloquesAEscribir-1){
 				if(string_equals_ignore_case(operacion,"ACTUALIZAR")){
+					log_info(logger, "Actualizacion pedido: Obteniendo bloque siguiente");
+
 					//if(i<cantBloquesAEscribir-2){
 						//bloqueSiguiente=atoi(list_get(bloquesAsignadosARecurso,i+1));
 						bloqueSiguiente=list_get(bloquesAsignadosARecurso,i+1);
@@ -808,6 +818,8 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 					//}
 
 				}else {
+					log_info(logger, "Creacion: Obteniendo bloque siguiente");
+
 					pthread_mutex_lock(&mutexBitMap);
 					bloqueSiguiente=buscarBloqueLibre(infoBloques);
 					list_add(bloquesAsignadosARecurso,bloqueSiguiente);
@@ -850,6 +862,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 							resultado=-3;
 				}
 				tamanioNuevoTotal=tamanioNuevoTotal+strlen(bytesAEscribir);
+				log_info(logger, "Escribiendo archivo de bloque");
 
 				if(fwrite(bytesAEscribir,strlen(bytesAEscribir),1,archivoBloqueActual)==0){
 												log_error(logger,"Error al escribir en el archivo info de restaurante");
@@ -896,6 +909,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 
 				}
 				tamanioNuevoTotal=tamanioNuevoTotal+strlen(bytesAEscribir);
+				log_info(logger, "Escribiendo archivo de bloque");
 
 				if(fwrite(bytesAEscribir,strlen(bytesAEscribir),1,archivoBloqueActual)==0){
 					log_error(logger,"Error al escribir en el archivo info de restaurante");
@@ -912,6 +926,7 @@ int escribirBloques(char*propiedades,uint32_t cantEscritura, int bloqueInicial,c
 		}
 		//pthread_mutex_lock(&mutexArchivoBloquesAsignadosRestos);
 		//pthread_mutex_lock(&mutexDiccionarioRestos);
+		log_info(logger, "Actualziando estructuras de asignacion de bloques...");
 
 		if(strcmp(tipoRecurso,"RESTO")==0){
 						pthread_mutex_lock(&mutexDiccionarioRestos);
@@ -1179,7 +1194,7 @@ int grabarArchivoReceta(tCreacionReceta* recetaNueva,tInfoBloques*infoBloques){
 
 	int e;
 	struct  stat info;
-	int sizePathReceta=strlen(pathRecetas)+strlen(recetaNueva->nombreReceta);
+	int sizePathReceta=strlen(pathRecetas)+strlen(recetaNueva->nombreReceta)+5;
 	char* pathRecetaNueva=malloc(sizePathReceta+1);
 	strcpy(pathRecetaNueva,pathRecetas);
 	string_append_with_format(&pathRecetaNueva,"%s%s",recetaNueva->nombreReceta,".AFIP"),

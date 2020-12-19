@@ -24,9 +24,17 @@ int paramValidos(char** parametros) {
 
 }
 
-void levantarConsola(tInfoBloques* infoBloques) {
+//void levantarConsola(void* arguments) {
+	void levantarConsola(void* arguments) {
+
 	printf(" ");
 	printf("*****************************CONSOLA SINDICATO*******************\n");
+	 struct arg_struct *args = (struct arg_struct *)arguments;
+	tInfoBloques* argInfoBloques=malloc(sizeof(tInfoBloques));
+
+	int socketCliente=args->arg1;
+	argInfoBloques=args->arg2;
+
 
 	while (1) {
 		int sizeLineaComando=400;
@@ -85,7 +93,7 @@ void levantarConsola(tInfoBloques* infoBloques) {
 			log_info(logger,"Nombre: %s\n", restaurante->nombreRestaurante);
 			log_info(logger,"Cantidad Cocineros: %d\n", restaurante->cantCocineros);
 
-			int archivoGrabado=grabarArchivoRestaurante(restaurante,infoBloques);
+			int archivoGrabado=grabarArchivoRestaurante(restaurante,argInfoBloques);
 
 			if(archivoGrabado<0){
 				log_error(logger,"Archivo no grabado");
@@ -125,7 +133,7 @@ void levantarConsola(tInfoBloques* infoBloques) {
 			log_info(logger,"Creando receta...\n");
 			log_info(logger,receta->nombreReceta);
 
-			int archivoGrabado=grabarArchivoReceta(receta,infoBloques);
+			int archivoGrabado=grabarArchivoReceta(receta,argInfoBloques);
 
 			if(archivoGrabado==0){
 						log_error(logger,"Archivo no grabado");
@@ -143,6 +151,8 @@ void levantarConsola(tInfoBloques* infoBloques) {
 		free(substrings);
 
 	}
+
+	free(argInfoBloques);
 
 }
 //COMPLETAR
@@ -2310,6 +2320,10 @@ int main(int argc, char *argv[]) {
 
 	montarFS(infoBloques);
 
+    struct arg_struct argsConsola;
+    argsConsola.arg1=0;
+    argsConsola.arg2=infoBloques;
+
 	//info=obtenerInfoRestaurante("Resto1");
 
 	tCreacionPedido* pedido=malloc(sizeof(tCreacionPedido));
@@ -2347,8 +2361,10 @@ int main(int argc, char *argv[]) {
 
 	//int resultado = finalizarPedido("LaParri",string_itoa(1), NULL, 0);
 
-	levantarConsola(infoBloques);
-
+	//levantarConsola(infoBloques);
+	if(pthread_create(&hiloConsola, NULL,levantarConsola,(void*)&argsConsola)==0){
+				log_error(logger,"Error creando el hilo");
+	}
 	//mensajeConsultasPlatosPrueba("LaParri");
 
 
@@ -2367,7 +2383,6 @@ int main(int argc, char *argv[]) {
 		//Crear Hilo
 	    struct arg_struct args;
 
-		pthread_t hiloConexionAceptada;
 		int socketConectado = aceptar_conexion(socketServer);
 	    args.arg1=socketConectado;
 	    args.arg2=infoBloques;
