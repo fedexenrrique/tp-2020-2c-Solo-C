@@ -600,21 +600,21 @@ t_respuesta_info_restaurante * deserializar_respuesta_info_restaurante(void * pa
 	memcpy(&(respuesta_info->size_afinidad_cocineros), payload, sizeof(uint32_t));
 	payload += sizeof(uint32_t);
 
-	respuesta_info->afinidad_cocineros = malloc((respuesta_info->size_afinidad_cocineros) + 1);
+	respuesta_info->afinidad_cocineros = malloc((respuesta_info->size_afinidad_cocineros));
 	memcpy((respuesta_info->afinidad_cocineros), payload, respuesta_info->size_afinidad_cocineros);
 	payload += respuesta_info->size_afinidad_cocineros;
 
 	memcpy(&(respuesta_info->size_platos), payload, sizeof(uint32_t));
 	payload += sizeof(uint32_t);
 
-	respuesta_info->platos = malloc((respuesta_info->size_platos) + 1);
+	respuesta_info->platos = malloc((respuesta_info->size_platos));
 	memcpy((respuesta_info->platos), payload, respuesta_info->size_platos);
 	payload += respuesta_info->size_platos;
 
 	memcpy(&(respuesta_info->size_precio_platos), payload, sizeof(uint32_t));
 	payload += sizeof(uint32_t);
 
-	respuesta_info->precio_platos = malloc((respuesta_info->size_precio_platos) + 1);
+	respuesta_info->precio_platos = malloc((respuesta_info->size_precio_platos));
 	memcpy((respuesta_info->precio_platos), payload, respuesta_info->size_precio_platos);
 	payload += respuesta_info->size_precio_platos;
 
@@ -666,13 +666,17 @@ t_respuesta_platos_restaurante * consultar_platos_restaurante() {
 }
 
 void cargar_variables(t_respuesta_info_restaurante * respuesta) {
-	char ** platos_array = string_get_string_as_array(respuesta->platos);
+	log_info(logger,"%s",respuesta->platos);
+	char ** platos_array=NULL;
+	platos_array = string_get_string_as_array(respuesta->platos);
 	int i = 0;
+	platos=list_create();
 	while (platos_array[i] != NULL) {
 		list_add(platos, platos_array[i]);
 		i++;
 	}
 
+	cocineros=list_create();
 	char ** cocineros_array = string_get_string_as_array(respuesta->afinidad_cocineros);
 	for(i = 0; i < respuesta->cantidad_cocineros; ++i) {
 		if(cocineros_array[i] == NULL) {
@@ -689,6 +693,7 @@ void cargar_variables(t_respuesta_info_restaurante * respuesta) {
 
 	char ** precios_array = string_get_string_as_array(respuesta->platos);
 	i = 0;
+	platos_precios=dictionary_create();
 	while (precios_array[i] != NULL) {
 		dictionary_put(platos_precios, list_get(platos, i), precios_array[i]);
 		i++;

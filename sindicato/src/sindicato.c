@@ -1497,8 +1497,10 @@ return 1;
 
 void mapearInfoRestauranteARespuesta(tMensajeInfoRestaurante* infoRestauranteAEnviar,t_respuesta_info_restaurante* respuestaArchivoInfoResto){
 	respuestaArchivoInfoResto->cantidad_cocineros=infoRestauranteAEnviar->cantCocineros;
-	char*posicionAux=malloc(strlen(infoRestauranteAEnviar->posicion)-2);
-	memcpy(posicionAux,infoRestauranteAEnviar->posicion+1,strlen(infoRestauranteAEnviar->posicion));
+	char*posicionAux=malloc(strlen(infoRestauranteAEnviar->posicion)-1);
+	//memcpy(posicionAux,(infoRestauranteAEnviar->posicion)+1,strlen(infoRestauranteAEnviar->posicion)-1);
+	posicionAux=string_substring(infoRestauranteAEnviar->posicion,1,strlen(infoRestauranteAEnviar->posicion)-1);
+	posicionAux[strlen(posicionAux)]='\0';
 	char** coordenadasPosicion=string_split(posicionAux,",");
 
 	respuestaArchivoInfoResto->posicion_x=atoi(coordenadasPosicion[0]);
@@ -1507,16 +1509,16 @@ void mapearInfoRestauranteARespuesta(tMensajeInfoRestaurante* infoRestauranteAEn
 	respuestaArchivoInfoResto->afinidad_cocineros=malloc(strlen(infoRestauranteAEnviar->afinidadCocineros)+1);
 	memcpy(respuestaArchivoInfoResto->afinidad_cocineros,infoRestauranteAEnviar->afinidadCocineros,strlen(infoRestauranteAEnviar->afinidadCocineros));
 	respuestaArchivoInfoResto->afinidad_cocineros[strlen(infoRestauranteAEnviar->afinidadCocineros)]='\0';
-	respuestaArchivoInfoResto->size_afinidad_cocineros=strlen(infoRestauranteAEnviar->afinidadCocineros);
+	respuestaArchivoInfoResto->size_afinidad_cocineros=strlen(infoRestauranteAEnviar->afinidadCocineros)+1;
 
 	respuestaArchivoInfoResto->platos=malloc(strlen(infoRestauranteAEnviar->platos)+1);
 	memcpy(respuestaArchivoInfoResto->platos,infoRestauranteAEnviar->platos,strlen(infoRestauranteAEnviar->platos));
 	respuestaArchivoInfoResto->platos[strlen(infoRestauranteAEnviar->platos)]='\0';
-	respuestaArchivoInfoResto->size_platos = strlen(infoRestauranteAEnviar->platos);
+	respuestaArchivoInfoResto->size_platos = strlen(infoRestauranteAEnviar->platos)+1;
 
 	respuestaArchivoInfoResto->precio_platos=malloc(strlen(infoRestauranteAEnviar->preciosPlatos)+1);
 	memcpy(respuestaArchivoInfoResto->precio_platos,infoRestauranteAEnviar->preciosPlatos,strlen(infoRestauranteAEnviar->preciosPlatos));
-	respuestaArchivoInfoResto->size_precio_platos=strlen(infoRestauranteAEnviar->preciosPlatos);
+	respuestaArchivoInfoResto->size_precio_platos=strlen(infoRestauranteAEnviar->preciosPlatos)+1;
 	respuestaArchivoInfoResto->precio_platos[strlen(infoRestauranteAEnviar->preciosPlatos)]='\0';
 	respuestaArchivoInfoResto->cantidad_hornos=infoRestauranteAEnviar->cantidadHornos;
 
@@ -1813,7 +1815,7 @@ void deserializarSolicitudPlatos(char* payload,t_solicitud_info_restaurante* inf
 //void handleConexion(int socketCliente,tInfoBloques* infoBloques) {
 void* handleConexion(void* arguments) {
 	log_info(logger, "Handle conexion aceptada...");
-	uint32_t modulo, idProceso, nroMsg, size;
+	uint32_t modulo, idProceso, nroMsg, size=0;
     struct arg_struct *args = (struct arg_struct *)arguments;
 
     int socketCliente=args->arg1;
@@ -1937,7 +1939,7 @@ void* handleConexion(void* arguments) {
 		}
 
 
-		free(infoRestauranteAEnviar);
+		//free(infoRestauranteAEnviar);
 		break;
 	}
 
@@ -2106,7 +2108,7 @@ void* handleConexion(void* arguments) {
 	 int streamRespuestaSize = sizeof(uint32_t) * 4 + headerRespuesta->size;
 	 */
 	//ARMO RESPUESTA AL RESTAURANTE HARDCODEADA
-	pthread_exit (NULL);
+	//pthread_exit (NULL);
 }
 
 void armarBufferHardcodeadoRestaurante(t_header2* header,
@@ -2405,7 +2407,7 @@ int main(int argc, char *argv[]) {
 		//pthread_create(&hiloConexionAceptada, NULL,handleConexion,args);
 		//	log_error(logger,"Error creando el hilo");
 
-		handleConexion(&args);
+		handleConexion(args);
 		//if(pthread_create(&hiloConexionAceptada, NULL,handleConexion,(void*)&args)==0){
 			//log_error(logger,"Error creando el hilo");
 		//}
@@ -2418,6 +2420,9 @@ int main(int argc, char *argv[]) {
 	   //pthread_join(hiloConexionAceptada, NULL);
 	    //pthread_detach(hiloConexionAceptada);
 	    //pthread_mutex_destroy(&lock);
+
+		free(args->arg2);
+		free(args);
 
 	}
 
