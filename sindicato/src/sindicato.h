@@ -11,8 +11,15 @@
 //#include "serializar.h"
 
 #include "utils.h"
+#define PATH_BLOQUES_ASIGNADOS_A_RESTAURANTES "./bloquesAsignadosARestos.bin"
+#define PATH_BLOQUES_ASIGNADOS_A_RECETAS 	  "./bloquesAsignadosARecetas.bin"
+#define PATH_BLOQUES_ASIGNADOS_A_PEDIDOS 	  "./bloquesAsignadosAPedidos.bin"
 
+typedef struct{
+	uint32_t size;
+	uint32_t bloqueInicial;
 
+}tInfoArchivo;
 typedef struct{
 
 	int idPedido;
@@ -66,7 +73,8 @@ typedef struct{
 }tSolicitudAniadirPlato;
 
 typedef struct{
-	char* estadoPedido;
+		uint32_t idPedido;
+		char* estadoPedido;
 		char* listaPlatos;
 		char* cantidadPlatos;
 		char* cantidadLista;
@@ -149,6 +157,7 @@ typedef struct{
 }tSolicitudPedido;
 
 typedef struct{
+	uint32_t idPedido;
 	uint32_t sizeEstadoPedido;
 	char* estadoPedido;
 	uint32_t sizeListaPlatos;
@@ -186,15 +195,42 @@ t_dictionary* diccionarioBloquesAsignadosAPedidos;
 
 t_dictionary* diccionarioPosPropiedadesEnArchivo;
 
-int bloquesLibres;
 
+
+int bloquesLibres;
 
 char* pathFiles;
 char* pathMetadata;
 char* pathBloques;
 char* pathRestaurantes;
 char* pathRecetas;
+char* pathAbsolutoBloquesAsignadosARestos;
+char* pathAbsolutoBloquesAsignadosAPedidos;
+char* pathAbsolutoBloquesAsignadosARecetas;
+pthread_t hiloConexionAceptada;
+pthread_t hiloConsola;
 
+
+pthread_mutex_t mutexDiccionarioRestos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexDiccionarioRecetas;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexDiccionarioPedidos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexArchivoBloquesAsignadosRestos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexArchivoBloquesAsignadosRecetas;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexArchivoBloquesAsignadosPedidos;//=PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexBloques;//PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexBitMap;//PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexEscrituraBloques;
+pthread_mutex_t mutexLecturaInfoResto;
+pthread_mutex_t mutexLecturaInfoRecetas;
+pthread_mutex_t mutexCreacionPedido;
+pthread_mutex_t mutexLecturaPedido;
+pthread_mutex_t mutexAgregarPlato;
+pthread_mutex_t mutexConfirmarPedido;
+pthread_mutex_t mutexFinalizarPedido;
+pthread_mutex_t mutexArchivoInfoPedido;
+pthread_mutex_t mutexLecturaBloquesPedido;
+pthread_mutex_t mutexArchivoBloquePedido;
+pthread_mutex_t mutexAumentarCantidadPlatoListo;
 
 //void handleConexion(int socketCliente,tInfoBloques* infoBloques);
 int montarFS(tInfoBloques* infoBloques);
